@@ -331,7 +331,10 @@ implements Runnable
         }
         
         System.out.println("end of automation thread");
+        
         currentValue = 0.0;
+        notifyCurrentValueChanged(currentValue);
+
         suspended = false;
         if( quit==true )
         {
