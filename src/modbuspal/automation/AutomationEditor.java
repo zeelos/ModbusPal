@@ -291,6 +291,7 @@ implements AutomationStateListener, AutomationValueListener
         gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
         controlsPanel.add(loopToggleButton, gridBagConstraints);
 
+        valueTextField.setEditable(false);
         valueTextField.setText("000.0000");
         valueTextField.setPreferredSize(new java.awt.Dimension(60, 20));
         gridBagConstraints = new java.awt.GridBagConstraints();
