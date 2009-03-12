@@ -560,6 +560,11 @@ implements AutomationStateListener, AutomationValueListener
             generators[i].setEnabled(false);
         }
 
+        // check that the "play" button is pushed. This is not the
+        // case if the automation is started by pushing the button
+        // on the main gui instead of the button on the automation
+        // editor.
+        playToggleButton.setSelected(true);
         playToggleButton.setText("Pause");
 
         // disable any input in "Controls" list
