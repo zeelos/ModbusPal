@@ -1,0 +1,58 @@
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>Slaves import and export</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+
+    <h1>Slaves import and export</h1>
+
+    <p>Even if you use the Learn Mode, configuring a Modbus slave can be
+    long and boring. What will happen if you have many slaves of the same
+    kind to configure ? You'll get bored to death unless you do it smartly.
+    Once you have fully configured a Modbus slave, you can very easily
+    duplicate it by using the import/export mechanism.</p>
+
+    <h2>Export a slave</h2>
+
+    <p>The first step is to open your slave's dialog by cliking on the desired
+    "Show" button of the main window. Then, just click on the "Export" button.</p>
+
+    <p>By default, only the static values of the registers/coils are
+    exported, not the bindings. Importing only this data into a new slave
+    would mean that the new slaves has no binding, and you have to do it
+    by yourself.</p>
+
+    <p>Fortunately, there are some options you can configure so that you
+    export all the data you need.</p>
+
+    <h3>Export with bindings</h3>
+
+    <p>If you enable this option, your slave registers/coils will be exported
+    with all the bindings that you have created. You can create a new slave
+    in you current project and import this data, you'll have an exact copy of
+    the slave you just exported.</p>
+
+    <p>The tricky part is when you import that slave into another project. Remember
+    that ModbusPal uses the names of the automations in order to recognize which
+    register/coil is bound to which automation; if you import the bindings information,
+    there may not be automations with matching names in your new project, and your
+    imported slave would not work as expected.</p>
+
+    <h3>Export with automations</h3>
+
+    <p>If you enable this option, your slave is exported with bindings AND with
+    the automations related to those bindings. This is the most convenient
+    option if you want to import this data into another project, because you
+    ensure that you do not lose any information.</p>
+
+    <p>The drawback is that you have to be careful when importing this data, as
+    you may erase already existing automations with the same names.</p>
+
+  </body>
+</html>
