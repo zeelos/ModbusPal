@@ -9,10 +9,14 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import modbuspal.main.XMLTools;
 import org.python.util.PythonInterpreter;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 
 /**
  *
@@ -30,6 +34,20 @@ implements Runnable
         scriptFile = source;
     }
 
+    public ScriptManager(Node node)
+    {
+        // find "language"
+        String language = XMLTools.getAttribute("language", node);
+        if( language!=null )
+        {
+
+        }
+
+        // find "src"
+        String src = XMLTools.getAttribute("src", node);
+        scriptFile = new File(src);
+    }
+
     public String getName()
     {
         return scriptFile.getName();
@@ -43,6 +61,15 @@ implements Runnable
     public String getStatus()
     {
         return status;
+    }
+
+    public void save(OutputStream out)
+    throws IOException
+    {
+        StringBuffer tag = new StringBuffer("<script language=\"python\" ");
+        tag.append("src=\"" + scriptFile.getPath() + "\" ");
+        tag.append("/>\r\n");
+        out.write( tag.toString().getBytes() );
     }
 
     public void start()

@@ -6,6 +6,7 @@
 package modbuspal.main;
 
 import modbuspal.automation.Automation;
+import modbuspal.script.ScriptManager;
 import modbuspal.slave.ModbusSlave;
 
 /**
@@ -23,4 +24,6 @@ public interface ModbusPalListener
     public void automationRemoved(Automation automation);
 
     public void tilt();
+
+    public void scriptManagerAdded(ScriptManager script);
 }

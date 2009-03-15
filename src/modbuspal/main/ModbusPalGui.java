@@ -11,6 +11,7 @@
 
 package modbuspal.main;
 
+import modbuspal.script.ScriptManager;
 import modbuspal.slave.ModbusSlavePanel;
 import java.awt.Component;
 import java.awt.event.WindowEvent;
@@ -29,7 +30,6 @@ import modbuspal.doc.HelpViewer;
 import modbuspal.link.*;
 import modbuspal.master.ModbusMaster;
 import modbuspal.master.ModbusMasterDialog;
-import modbuspal.script.ScriptManager;
 import modbuspal.script.ScriptManagerDialog;
 import modbuspal.slave.ModbusSlave;
 import org.w3c.dom.*;
@@ -97,7 +97,6 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
     private static File projectFile = null;
     private HelpViewer helpViewer = null;
     private ScriptManagerDialog scriptManagerDialog = null;
-    private Vector<ScriptManager> scriptManagers = new Vector<ScriptManager>();
     private ModbusLink currentLink = null;
 
 
@@ -347,6 +346,10 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
 
     private void installScriptEngine()
     {
+        scriptManagerDialog = new ScriptManagerDialog(this);
+        scriptManagerDialog.addWindowListener(this);
+        ModbusPal.addModbusPalListener(scriptManagerDialog);
+
         if( verifyPython() == false )
         {
             // remove the serial settings panel
@@ -1117,19 +1120,11 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
 
         if( scriptsToggleButton.isSelected()==true )
         {
-            if( scriptManagerDialog == null )
-            {
-                scriptManagerDialog = new ScriptManagerDialog(this,scriptManagers);
-                scriptManagerDialog.addWindowListener(this);
-            }
             scriptManagerDialog.setVisible(true);
         }
         else
         {
-            if( scriptManagerDialog != null )
-            {
-                scriptManagerDialog.setVisible(false);
-            }
+            scriptManagerDialog.setVisible(false);
         }
 
 
@@ -1326,6 +1321,10 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
             // force the list to be repainted
             automationsListPanel.repaint();
         }
+    }
+
+    @Override
+    public void scriptManagerAdded(ScriptManager script) {
     }
 
 

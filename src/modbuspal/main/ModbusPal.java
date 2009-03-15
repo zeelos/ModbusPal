@@ -20,6 +20,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import modbuspal.automation.Automation;
 import modbuspal.binding.Binding;
+import modbuspal.script.ScriptManager;
 import modbuspal.slave.ModbusSlave;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -39,6 +40,7 @@ implements ModbusPalXML
     private static IdGenerator idGenerator = new IdGenerator();
     private static ArrayList<ModbusPalListener> listeners = new ArrayList<ModbusPalListener>();
     private static boolean learnModeEnabled = false;
+    private static Vector<ScriptManager> scriptManagers = new Vector<ScriptManager>();
 
     //
     //
@@ -307,6 +309,26 @@ implements ModbusPalXML
     }
 
 
+    //
+    //
+    // SCRIPTS
+    //
+    //
+
+    private static void addScript(ScriptManager manager)
+    {
+        // add manager to list
+        scriptManagers.add(manager);
+
+        // notify
+        notifyScriptAdded(manager);
+    }
+
+    public static void addScript(File scriptFile)
+    {
+        ScriptManager manager = new ScriptManager(scriptFile);
+        addScript(manager);
+    }
 
 
 
@@ -359,6 +381,14 @@ implements ModbusPalXML
         for(ModbusPalListener l:listeners)
         {
             l.tilt();
+        }
+    }
+
+    private static void notifyScriptAdded(ScriptManager script)
+    {
+        for(ModbusPalListener l:listeners)
+        {
+            l.scriptManagerAdded(script);
         }
     }
 
@@ -417,6 +447,7 @@ implements ModbusPalXML
         saveParameters(out);
         saveAutomations(out);
         saveSlaves(out);
+        saveScripts(out);
 
         String closeTag = "</modbuspal_project>\r\n";
         out.write( closeTag.getBytes() );
@@ -463,6 +494,15 @@ implements ModbusPalXML
         }
     }
 
+    private static void saveScripts(OutputStream out)
+    throws IOException
+    {
+        for( int i=0; i<scriptManagers.size(); i++)
+        {
+            ScriptManager man = scriptManagers.get(i);
+            man.save(out);
+        }
+    }
 
 
     //
@@ -497,6 +537,7 @@ implements ModbusPalXML
         loadAutomations(doc);
         loadSlaves(doc);
         loadBindings(doc);
+        loadScripts(doc);
     }
 
 
@@ -644,6 +685,9 @@ implements ModbusPalXML
     }
 
 
+
+
+
     // TODO: why is it public ???
     /**
      * This method scans the content of the document in order to find all
@@ -671,6 +715,25 @@ implements ModbusPalXML
                 Logger.getLogger(ModbusPalGui.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+    }
+
+
+
+    private static void loadScripts(Document doc)
+    {
+        NodeList list = doc.getElementsByTagName("script");
+        for(int i=0; i<list.getLength(); i++ )
+        {
+            Node node = list.item(i);
+            loadScript(node);
+        }
+    }
+
+
+    private static void loadScript(Node node)
+    {
+        ScriptManager man = new ScriptManager(node);
+        addScript(man);
     }
 
 

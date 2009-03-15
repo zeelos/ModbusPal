@@ -14,10 +14,13 @@ package modbuspal.script;
 import java.awt.Component;
 import java.awt.Frame;
 import java.io.File;
-import java.util.Vector;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import modbuspal.automation.Automation;
 import modbuspal.main.ListLayout;
+import modbuspal.main.ModbusPal;
+import modbuspal.main.ModbusPalListener;
+import modbuspal.slave.ModbusSlave;
 
 /**
  *
@@ -25,14 +28,14 @@ import modbuspal.main.ListLayout;
  */
 public class ScriptManagerDialog
 extends javax.swing.JDialog
+implements ModbusPalListener
 {
-    private Vector<ScriptManager> scriptManagers;
+    
 
     /** Creates new form ModbusMasterDialog */
-    public ScriptManagerDialog(Frame parent, Vector<ScriptManager>managers)
+    public ScriptManagerDialog(Frame parent)
     {
         super(parent, false);
-        scriptManagers = managers;
         initComponents();
     }
 
@@ -117,10 +120,8 @@ extends javax.swing.JDialog
         }
 
         // Create a new Script manager for this script:
-        ScriptManager manager = new ScriptManager(pythonFile);
-
-        // Create a new panel to display in the list
-        addScriptManager(manager);
+        ModbusPal.addScript(pythonFile);
+        
     }//GEN-LAST:event_addButtonActionPerformed
 
     private void executeAllButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_executeAllButtonActionPerformed
@@ -138,20 +139,6 @@ extends javax.swing.JDialog
     }//GEN-LAST:event_executeAllButtonActionPerformed
 
 
-    private void addScriptManager(ScriptManager manager)
-    {
-        // add manager to list
-        scriptManagers.add(manager);
-
-        // create a panel for this manager
-        ScriptManagerPanel panel = new ScriptManagerPanel(manager);
-        manager.addScriptListener(panel);
-        scriptsListPanel.add(panel);
-
-        // refresh list
-        scriptsListScrollPane.validate();
-    }
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addButton;
     private javax.swing.JButton executeAllButton;
@@ -165,6 +152,38 @@ extends javax.swing.JDialog
     private void setStatus(String text)
     {
         statusLabel.setText(text);
+    }
+
+    @Override
+    public void modbusSlaveAdded(ModbusSlave slave) {
+    }
+
+    @Override
+    public void modbusSlaveRemoved(ModbusSlave slave) {
+    }
+
+    @Override
+    public void automationAdded(Automation automation, int index) {
+    }
+
+    @Override
+    public void automationRemoved(Automation automation) {
+    }
+
+    @Override
+    public void tilt() {
+    }
+
+    @Override
+    public void scriptManagerAdded(ScriptManager manager)
+    {
+        // create a panel for this manager
+        ScriptManagerPanel panel = new ScriptManagerPanel(manager);
+        manager.addScriptListener(panel);
+        scriptsListPanel.add(panel);
+                
+        // refresh list
+        scriptsListScrollPane.validate();
     }
 
 }
