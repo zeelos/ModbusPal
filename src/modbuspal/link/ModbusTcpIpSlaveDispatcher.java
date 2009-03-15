@@ -9,9 +9,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import modbuspal.main.ModbusPalGui;
 import modbuspal.main.ModbusTools;
 
 /**
@@ -27,10 +24,9 @@ implements Runnable
     private InputStream slaveInput;
     private OutputStream slaveOutput;
 
-    public ModbusTcpIpSlaveDispatcher(ModbusPalGui parent, Socket sock)
+    public ModbusTcpIpSlaveDispatcher(Socket sock)
     throws IOException
     {
-        super(parent);
         slaveSocket = sock;
         slaveInput = sock.getInputStream();
         slaveOutput = sock.getOutputStream();

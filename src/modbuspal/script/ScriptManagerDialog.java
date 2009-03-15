@@ -12,12 +12,12 @@
 package modbuspal.script;
 
 import java.awt.Component;
+import java.awt.Frame;
 import java.io.File;
 import java.util.Vector;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import modbuspal.main.ListLayout;
-import modbuspal.main.ModbusPalGui;
 
 /**
  *
@@ -26,14 +26,12 @@ import modbuspal.main.ModbusPalGui;
 public class ScriptManagerDialog
 extends javax.swing.JDialog
 {
-    private ModbusPalGui mainGui;
     private Vector<ScriptManager> scriptManagers;
 
     /** Creates new form ModbusMasterDialog */
-    public ScriptManagerDialog(ModbusPalGui parent, Vector<ScriptManager>managers)
+    public ScriptManagerDialog(Frame parent, Vector<ScriptManager>managers)
     {
         super(parent, false);
-        mainGui = parent;
         scriptManagers = managers;
         initComponents();
     }

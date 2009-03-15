@@ -11,11 +11,13 @@
 
 package modbuspal.master;
 
+import java.awt.Frame;
 import java.awt.event.ItemEvent;
 import java.util.Vector;
 import javax.swing.ComboBoxModel;
+import javax.swing.JDialog;
 import javax.swing.event.ListDataListener;
-import modbuspal.main.ModbusPalGui;
+import modbuspal.main.GUITools;
 import modbuspal.main.ModbusConst;
 import modbuspal.main.ModbusPal;
 import modbuspal.slave.ModbusSlave;
@@ -84,14 +86,14 @@ implements ModbusConst
     private SlavesList slaves = null;
 
     /** Creates new form AddRequestDialog */
-    public AddRequestDialog(ModbusPalGui main, ModbusMasterDialog parent)
+    public AddRequestDialog(Frame parentFrame, JDialog parentDialog)
     {
-        super(main, true);
+        super(parentFrame, true);
         slaves = new SlavesList( ModbusPal.getModbusSlaves() );
         initComponents();
         slaveComboBox.setSelectedIndex(0);
         //slaveHasBeenSelected(0);
-        ModbusPalGui.align(parent,this);
+        GUITools.align(parentDialog,this);
     }
 
     public int getSlaveId()

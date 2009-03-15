@@ -11,13 +11,13 @@
 
 package modbuspal.slave;
 
+import java.awt.Frame;
 import modbuspal.automation.*;
 import javax.swing.ComboBoxModel;
 import javax.swing.ListModel;
 import javax.swing.event.ListDataListener;
 import modbuspal.binding.Binding;
 import modbuspal.main.ModbusPal;
-import modbuspal.main.ModbusPalGui;
 
 /**
  *
@@ -95,15 +95,13 @@ extends javax.swing.JDialog
         }
     }
 
-    private ModbusPalGui mainGui;
     private AutomationList automations;
     private BindingList bindings;
     
     /** Creates new form AutomationBindingDialog */
-    public AutomationBindingDialog(ModbusPalGui parent, boolean allowOrderSelection)
+    public AutomationBindingDialog(Frame frame, boolean allowOrderSelection)
     {
-        super(parent, true);
-        mainGui = parent;
+        super(frame, true);
         automations = new AutomationList( ModbusPal.getAutomations() );
         bindings = new BindingList( Binding.getClassList() );
         initComponents();

@@ -14,13 +14,12 @@ package modbuspal.main;
 import java.awt.Frame;
 import modbuspal.slave.*;
 import javax.swing.DefaultComboBoxModel;
-import modbuspal.main.ModbusPalGui;
 
 /**
  *
  * @author avincon
  */
-public class AddSlaveDialog
+class AddSlaveDialog
 extends javax.swing.JDialog
 {
     private boolean added = false;
@@ -42,7 +41,7 @@ extends javax.swing.JDialog
 
         initComponents();
         
-        ModbusPalGui.align(parent,this);
+        GUITools.align(parent,this);
     }
 
     public boolean isAdded()

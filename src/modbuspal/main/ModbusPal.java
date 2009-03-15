@@ -20,7 +20,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import modbuspal.automation.Automation;
 import modbuspal.binding.Binding;
-import modbuspal.link.ModbusLink;
 import modbuspal.slave.ModbusSlave;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -204,6 +203,17 @@ implements ModbusPalXML
         }
     }
 
+    //
+    //
+    // FUNCTIONS
+    //
+    //
+
+    public static boolean isFunctionEnabled(int slaveID, byte functionCode)
+    {
+        //TODO: implement isFunctionEnabled
+        return true;
+    }
 
     //
     //
@@ -342,6 +352,15 @@ implements ModbusPalXML
     // EVENTS
     //
     //
+
+
+    public static void tilt()
+    {
+        for(ModbusPalListener l:listeners)
+        {
+            l.tilt();
+        }
+    }
 
     private static void notifySlaveAdded(ModbusSlave slave)
     {

@@ -16,7 +16,7 @@ import org.w3c.dom.NodeList;
  *
  * @author avincon
  */
-public class IdGenerator
+class IdGenerator
 {
     long idCreator = 0;
 

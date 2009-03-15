@@ -10,7 +10,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import modbuspal.main.ModbusPalGui;
 import modbuspal.main.ModbusRequest;
 
 /**
@@ -22,14 +21,12 @@ implements ModbusLink, Runnable
 {
     private ServerSocket serverSocket;
     private Thread serverThread;
-    private ModbusPalGui mainGui;
     private boolean executeThread;
 
-    public ModbusTcpIpLink(ModbusPalGui parent, int port)
+    public ModbusTcpIpLink(int port)
     throws IOException
     {
         super();
-        mainGui = parent;
         serverSocket = new ServerSocket(port);
     }
 
@@ -71,7 +68,7 @@ implements ModbusLink, Runnable
             try
             {
                 Socket socket = serverSocket.accept();
-                ModbusTcpIpSlaveDispatcher slave = new ModbusTcpIpSlaveDispatcher(mainGui, socket);
+                ModbusTcpIpSlaveDispatcher slave = new ModbusTcpIpSlaveDispatcher(socket);
                 slave.start();
             }
             catch (IOException ex)

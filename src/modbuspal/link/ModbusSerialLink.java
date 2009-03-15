@@ -16,7 +16,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ComboBoxModel;
 import javax.swing.event.ListDataListener;
-import modbuspal.main.ModbusPalGui;
 import modbuspal.main.ModbusRequest;
 import modbuspal.main.ModbusTools;
 
@@ -109,10 +108,9 @@ implements ModbusLink, Runnable, SerialPortEventListener
     private int serialParity;
     private int flowControl;
 
-    public ModbusSerialLink(ModbusPalGui parent, int index, int speed, int parity, boolean xonxoff, boolean rtscts)
+    public ModbusSerialLink(int index, int speed, int parity, boolean xonxoff, boolean rtscts)
     throws PortInUseException, ClassCastException
     {
-        super(parent);
         CommPortIdentifier comm = commPorts.get(index);
         serialPort = (SerialPort)(comm.open("MODBUSPAL",3000));
         baudrate = speed;

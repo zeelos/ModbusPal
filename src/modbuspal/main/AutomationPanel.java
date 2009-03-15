@@ -23,7 +23,7 @@ import modbuspal.automation.Generator;
  *
  * @author avincon
  */
-public class AutomationPanel
+class AutomationPanel
 extends javax.swing.JPanel
 implements WindowListener, AutomationStateListener
 {

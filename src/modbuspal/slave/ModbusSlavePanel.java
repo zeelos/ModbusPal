@@ -12,11 +12,8 @@
 package modbuspal.slave;
 
 import modbuspal.main.*;
-import modbuspal.slave.ModbusSlaveDialog;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import modbuspal.slave.ModbusSlave;
-import modbuspal.slave.ModbusSlaveListener;
 
 /**
  *
@@ -29,12 +26,10 @@ implements WindowListener, ModbusSlaveListener
 
     private ModbusSlave modbusSlave = null;
     private ModbusSlaveDialog modbusSlaveDialog = null;
-    private ModbusPalGui mainGui;
 
     /** Creates new form listOfSlavesCellRenderer */
-    public ModbusSlavePanel(ModbusPalGui frame, ModbusSlave parent)
+    public ModbusSlavePanel(ModbusSlave parent)
     {
-        mainGui = frame;
         modbusSlave = parent;
         initComponents();
     }
@@ -127,7 +122,7 @@ implements WindowListener, ModbusSlaveListener
         {
             if( modbusSlaveDialog == null )
             {
-                modbusSlaveDialog = new ModbusSlaveDialog(mainGui, modbusSlave);
+                modbusSlaveDialog = new ModbusSlaveDialog(GUITools.findFrame(this), modbusSlave);
                 modbusSlaveDialog.addWindowListener(this);
             }
             modbusSlaveDialog.setVisible(true);

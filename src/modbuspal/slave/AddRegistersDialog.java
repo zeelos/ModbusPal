@@ -11,7 +11,8 @@
 
 package modbuspal.slave;
 
-import modbuspal.main.ModbusPalGui;
+import java.awt.Frame;
+import modbuspal.main.GUITools;
 import modbuspal.main.ModbusConst;
 import modbuspal.main.NumericTextField;
 
@@ -29,9 +30,9 @@ implements ModbusConst
     private int implementation = IMPLEMENTATION_MODBUS;
 
     /** Creates new form AddSlaveDialog */
-    public AddRegistersDialog(ModbusPalGui mainGui, ModbusSlaveDialog parent)
+    public AddRegistersDialog(Frame frame, ModbusSlaveDialog parent)
     {
-        super(mainGui, true);
+        super(frame, true);
 
         implementation = parent.getModbusSlave().getImplementation();
         switch( implementation )
@@ -49,7 +50,7 @@ implements ModbusConst
         }
 
         initComponents();
-        ModbusPalGui.align(parent,this);
+        GUITools.align(parent,this);
     }
 
     public boolean isAdded()

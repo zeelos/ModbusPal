@@ -15,16 +15,10 @@ import modbuspal.main.*;
 public abstract class ModbusSlaveDispatcher
 implements ModbusConst
 {
-    private ModbusPalGui mainGui;
-
-    protected ModbusSlaveDispatcher(ModbusPalGui parent)
-    {
-        mainGui = parent;
-    }
 
     protected int processPDU(int slaveID, byte[] buffer, int offset, int pduLength)
     {
-        mainGui.tilt();
+        ModbusPal.tilt();
 
         // check if the slave is enabled
         if( ModbusPal.isSlaveEnabled(slaveID) == false )
@@ -35,7 +29,7 @@ implements ModbusConst
 
         // check if the function code is enabled
         byte functionCode = buffer[offset+0];
-        if( mainGui.isFunctionEnabled(slaveID, functionCode) == false )
+        if( ModbusPal.isFunctionEnabled(slaveID, functionCode) == false )
         {
             return makeExceptionResponse(functionCode,XC_ILLEGAL_FUNCTION, buffer, offset);
         }

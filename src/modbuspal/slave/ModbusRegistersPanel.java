@@ -15,7 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import modbuspal.automation.Automation;
 import modbuspal.binding.Binding;
-import modbuspal.main.ModbusPalGui;
+import modbuspal.main.GUITools;
 import modbuspal.main.ModbusConst;
 
 /**
@@ -26,15 +26,13 @@ public class ModbusRegistersPanel
 extends javax.swing.JPanel
 implements ModbusConst
 {
-    private ModbusPalGui mainGui;
     private ModbusSlaveDialog slaveDialog;
     private ModbusRegisters registers;
     private ModbusSlave modbusSlave;
 
     /** Creates new form ModbusRegistersPanel */
-    public ModbusRegistersPanel(ModbusPalGui root, ModbusSlaveDialog parent, ModbusRegisters regs)
+    public ModbusRegistersPanel(ModbusSlaveDialog parent, ModbusRegisters regs)
     {
-        mainGui = root;
         slaveDialog = parent;
         registers = regs;
         modbusSlave = parent.getModbusSlave();
@@ -121,7 +119,7 @@ implements ModbusConst
     private void addRegistersButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addRegistersButtonActionPerformed
 
         // create and display dialog
-        AddRegistersDialog dialog = new AddRegistersDialog(mainGui, slaveDialog);
+        AddRegistersDialog dialog = new AddRegistersDialog( GUITools.findFrame(this), slaveDialog);
         slaveDialog.setStatus("Adding registers...");
         dialog.setVisible(true);
 
@@ -151,7 +149,7 @@ implements ModbusConst
         else if( rowCount == 1)
         {
             // display the bind dialog
-            AutomationBindingDialog dialog = new AutomationBindingDialog(mainGui, true);
+            AutomationBindingDialog dialog = new AutomationBindingDialog(GUITools.findFrame(this), true);
             slaveDialog.setStatus("Binding...");
             dialog.setVisible(true);
 
@@ -187,7 +185,7 @@ implements ModbusConst
         else
         {
             // display the bind dialog
-            AutomationBindingDialog dialog = new AutomationBindingDialog(mainGui, false);
+            AutomationBindingDialog dialog = new AutomationBindingDialog(GUITools.findFrame(this), false);
             slaveDialog.setStatus("Binding...");
             dialog.setVisible(true);
 

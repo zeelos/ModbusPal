@@ -21,4 +21,6 @@ public interface ModbusPalListener
     public void automationAdded(Automation automation, int index);
 
     public void automationRemoved(Automation automation);
+
+    public void tilt();
 }

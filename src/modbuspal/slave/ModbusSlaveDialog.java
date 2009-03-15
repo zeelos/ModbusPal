@@ -12,6 +12,7 @@
 package modbuspal.slave;
 
 import java.awt.BorderLayout;
+import java.awt.Frame;
 import modbuspal.main.*;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -41,18 +42,16 @@ extends javax.swing.JDialog
 implements ModbusConst, ModbusSlaveListener
 {
     private ModbusSlave modbusSlave;
-    private ModbusPalGui mainGui;
 
     /** Creates new form ModbusSlaveDialog */
-    public ModbusSlaveDialog(ModbusPalGui parent, ModbusSlave slave)
+    public ModbusSlaveDialog(Frame frame, ModbusSlave slave)
     {
-        super(parent, false);
-        mainGui = parent;
+        super(frame, false);
         setTitle( String.valueOf(slave.getSlaveId()) + ":" + slave.getName() );
         modbusSlave = slave;
         modbusSlave.addModbusSlaveListener(this);
         initComponents();
-        holdingRegistersPanel.add(new ModbusRegistersPanel(mainGui, this, modbusSlave.getHoldingRegisters()),BorderLayout.CENTER);
+        holdingRegistersPanel.add(new ModbusRegistersPanel(this, modbusSlave.getHoldingRegisters()),BorderLayout.CENTER);
     }
 
     ModbusSlave getModbusSlave()
@@ -129,7 +128,7 @@ implements ModbusConst, ModbusSlaveListener
             }
         }
 
-        ImportSlaveDialog dialog = new ImportSlaveDialog(mainGui, doc);
+        ImportSlaveDialog dialog = new ImportSlaveDialog(GUITools.findFrame(this), doc);
         dialog.setVisible(true);
 
         Node importData = dialog.getImport();
@@ -230,8 +229,8 @@ implements ModbusConst, ModbusSlaveListener
         if( modbusSlave.hasBindings()==true )
         {
             // Create option dialog
-            ExportSlaveDialog optionDialog = new ExportSlaveDialog(mainGui);
-            ModbusPalGui.align(this, optionDialog);
+            ExportSlaveDialog optionDialog = new ExportSlaveDialog(GUITools.findFrame(this));
+            GUITools.align(this, optionDialog);
             optionDialog.setVisible(true);
 
             // check that the option dialog has been validated

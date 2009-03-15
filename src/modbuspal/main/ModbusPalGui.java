@@ -41,7 +41,7 @@ import org.xml.sax.SAXException;
  *
  * @author avincon
  */
-public class ModbusPalGui
+class ModbusPalGui
 extends JFrame
 implements ModbusPalXML, WindowListener, ModbusPalListener
 {
@@ -49,19 +49,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
     private static ModbusPalGui uniqueInstance;
 
 
-    /**
-     * Moves a component so that it is located in the middle of the
-     * boundaries of another component. In most cases, this method is used
-     * to aligndialogs and frames.
-     * @param parent the reference for aligning the child component
-     * @param child the component that must be aligned
-     */
-    public static void align(Component parent, Component child)
-    {
-        int w = parent.getWidth()-child.getWidth();
-        int h = parent.getHeight()-child.getHeight();
-        child.setLocation(parent.getX()+w/2, parent.getY()+h/2);
-    }
+
 
 
     public static JFrame getFrame()
@@ -400,21 +388,11 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
         comPortComboBox.setModel( ModbusSerialLink.getListOfCommPorts() );
     }
     
-    
-    
+   
 
 
 
-    
-    public boolean isFunctionEnabled(int slaveID, byte functionCode)
-    {
-        //TODO: implement isFunctionEnabled
-        return true;
-    }
-
-
-
-
+    @Override
     public void tilt()
     {
         ( (TiltLabel)tiltLabel ).tilt();
@@ -812,7 +790,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
         try
         {
             int commPortIndex = comPortComboBox.getSelectedIndex();
-            currentLink = new ModbusSerialLink(this, commPortIndex, baudrate, parity, xonxoff, rtscts);
+            currentLink = new ModbusSerialLink(commPortIndex, baudrate, parity, xonxoff, rtscts);
             currentLink.start();
             modbusMaster.setLink(currentLink);
 
@@ -855,7 +833,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
 
         try
         {
-            currentLink = new ModbusTcpIpLink(this, port);
+            currentLink = new ModbusTcpIpLink(port);
             currentLink.start();
             modbusMaster.setLink(currentLink);
 
@@ -1251,7 +1229,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
     public void modbusSlaveAdded(ModbusSlave slave)
     {
         // add slave panel into the gui and refresh gui
-        ModbusSlavePanel panel = new ModbusSlavePanel(this,slave);
+        ModbusSlavePanel panel = new ModbusSlavePanel(slave);
         slavesListPanel.add( panel, new Integer(slave.getSlaveId()) );
         slave.addModbusSlaveListener(panel);
         slaveListScrollPane.validate();

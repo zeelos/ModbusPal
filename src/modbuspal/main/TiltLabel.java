@@ -15,7 +15,7 @@ import javax.swing.JLabel;
  *
  * @author avincon
  */
-public class TiltLabel
+class TiltLabel
 extends JLabel
 implements Runnable
 {
