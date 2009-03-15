@@ -12,7 +12,7 @@ import javax.swing.table.TableModel;
  *
  * @author avincon
  */
-public class ModbusRegistersTable
+class ModbusRegistersTable
 extends JTable
 {
     private ModbusRegisters registers;

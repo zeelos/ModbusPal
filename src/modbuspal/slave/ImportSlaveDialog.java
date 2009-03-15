@@ -23,7 +23,7 @@ import org.w3c.dom.NodeList;
  *
  * @author avincon
  */
-public class ImportSlaveDialog
+class ImportSlaveDialog
 extends javax.swing.JDialog
 {
     private boolean validate = false;

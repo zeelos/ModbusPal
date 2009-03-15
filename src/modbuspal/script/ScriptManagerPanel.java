@@ -15,7 +15,7 @@ package modbuspal.script;
  *
  * @author avincon
  */
-public class ScriptManagerPanel
+class ScriptManagerPanel
 extends javax.swing.JPanel
 implements ScriptListener
 {

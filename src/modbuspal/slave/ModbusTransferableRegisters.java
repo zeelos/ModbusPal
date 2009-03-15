@@ -15,7 +15,7 @@ import javax.swing.table.TableModel;
  *
  * @author avincon
  */
-public class ModbusTransferableRegisters
+class ModbusTransferableRegisters
 implements Transferable
 {
 

@@ -23,7 +23,7 @@ import modbuspal.main.ModbusPal;
  *
  * @author avincon
  */
-public class AutomationBindingDialog
+class AutomationBindingDialog
 extends javax.swing.JDialog
 {
     class AutomationList

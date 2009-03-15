@@ -18,7 +18,7 @@ import javax.swing.TransferHandler;
  *
  * @author avincon
  */
-public class ModbusRegistersTransferHandler
+class ModbusRegistersTransferHandler
 extends TransferHandler
 {
 

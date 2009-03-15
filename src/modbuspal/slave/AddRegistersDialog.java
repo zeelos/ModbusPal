@@ -20,7 +20,7 @@ import modbuspal.main.NumericTextField;
  *
  * @author avincon
  */
-public class AddRegistersDialog
+class AddRegistersDialog
 extends javax.swing.JDialog
 implements ModbusConst
 {

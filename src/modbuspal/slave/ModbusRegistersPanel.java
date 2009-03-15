@@ -22,7 +22,7 @@ import modbuspal.main.ModbusConst;
  *
  * @author avincon
  */
-public class ModbusRegistersPanel
+class ModbusRegistersPanel
 extends javax.swing.JPanel
 implements ModbusConst
 {

@@ -15,7 +15,7 @@ package modbuspal.slave;
  *
  * @author avincon
  */
-public class ExportSlaveDialog
+class ExportSlaveDialog
 extends javax.swing.JDialog
 {
     private boolean okPushed = false;
