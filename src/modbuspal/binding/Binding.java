@@ -14,7 +14,7 @@ import modbuspal.slave.ModbusRegisters;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 public abstract class Binding
 implements AutomationValueListener

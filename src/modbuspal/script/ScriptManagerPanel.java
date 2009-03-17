@@ -13,7 +13,7 @@ package modbuspal.script;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 class ScriptManagerPanel
 extends javax.swing.JPanel

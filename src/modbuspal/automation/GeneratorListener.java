@@ -6,10 +6,9 @@
 package modbuspal.automation;
 
 /**
- * HISTORY:
- * - events "generatorHasEnded" and "generatorHasStarted"
- *   have been moved into "GeneratorListener" instead of "AutomationListener"
- * @author avincon
+ * Specifies the method that a class must implement in order to receive notifications
+ * from generators.
+ * @author nnovic
  */
 public interface GeneratorListener
 {

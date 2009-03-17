@@ -15,12 +15,11 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import modbuspal.main.XMLTools;
 import org.python.util.PythonInterpreter;
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 public class ScriptManager
 implements Runnable

@@ -13,7 +13,7 @@ import javax.swing.text.PlainDocument;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 public class NumericTextField
 extends JTextField

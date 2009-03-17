@@ -24,7 +24,7 @@ import modbuspal.slave.ModbusSlave;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 public class ScriptManagerDialog
 extends javax.swing.JDialog

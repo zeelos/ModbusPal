@@ -16,7 +16,7 @@ import org.w3c.dom.NodeList;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 public class LinearGenerator
 extends Generator

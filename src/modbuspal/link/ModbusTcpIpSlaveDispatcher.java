@@ -13,7 +13,7 @@ import modbuspal.main.ModbusTools;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 public class ModbusTcpIpSlaveDispatcher
 extends ModbusSlaveDispatcher

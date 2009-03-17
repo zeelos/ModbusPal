@@ -18,7 +18,7 @@ import modbuspal.main.NumericTextField;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 class AddRegistersDialog
 extends javax.swing.JDialog

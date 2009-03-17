@@ -10,7 +10,7 @@ import javax.swing.table.TableModel;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 public class ModbusMasterModel
 implements TableModel

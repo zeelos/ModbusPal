@@ -13,7 +13,7 @@ import modbuspal.link.ModbusLink;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 public class ModbusMaster
 implements Runnable

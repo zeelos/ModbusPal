@@ -7,7 +7,7 @@ package modbuspal.main;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 public interface ModbusConst
 {
@@ -21,6 +21,7 @@ public interface ModbusConst
         "(0x03) Read holding registers",
     };
 
+    public static final byte XC_SUCCESSFUL = (byte)0x00;
     public static final byte XC_ILLEGAL_FUNCTION = (byte)0x01;
     public static final byte XC_ILLEGAL_DATA_ADDRESS = (byte)0x02;
     public static final byte XC_ILLEGAL_DATA_VALUE = (byte)0x03;

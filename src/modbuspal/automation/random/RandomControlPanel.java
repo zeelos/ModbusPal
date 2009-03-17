@@ -13,7 +13,7 @@ package modbuspal.automation.random;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 public class RandomControlPanel
 extends javax.swing.JPanel

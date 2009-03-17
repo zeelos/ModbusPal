@@ -13,7 +13,7 @@ package modbuspal.slave;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 class ExportSlaveDialog
 extends javax.swing.JDialog

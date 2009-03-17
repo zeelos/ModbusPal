@@ -6,10 +6,9 @@
 package modbuspal.automation;
 
 /**
- * HISTORY:
- * - event "generatorHasBeenAdded" is now attached to AutomationStateListener
- *   instead of "GeneratorListener"
- * @author avincon
+ * This interface defines method that a class must implement in order to receive
+ * notifications about the status of automations.
+ * @author nnovic
  */
 public interface AutomationStateListener
 {

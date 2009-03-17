@@ -12,30 +12,27 @@
  *
  * Created on 21 déc. 2008, 21:03:38
  */
-
 package modbuspal.automation;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 
 /**
- *
- * @author avincon
+ * Builds a Swing panel which is embedded into the AutomationEditor and represents
+ * the configuration of a generator.
+ * @author nnovic
  */
 public class GeneratorRenderer
-extends javax.swing.JPanel
-implements GeneratorListener
-{
+        extends javax.swing.JPanel
+        implements GeneratorListener {
+
     private Generator generator;
     private JPanel customPanel;
     private AutomationEditor editor;
 
-
     /** Creates new form GeneratorRenderer */
-    public GeneratorRenderer(AutomationEditor parent, Generator gen)
-    {
+    public GeneratorRenderer(AutomationEditor parent, Generator gen) {
         editor = parent;
         generator = gen;
         customPanel = gen.getPanel();
@@ -45,8 +42,7 @@ implements GeneratorListener
     }
 
     @Override
-    public void setEnabled(boolean enabled)
-    {
+    public void setEnabled(boolean enabled) {
         super.setEnabled(enabled);
         upButton.setEnabled(enabled);
         deleteButton.setEnabled(enabled);
@@ -55,11 +51,9 @@ implements GeneratorListener
         durationTextField.setEnabled(enabled);
     }
 
-    Generator getGenerator()
-    {
+    Generator getGenerator() {
         return generator;
     }
-
 
     /** This method is called from within the constructor to
      * initialize the form.
@@ -198,19 +192,15 @@ implements GeneratorListener
     private javax.swing.JButton upButton;
     // End of variables declaration//GEN-END:variables
 
-    public void generatorHasEnded(Generator gen)
-    {
-        if( gen == generator )
-        {
-            setBackground( UIManager.getColor("Panel.background") );
+    public void generatorHasEnded(Generator gen) {
+        if (gen == generator) {
+            setBackground(UIManager.getColor("Panel.background"));
         }
     }
 
-    public void generatorHasStarted(Generator gen)
-    {
-        if( gen == generator )
-        {
-            setBackground( UIManager.getColor("List.selectionBackground") );
+    public void generatorHasStarted(Generator gen) {
+        if (gen == generator) {
+            setBackground(UIManager.getColor("List.selectionBackground"));
         }
     }
 }

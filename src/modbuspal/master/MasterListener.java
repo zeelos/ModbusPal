@@ -9,7 +9,7 @@ import modbuspal.main.ModbusRequest;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 public interface MasterListener
 {

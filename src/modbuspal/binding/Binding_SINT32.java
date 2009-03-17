@@ -5,11 +5,9 @@
 
 package modbuspal.binding;
 
-import modbuspal.automation.Automation;
-
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 public class Binding_SINT32
 extends Binding

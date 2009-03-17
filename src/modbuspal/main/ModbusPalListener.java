@@ -11,7 +11,7 @@ import modbuspal.slave.ModbusSlave;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 public interface ModbusPalListener
 {

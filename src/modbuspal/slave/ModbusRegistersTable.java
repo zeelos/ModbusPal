@@ -10,7 +10,7 @@ import javax.swing.table.TableModel;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 class ModbusRegistersTable
 extends JTable

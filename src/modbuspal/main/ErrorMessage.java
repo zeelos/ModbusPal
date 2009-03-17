@@ -17,7 +17,7 @@ import javax.swing.JButton;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 public class ErrorMessage
 extends javax.swing.JDialog

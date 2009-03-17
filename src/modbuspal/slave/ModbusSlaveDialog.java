@@ -35,7 +35,7 @@ import org.xml.sax.SAXException;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 public class ModbusSlaveDialog
 extends javax.swing.JDialog

@@ -21,9 +21,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- * HISTORY:
- * - generator listeners have been moved into "Generator" class
- * @author avincon
+ * Defines a generator. An automation is made of a list of generators.
+ * @author nnovic
  */
 public abstract class Generator
 {

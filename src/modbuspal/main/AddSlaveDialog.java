@@ -17,7 +17,7 @@ import javax.swing.DefaultComboBoxModel;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 class AddSlaveDialog
 extends javax.swing.JDialog

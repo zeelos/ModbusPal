@@ -2,7 +2,6 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-
 package modbuspal.automation;
 
 import java.io.IOException;
@@ -16,12 +15,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- *
- * History:
- * - generator listeners have been moved into "Generator" class
- * - generators are not removed when the user does an import
- *
- * @author avincon
+ * Defines an automation.
+ * @author nnovic
  */
 public class Automation
 implements Runnable

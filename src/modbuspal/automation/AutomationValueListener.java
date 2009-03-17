@@ -6,8 +6,9 @@
 package modbuspal.automation;
 
 /**
- *
- * @author avincon
+ * This interface defines method that a class must implement in order to receive
+ * notifications about the values of automations.
+ * @author nnovic
  */
 public interface AutomationValueListener
 {

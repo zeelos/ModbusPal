@@ -7,7 +7,7 @@ package modbuspal.main;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 public class ModbusTools
 {

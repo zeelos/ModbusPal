@@ -10,7 +10,7 @@ import modbuspal.main.*;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 public abstract class ModbusSlaveDispatcher
 implements ModbusConst

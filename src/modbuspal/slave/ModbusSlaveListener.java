@@ -7,7 +7,7 @@ package modbuspal.slave;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 public interface ModbusSlaveListener
 {

@@ -19,7 +19,7 @@ import modbuspal.main.ModbusPal;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 public class ModbusMasterDialog
 extends javax.swing.JDialog

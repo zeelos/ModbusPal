@@ -16,7 +16,7 @@ import javax.swing.TransferHandler;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 class ModbusRegistersTransferHandler
 extends TransferHandler

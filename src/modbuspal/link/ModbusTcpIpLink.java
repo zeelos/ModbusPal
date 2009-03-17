@@ -14,7 +14,7 @@ import modbuspal.main.ModbusRequest;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 public class ModbusTcpIpLink
 implements ModbusLink, Runnable

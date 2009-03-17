@@ -13,7 +13,7 @@ package modbuspal.automation.linear;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 public class LinearControlPanel
 extends javax.swing.JPanel

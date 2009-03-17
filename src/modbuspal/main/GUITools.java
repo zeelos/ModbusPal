@@ -10,7 +10,7 @@ import java.awt.Frame;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 public class GUITools
 {

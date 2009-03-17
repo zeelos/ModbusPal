@@ -24,7 +24,7 @@ import modbuspal.slave.ModbusSlave;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 public class AddRequestDialog
 extends javax.swing.JDialog

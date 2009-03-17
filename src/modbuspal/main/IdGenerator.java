@@ -14,7 +14,7 @@ import org.w3c.dom.NodeList;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 class IdGenerator
 {

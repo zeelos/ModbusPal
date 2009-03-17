@@ -20,7 +20,7 @@ import javax.swing.text.html.HTMLEditorKit;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 public class HelpViewer
 extends javax.swing.JDialog

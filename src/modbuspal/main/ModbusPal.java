@@ -30,7 +30,7 @@ import org.xml.sax.SAXException;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 public class ModbusPal
 implements ModbusPalXML
@@ -117,7 +117,8 @@ implements ModbusPalXML
 
     /**
      * Get all the slaves indexed by their modbus address.
-     * @return
+     * @return an array containing the modbus slaves currently defined in the
+     * application. 
      */
     public static ModbusSlave[] getModbusSlaves()
     {
@@ -179,7 +180,7 @@ implements ModbusPalXML
      * In all cases, if the slave with the provided ID doesn't exist in the list
      * of known slaves, it will be added to the list.
      * @param slaveID
-     * @return
+     * @return true if the slave is enabled; false otherwise.
      */
     public static boolean isSlaveEnabled(int slaveID)
     {

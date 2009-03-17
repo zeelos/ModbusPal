@@ -13,7 +13,7 @@ import javax.swing.JLabel;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 class TiltLabel
 extends JLabel

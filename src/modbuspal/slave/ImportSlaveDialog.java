@@ -21,7 +21,7 @@ import org.w3c.dom.NodeList;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 class ImportSlaveDialog
 extends javax.swing.JDialog

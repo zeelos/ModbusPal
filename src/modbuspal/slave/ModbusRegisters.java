@@ -17,6 +17,7 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 import modbuspal.binding.Binding;
 import modbuspal.link.ModbusSlaveDispatcher;
+import modbuspal.main.ModbusConst;
 import modbuspal.main.ModbusPalXML;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -24,10 +25,10 @@ import org.w3c.dom.NodeList;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 public class ModbusRegisters
-implements TableModel, ModbusPalXML
+implements TableModel, ModbusPalXML, ModbusConst
 {
     public static final String ADDRESS_COLUMN_NAME = "Address";
 
@@ -52,7 +53,7 @@ implements TableModel, ModbusPalXML
 
     /**
      * Creates and initialize several registers with default value.
-     * @see add creates one register with the specified settings.
+     * @see #add creates one register with the specified settings.
      * @param startingAddress
      * @param quantity
      */
@@ -81,8 +82,9 @@ implements TableModel, ModbusPalXML
      * consideration for the implementation offset (modbus/jbus). If the
      * register is bound to an automation, returns the current value of the
      * automation.
-     * @param sourceAddress
-     * @return
+     * @param address the address of the register, indexed starting from 0
+     * @return value of the register. If the register doesn't exist, returns 0
+     * by default.
      */
     public int getRegister(int address)
     {
@@ -113,10 +115,10 @@ implements TableModel, ModbusPalXML
     {
         if( registers.contains(address) == false )
         {
-            return ModbusSlaveDispatcher.XC_ILLEGAL_DATA_ADDRESS;
+            return XC_ILLEGAL_DATA_ADDRESS;
         }
         values.put(address,val);
-        return (byte)0x00;
+        return XC_SUCCESSFUL;
     }
 
     /**
@@ -128,7 +130,8 @@ implements TableModel, ModbusPalXML
      * This method will trigger a TableEvent event, so that the GUI is refreshed.
      * @param address
      * @param val
-     * @return
+     * @return the modbus error code indicating the success of the failure of the
+     * action. In case of success, the returned value is XC_SUCCESSFUL (0x00).
      */
     public byte setRegister(int address, int val)
     {
@@ -180,8 +183,8 @@ implements TableModel, ModbusPalXML
      * or not.
      * @param startingAddress
      * @param quantity
-     * @retval true if all registers comprised in the range are already defined
-     * @retval false if any register in the range is not defined yet.
+     * @return true if all registers comprised in the range are already defined;
+     * @return false if any register in the range is not defined yet.
      */
     public boolean exist(int startingAddress, int quantity)
     {
@@ -204,8 +207,8 @@ implements TableModel, ModbusPalXML
      * Check if a particular register, defined by its address,
      * is already defined or not.
      * @param address
-     * @retval true if the register is already defined
-     * @retval false otherwise
+     * @return true if the register is already defined
+     * @return false otherwise
      */
     public boolean exist(int address)
     {
@@ -276,7 +279,7 @@ implements TableModel, ModbusPalXML
      * provided binding. Note that address is indexed starting from 0,
      * whatever the slave's modbus implementation is (modbus,jbus,...). If a binding
      * already exists, it is replaced by the new.
-     * @param sourceAddress
+     * @param address
      * @param binding
      */
     public void bind(int address, Binding binding)
@@ -297,7 +300,8 @@ implements TableModel, ModbusPalXML
 
     /**
      * Checks if any of the registers has a binding definition.
-     * @return
+     * @return true if any of the registers has a binding defined, false if none
+     * of the register has a binding.
      */
     public boolean hasBindings()
     {

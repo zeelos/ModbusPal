@@ -36,10 +36,8 @@ import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
 /**
- * HISTORY:
- * - change layout of "modbus slaves" and "automations" panels
  *
- * @author avincon
+ * @author nnovic
  */
 class ModbusPalGui
 extends JFrame
@@ -1126,8 +1124,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
         {
             scriptManagerDialog.setVisible(false);
         }
-
-
+        
     }//GEN-LAST:event_scriptsToggleButtonActionPerformed
 
     private void learnToggleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_learnToggleButtonActionPerformed

@@ -21,7 +21,7 @@ import modbuspal.automation.Generator;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 class AutomationPanel
 extends javax.swing.JPanel

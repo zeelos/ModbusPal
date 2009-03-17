@@ -17,7 +17,7 @@ import java.awt.Frame;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 public class ModbusRequestPanel
 extends javax.swing.JPanel

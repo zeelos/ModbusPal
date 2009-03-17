@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 public class ListLayout
 implements LayoutManager2

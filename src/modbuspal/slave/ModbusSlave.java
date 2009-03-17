@@ -19,7 +19,7 @@ import org.w3c.dom.NodeList;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 public final class ModbusSlave
 implements ModbusPalXML, ModbusConst

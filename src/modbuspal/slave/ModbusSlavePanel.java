@@ -17,7 +17,7 @@ import java.awt.event.WindowListener;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 public class ModbusSlavePanel
 extends javax.swing.JPanel
