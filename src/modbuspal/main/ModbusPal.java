@@ -125,8 +125,15 @@ implements ModbusPalXML
         return knownSlaves;
     }
 
-
-    public static ModbusSlave addModbusSlave(ModbusSlave slave)
+    /**
+     * This method adds a modbus slave into the application. If a modbus slave
+     * with the same id already exists, a dialog will popup and invite the user
+     * to choose between keeping the existing slave or replacing it by the new.
+     * @param slave the new modbus slave to add
+     * @return a reference on the new or existing modbus slave, depending on the
+     * user's choice. null if an error occured.
+     */
+    public static ModbusSlave submitModbusSlave(ModbusSlave slave)
     {
         int slaveID = slave.getSlaveId();
 
@@ -156,9 +163,32 @@ implements ModbusPalXML
             }
         }
 
+        if( addModbusSlave(slave)==true )
+        {
+            return slave;
+        }
+        return null;
+    }
+
+    /**
+     * This method adds a modbus slave into the application. The addition will
+     * fail a modbus slave with the same id already exists in thecurrent project.
+     * @param slave the new modbus slave to add
+     * @return true if added successfully, false otherwise.
+     */
+    public static boolean addModbusSlave(ModbusSlave slave)
+    {
+        int slaveID = slave.getSlaveId();
+
+        // check if slaveID is already assigned:
+        if( knownSlaves[slaveID] != null )
+        {
+            return false;
+        }
+
         knownSlaves[slaveID] = slave;
         notifySlaveAdded(slave);
-        return slave;
+        return true;
     }
 
 
@@ -292,11 +322,75 @@ implements ModbusPalXML
         return automations.toArray(out);
     }
 
-    static void addAutomation(Automation automation)
+
+    /**
+     * This method adds an automation slave into the application. If an automation
+     * with the same name already exists, a dialog will popup and invite the user
+     * to choose between keeping the existing automation or replacing it by the new.
+     * @param automation the new automation to add
+     * @return a reference on the new or existing automation, depending on the
+     * user's choice. null if an error occured.
+     */
+    public static Automation submitAutomation(Automation automation)
     {
+        // check if an automation already exists with the same name
+        String name = automation.getName();
+        Automation existing = getAutomation(name);
+
+        if( existing != null )
+        {
+            // show a dialog to let the user decide
+            // what to do in order to resolve the conflict:
+            ErrorMessage conflict = new ErrorMessage(2);
+            conflict.setTitle("Address conflict");
+            conflict.append("You are trying to add a new automation with name \"" + name + "\".");
+            conflict.append("An existing automation already exists with this name. What do you want to do ?");
+            conflict.setButton(0, "Keep existing");
+            conflict.setButton(1, "Replace with new");
+            conflict.setVisible(true);
+
+            // if "Keep existing" is chosen:
+            if( conflict.getButton()==0 )
+            {
+                return existing;
+            }
+
+            else
+            {
+                // before replacing with new, remove old:
+                removeAutomation(existing);
+            }
+        }
+
+        if( addAutomation(automation)==true )
+        {
+            return automation;
+        }
+        return null;
+    }
+
+
+    /**
+     * Add the provided automation into the current application. Please note that
+     * each automation in the project must have a unique name. The addition will
+     * fail if an existing automation already uses the same name as the automation
+     * you want to add.
+     * @param automation
+     * @return true if the automation is added successfully, false otherwise.
+     */
+    public static boolean addAutomation(Automation automation)
+    {
+        // check if an automation already exists with the same name
+        String name = automation.getName();
+        if( getAutomation(name) != null )
+        {
+            return false;
+        }
+
         automations.add(automation);
         int index = automations.indexOf(automation);
         notifyAutomationAdded(automation, index);
+        return true;
     }
 
 
