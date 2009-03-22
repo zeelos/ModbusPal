@@ -11,13 +11,15 @@
 
 package modbuspal.main;
 
+import java.net.URISyntaxException;
 import modbuspal.script.ScriptManager;
 import modbuspal.slave.ModbusSlavePanel;
 import java.awt.Component;
+import java.awt.Desktop;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.*;
-import java.util.Vector;
+import java.net.URI;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
@@ -26,7 +28,6 @@ import javax.swing.UIManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.xml.parsers.ParserConfigurationException;
 import modbuspal.automation.Automation;
-import modbuspal.doc.HelpViewer;
 import modbuspal.link.*;
 import modbuspal.master.ModbusMaster;
 import modbuspal.master.ModbusMasterDialog;
@@ -93,7 +94,6 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
     private ModbusMaster modbusMaster = new ModbusMaster();
     private ModbusMasterDialog modbusMasterDialog = null;
     private static File projectFile = null;
-    private HelpViewer helpViewer = null;
     private ScriptManagerDialog scriptManagerDialog = null;
     private ModbusLink currentLink = null;
 
@@ -450,8 +450,8 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
         saveProjectButton = new javax.swing.JButton();
         toolsPanel = new javax.swing.JPanel();
         masterToggleButton = new javax.swing.JToggleButton();
-        helpToggleButton = new javax.swing.JToggleButton();
         scriptsToggleButton = new javax.swing.JToggleButton();
+        helpButton = new javax.swing.JButton();
         jSplitPane1 = new javax.swing.JSplitPane();
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
@@ -629,18 +629,6 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         toolsPanel.add(masterToggleButton, gridBagConstraints);
 
-        helpToggleButton.setText("Help");
-        helpToggleButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                helpToggleButtonActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        toolsPanel.add(helpToggleButton, gridBagConstraints);
-
         scriptsToggleButton.setText("Scripts");
         scriptsToggleButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -648,6 +636,18 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
             }
         });
         toolsPanel.add(scriptsToggleButton, new java.awt.GridBagConstraints());
+
+        helpButton.setText("Help");
+        helpButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                helpButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        toolsPanel.add(helpButton, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -1093,27 +1093,6 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
         }
     }//GEN-LAST:event_stopAllAutomationsButtonActionPerformed
 
-    private void helpToggleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpToggleButtonActionPerformed
-
-        if( helpToggleButton.isSelected()==true )
-        {
-            if( helpViewer==null )
-            {
-                helpViewer = new HelpViewer(this);
-                helpViewer.addWindowListener(this);
-            }
-            helpViewer.setVisible(true);
-        }
-        else
-        {
-            if( helpViewer!= null )
-            {
-                helpViewer.setVisible(false);
-            }
-        }
-
-    }//GEN-LAST:event_helpToggleButtonActionPerformed
-
     private void scriptsToggleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_scriptsToggleButtonActionPerformed
 
         if( scriptsToggleButton.isSelected()==true )
@@ -1131,6 +1110,24 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
         ModbusPal.setLearnModeEnabled( learnToggleButton.isSelected() );
     }//GEN-LAST:event_learnToggleButtonActionPerformed
 
+    private void helpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpButtonActionPerformed
+        if( Desktop.isDesktopSupported()==true )
+        {
+            try
+            {
+                Desktop.getDesktop().browse(new URI("http://modbuspal.wiki.sourceforge.net/"));
+            }
+            catch (URISyntaxException ex)
+            {
+                Logger.getLogger(ModbusPalGui.class.getName()).log(Level.SEVERE, null, ex);
+            }
+            catch (IOException ex)
+            {
+                Logger.getLogger(ModbusPalGui.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_helpButtonActionPerformed
+
 
 
 
@@ -1143,7 +1140,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
     private javax.swing.JComboBox comPortComboBox;
     private javax.swing.JButton disableAllSlavesButton;
     private javax.swing.JButton enableAllSlavesButton;
-    private javax.swing.JToggleButton helpToggleButton;
+    private javax.swing.JButton helpButton;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
@@ -1187,11 +1184,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
     {
         Object source = e.getSource();
         
-        if( source==helpViewer )
-        {
-            helpToggleButton.setSelected(false);
-        }
-        else if( source==modbusMasterDialog )
+        if( source==modbusMasterDialog )
         {
             masterToggleButton.setSelected(false);
         }
