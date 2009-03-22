@@ -24,9 +24,14 @@ import org.w3c.dom.Node;
 public class ScriptManager
 implements Runnable
 {
+    public static final int SCRIPT_ON_DEMAND = 1;
+    public static final int SCRIPT_GENERATOR = 2;
+    public static final int SCRIPT_AUTOMATION = 3;
+
     private File scriptFile;
     private String status = "stopped";
     private ArrayList<ScriptListener> scriptListeners = new ArrayList<ScriptListener>();
+    private int scriptType = SCRIPT_ON_DEMAND;
 
     public ScriptManager(File source)
     {
@@ -45,6 +50,12 @@ implements Runnable
         // find "src"
         String src = XMLTools.getAttribute("src", node);
         scriptFile = new File(src);
+    }
+
+
+    public int getType()
+    {
+        return scriptType;
     }
 
     public String getName()

@@ -11,14 +11,8 @@
 
 package modbuspal.script;
 
-import java.awt.Component;
 import java.awt.Frame;
-import java.io.File;
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import modbuspal.automation.Automation;
-import modbuspal.main.ListLayout;
-import modbuspal.main.ModbusPal;
 import modbuspal.main.ModbusPalListener;
 import modbuspal.slave.ModbusSlave;
 
@@ -30,6 +24,7 @@ public class ScriptManagerDialog
 extends javax.swing.JDialog
 implements ModbusPalListener
 {
+    private TabOnDemand tabOnDemand;
     
 
     /** Creates new form ModbusMasterDialog */
@@ -37,6 +32,8 @@ implements ModbusPalListener
     {
         super(parent, false);
         initComponents();
+        tabOnDemand = new TabOnDemand(this);
+        tabs.add("On demand", tabOnDemand);
     }
 
 
@@ -49,51 +46,21 @@ implements ModbusPalListener
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        jPanel1 = new javax.swing.JPanel();
-        addButton = new javax.swing.JButton();
-        executeAllButton = new javax.swing.JButton();
-        jPanel2 = new javax.swing.JPanel();
+        statusPanel = new javax.swing.JPanel();
         statusLabel = new javax.swing.JLabel();
-        scriptsListScrollPane = new javax.swing.JScrollPane();
-        scriptsListPanel = new javax.swing.JPanel();
+        tabs = new javax.swing.JTabbedPane();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Scripts manager");
         setMinimumSize(new java.awt.Dimension(400, 300));
 
-        jPanel1.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
-
-        addButton.setText("Add");
-        addButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                addButtonActionPerformed(evt);
-            }
-        });
-        jPanel1.add(addButton);
-
-        executeAllButton.setText("Execute all");
-        executeAllButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                executeAllButtonActionPerformed(evt);
-            }
-        });
-        jPanel1.add(executeAllButton);
-
-        getContentPane().add(jPanel1, java.awt.BorderLayout.NORTH);
-
-        jPanel2.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
+        statusPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
         statusLabel.setText(".");
-        jPanel2.add(statusLabel);
+        statusPanel.add(statusLabel);
 
-        getContentPane().add(jPanel2, java.awt.BorderLayout.SOUTH);
-
-        scriptsListPanel.setBackground(javax.swing.UIManager.getDefaults().getColor("List.background"));
-        scriptsListPanel.setLayout(null);
-        scriptsListPanel.setLayout( new ListLayout() );
-        scriptsListScrollPane.setViewportView(scriptsListPanel);
-
-        getContentPane().add(scriptsListScrollPane, java.awt.BorderLayout.CENTER);
+        getContentPane().add(statusPanel, java.awt.BorderLayout.SOUTH);
+        getContentPane().add(tabs, java.awt.BorderLayout.CENTER);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -104,52 +71,14 @@ implements ModbusPalListener
      * new modbus request.
      * @param evt
      */
-    private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonActionPerformed
-
-        // open a file chooser dialog in order to select a python file
-        JFileChooser openDialog = new JFileChooser();
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("Python file", "py");
-        openDialog.setFileFilter(filter);
-        openDialog.showOpenDialog(this);
-
-        File pythonFile = openDialog.getSelectedFile();
-        if( pythonFile==null )
-        {
-            setStatus("Cancelled by user.");
-            return;
-        }
-
-        // Create a new Script manager for this script:
-        ModbusPal.addScript(pythonFile);
-        
-    }//GEN-LAST:event_addButtonActionPerformed
-
-    private void executeAllButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_executeAllButtonActionPerformed
-
-        Component panels[] = scriptsListPanel.getComponents();
-        for(int i=0; i<panels.length; i++)
-        {
-            if( panels[i] instanceof ScriptManagerPanel )
-            {
-                ScriptManagerPanel man = (ScriptManagerPanel)panels[i];
-                man.execute();
-            }
-        }
-
-    }//GEN-LAST:event_executeAllButtonActionPerformed
-
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JButton addButton;
-    private javax.swing.JButton executeAllButton;
-    private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel scriptsListPanel;
-    private javax.swing.JScrollPane scriptsListScrollPane;
     private javax.swing.JLabel statusLabel;
+    private javax.swing.JPanel statusPanel;
+    private javax.swing.JTabbedPane tabs;
     // End of variables declaration//GEN-END:variables
 
-    private void setStatus(String text)
+    void setStatus(String text)
     {
         statusLabel.setText(text);
     }
@@ -177,13 +106,13 @@ implements ModbusPalListener
     @Override
     public void scriptManagerAdded(ScriptManager manager)
     {
-        // create a panel for this manager
-        ScriptManagerPanel panel = new ScriptManagerPanel(manager);
-        manager.addScriptListener(panel);
-        scriptsListPanel.add(panel);
-                
-        // refresh list
-        scriptsListScrollPane.validate();
+        switch( manager.getType() )
+        {
+            default:
+            case ScriptManager.SCRIPT_ON_DEMAND:
+                 tabOnDemand.add(manager);
+                 break;
+        }
     }
 
 }
