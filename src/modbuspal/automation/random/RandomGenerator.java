@@ -29,26 +29,8 @@ extends Generator
 
     public RandomGenerator()
     {
-        super("RandomGenerator.png");
+        setIcon("RandomGenerator.png");
         panel = new RandomControlPanel(this);
-    }
-
-    public RandomGenerator(NamedNodeMap attributes)
-    {
-        super("RandomGenerator.png",attributes);
-        panel = new RandomControlPanel(this);
-    }
-
-    @Override
-    public String getGeneratorName()
-    {
-        return "Random";
-    }
-
-    @Override
-    public JPanel getPanel()
-    {
-        return panel;
     }
 
     @Override
@@ -71,7 +53,7 @@ extends Generator
     }
 
     @Override
-    protected void saveGenerator(OutputStream out)
+    protected void saveSettings(OutputStream out)
     throws IOException
     {
         StringBuffer start = new StringBuffer("<min");
@@ -88,7 +70,7 @@ extends Generator
     }
 
     @Override
-    public void load(NodeList childNodes)
+    protected void loadSettings(NodeList childNodes)
     {
         Node minNode = XMLTools.getNode(childNodes, "min");
         loadMin(minNode);
@@ -125,6 +107,12 @@ extends Generator
         // update generator's panel
         panel.minTextField.setText( String.valueOf(minValue) );
         panel.minRelativeCheckBox.setSelected(relativeMin);
+    }
+
+    @Override
+    public JPanel getControlPanel()
+    {
+        return panel;
     }
 
 }

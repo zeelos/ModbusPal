@@ -16,23 +16,24 @@
 package modbuspal.automation;
 
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InvalidClassException;
 import java.io.OutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import modbuspal.automation.linear.LinearGenerator;
-import modbuspal.automation.random.RandomGenerator;
 import modbuspal.main.ListLayout;
+import modbuspal.python.ScriptInstanciator;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -45,7 +46,7 @@ import org.xml.sax.SAXException;
  */
 public class AutomationEditor
 extends javax.swing.JDialog
-implements AutomationStateListener, AutomationValueListener
+implements AutomationStateListener, AutomationValueListener, GeneratorFactoryListener
 {
     private Automation automation = null;
     private ListLayout listLayout;
@@ -59,9 +60,59 @@ implements AutomationStateListener, AutomationValueListener
         listLayout = new ListLayout();
         initComponents();
         addAlreadyExistingGeneratorsToList();
+        addGeneratorButtons();
+        pack();
         automation.addAutomationStateListener(this);
         automation.addAutomationValueListener(this);
-        //automation.addGeneratorListener(this);
+        GeneratorFactory.addGeneratorFactoryListener(this);
+    }
+
+    @Override
+    public void dispose()
+    {
+        super.dispose();
+        automation.removeAutomationStateListener(this);
+        automation.removeAutomationValueListener(this);
+        GeneratorFactory.removeGeneratorFactoryListener(this);
+    }
+
+    
+    private void addGeneratorButton(final String className)
+    {
+        JButton button = new JButton( className );
+        button.addActionListener( new ActionListener()
+        {
+            public void actionPerformed(ActionEvent e)
+            {
+                try 
+                {
+                    Generator gen = GeneratorFactory.newInstance(className);
+                    automation.addGenerator(gen);
+                }
+                catch (InstantiationException ex)
+                {
+                    Logger.getLogger(AutomationEditor.class.getName()).log(Level.SEVERE, null, ex);
+                }
+                catch (IllegalAccessException ex)
+                {
+                    Logger.getLogger(AutomationEditor.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+        generatorsPanel.add(button);
+        addGenPanel.validate();
+    }
+
+    private void addGeneratorButtons()
+    {
+        // get the list of generators:
+        String list[] = GeneratorFactory.getList();
+
+        // for each generator, add a button;
+        for( int i=0; i<list.length; i++ )
+        {
+            addGeneratorButton(list[i]);
+        }
     }
 
     void down(GeneratorRenderer source)
@@ -140,7 +191,7 @@ implements AutomationStateListener, AutomationValueListener
     }
 
     private void importAutomation(Document doc)
-    throws InvalidClassException
+    throws InstantiationException, IllegalAccessException
     {
         NodeList slaveNodes = doc.getElementsByTagName("automation");
         if( slaveNodes.getLength()==1 )
@@ -161,7 +212,7 @@ implements AutomationStateListener, AutomationValueListener
     }
 
     private void importAutomation(File importFile)
-    throws ParserConfigurationException, SAXException, IOException
+    throws ParserConfigurationException, SAXException, IOException, InstantiationException, IllegalAccessException
     {
         DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
@@ -174,7 +225,7 @@ implements AutomationStateListener, AutomationValueListener
     }
 
     private void importAutomation(Node item)
-    throws InvalidClassException
+    throws InstantiationException, IllegalAccessException
     {
         NamedNodeMap attributes = item.getAttributes();
         NodeList content = item.getChildNodes();
@@ -195,9 +246,6 @@ implements AutomationStateListener, AutomationValueListener
         generatorsListScrollPane = new javax.swing.JScrollPane();
         generatorsListPanel = new javax.swing.JPanel();
         buttonsPanel = new javax.swing.JPanel();
-        generatorsPanel = new javax.swing.JPanel();
-        linearButton = new javax.swing.JButton();
-        randomButton = new javax.swing.JButton();
         controlsPanel = new javax.swing.JPanel();
         playToggleButton = new javax.swing.JToggleButton();
         stopButton = new javax.swing.JButton();
@@ -208,6 +256,10 @@ implements AutomationStateListener, AutomationValueListener
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
         initTextField = new javax.swing.JTextField();
+        addGenPanel = new javax.swing.JPanel();
+        genButtonsPanel = new javax.swing.JPanel();
+        addGeneratorScriptButton = new javax.swing.JButton();
+        generatorsPanel = new javax.swing.JPanel();
         importExportPanel = new javax.swing.JPanel();
         importButton = new javax.swing.JButton();
         exportButton = new javax.swing.JButton();
@@ -224,29 +276,6 @@ implements AutomationStateListener, AutomationValueListener
         getContentPane().add(generatorsListScrollPane, java.awt.BorderLayout.CENTER);
 
         buttonsPanel.setLayout(new java.awt.GridBagLayout());
-
-        generatorsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Add generators"));
-        generatorsPanel.setLayout(new java.awt.GridBagLayout());
-
-        linearButton.setText("Linear");
-        linearButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                linearButtonActionPerformed(evt);
-            }
-        });
-        generatorsPanel.add(linearButton, new java.awt.GridBagConstraints());
-
-        randomButton.setText("Random");
-        randomButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                randomButtonActionPerformed(evt);
-            }
-        });
-        generatorsPanel.add(randomButton, new java.awt.GridBagConstraints());
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        buttonsPanel.add(generatorsPanel, gridBagConstraints);
 
         controlsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Controls"));
         controlsPanel.setLayout(new java.awt.GridBagLayout());
@@ -346,6 +375,26 @@ implements AutomationStateListener, AutomationValueListener
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         buttonsPanel.add(controlsPanel, gridBagConstraints);
 
+        addGenPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Add generators"));
+        addGenPanel.setLayout(new java.awt.BorderLayout());
+
+        addGeneratorScriptButton.setText("+");
+        addGeneratorScriptButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addGeneratorScriptButtonActionPerformed(evt);
+            }
+        });
+        genButtonsPanel.add(addGeneratorScriptButton);
+
+        addGenPanel.add(genButtonsPanel, java.awt.BorderLayout.EAST);
+
+        generatorsPanel.setLayout(new java.awt.GridLayout(0, 3));
+        addGenPanel.add(generatorsPanel, java.awt.BorderLayout.CENTER);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        buttonsPanel.add(addGenPanel, gridBagConstraints);
+
         getContentPane().add(buttonsPanel, java.awt.BorderLayout.SOUTH);
 
         importExportPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
@@ -370,11 +419,6 @@ implements AutomationStateListener, AutomationValueListener
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
-
-    private void linearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_linearButtonActionPerformed
-        LinearGenerator linear = new LinearGenerator();
-        automation.addGenerator(linear);
-}//GEN-LAST:event_linearButtonActionPerformed
 
     private void playToggleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_playToggleButtonActionPerformed
 
@@ -422,7 +466,7 @@ implements AutomationStateListener, AutomationValueListener
 
     private void exportButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportButtonActionPerformed
 
-        // create and setup dialog
+        // newInstance and setup dialog
         JFileChooser chooser = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter(
         "Automation export file (*.xmpa)", "xmpa");
@@ -455,7 +499,7 @@ implements AutomationStateListener, AutomationValueListener
 
     private void importButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_importButtonActionPerformed
 
-        // create and setup dialog
+        // newInstance and setup dialog
         JFileChooser chooser = new JFileChooser();
         FileNameExtensionFilter filter = new FileNameExtensionFilter(
         "Automation export file (*.xmpa)", "xmpa");
@@ -467,21 +511,33 @@ implements AutomationStateListener, AutomationValueListener
         {
             return;
         }
-        try {
+
+        try
+        {
             importAutomation(target);
-        } catch (ParserConfigurationException ex) {
+        } 
+        catch (ParserConfigurationException ex)
+        {
             Logger.getLogger(AutomationEditor.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SAXException ex) {
+        } 
+        catch (SAXException ex)
+        {
             Logger.getLogger(AutomationEditor.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
+        } 
+        catch (IOException ex)
+        {
             Logger.getLogger(AutomationEditor.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }//GEN-LAST:event_importButtonActionPerformed
+        catch (InstantiationException ex)
+        {
+            Logger.getLogger(AutomationEditor.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        catch (IllegalAccessException ex)
+        {
+            Logger.getLogger(AutomationEditor.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
-    private void randomButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_randomButtonActionPerformed
-        RandomGenerator random = new RandomGenerator();
-        automation.addGenerator(random);
-}//GEN-LAST:event_randomButtonActionPerformed
+    }//GEN-LAST:event_importButtonActionPerformed
 
     private void initTextFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_initTextFieldFocusLost
         String val = initTextField.getText();
@@ -489,10 +545,44 @@ implements AutomationStateListener, AutomationValueListener
         automation.setInitialValue( dval );
     }//GEN-LAST:event_initTextFieldFocusLost
 
+    private void addGeneratorScriptButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addGeneratorScriptButtonActionPerformed
+
+        // get the selected file, in any.
+        File scriptFile = GeneratorFactory.chooseScriptFile(this);
+        if( scriptFile==null )
+        {
+            //setStatus("Cancelled by user.");
+            return;
+        }
+
+        
+        try
+        {
+            // newInstance a scripted generator handler
+            ScriptInstanciator gen = ScriptInstanciator.create(scriptFile);
+            
+            // add the handler to the factory:
+            GeneratorFactory.add(gen);
+        }
+        catch (FileNotFoundException ex)
+        {
+            Logger.getLogger(AutomationEditor.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        catch (IOException ex)
+        {
+            Logger.getLogger(AutomationEditor.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        
+}//GEN-LAST:event_addGeneratorScriptButtonActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel addGenPanel;
+    private javax.swing.JButton addGeneratorScriptButton;
     private javax.swing.JPanel buttonsPanel;
     private javax.swing.JPanel controlsPanel;
     private javax.swing.JButton exportButton;
+    private javax.swing.JPanel genButtonsPanel;
     private javax.swing.JPanel generatorsListPanel;
     private javax.swing.JScrollPane generatorsListScrollPane;
     private javax.swing.JPanel generatorsPanel;
@@ -502,15 +592,14 @@ implements AutomationStateListener, AutomationValueListener
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JButton linearButton;
     private javax.swing.JToggleButton loopToggleButton;
     private javax.swing.JToggleButton playToggleButton;
-    private javax.swing.JButton randomButton;
     private javax.swing.JTextField stepTextField;
     private javax.swing.JButton stopButton;
     private javax.swing.JTextField valueTextField;
     // End of variables declaration//GEN-END:variables
 
+    @Override
     public void automationHasEnded(Automation source)
     {
         if( source == automation )
@@ -544,6 +633,7 @@ implements AutomationStateListener, AutomationValueListener
         }
     }
 
+    @Override
     public void automationHasStarted(Automation aThis)
     {
         // disable any button in "Add Generators" panel
@@ -578,17 +668,20 @@ implements AutomationStateListener, AutomationValueListener
         }
     }
 
+    @Override
     public void automationValueHasChanged(Automation source, double value)
     {
         valueTextField.setText( String.valueOf(value) );
         valueTextField.validate();
     }
 
+    @Override
     public void automationNameHasChanged(Automation aThis, String newName)
     {
         setTitle( "Automation:"+newName );
     }
 
+    @Override
     public void generatorHasBeenAdded(Automation source, Generator generator, int index)
     {
         // add slave panel into the gui and refresh gui
@@ -598,16 +691,19 @@ implements AutomationStateListener, AutomationValueListener
         generatorsListScrollPane.validate();
     }
 
+    @Override
     public void automationLoopEnabled(Automation aThis, boolean enabled)
     {
         loopToggleButton.setSelected(enabled);
     }
 
+    @Override
     public void automationStepHasChanged(Automation aThis, double step)
     {
         stepTextField.setText( String.valueOf(step) );
     }
 
+    @Override
     public void generatorHasBeenRemoved(Automation source, Generator generator)
     {
         // remove generator's panel from the gui and refresh gui
@@ -616,6 +712,7 @@ implements AutomationStateListener, AutomationValueListener
         generatorsListScrollPane.repaint();
     }
 
+    @Override
     public void generatorsHaveBeenSwapped(Automation source, Generator g1, Generator g2)
     {
         Component comp1 = findComponent(g1);
@@ -626,14 +723,16 @@ implements AutomationStateListener, AutomationValueListener
         //generatorsListScrollPane.repaint();
     }
 
+    @Override
     public void automationInitialValueChanged(Automation aThis, double init)
     {
         initTextField.setText( String.valueOf(init) );
     }
 
-//    public void generatorsHaveAllBeenRemoved(Automation aThis)
-//    {
-//        generatorsListPanel.removeAll();
-//        generatorsListScrollPane.validate();
-//    }
+    @Override
+    public void generatorInstanciatorAdded(String className)
+    {
+        addGeneratorButton(className);
+    }
+
 }

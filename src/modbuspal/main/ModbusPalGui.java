@@ -12,7 +12,6 @@
 package modbuspal.main;
 
 import java.net.URISyntaxException;
-import modbuspal.script.ScriptManager;
 import modbuspal.slave.ModbusSlavePanel;
 import java.awt.Component;
 import java.awt.Desktop;
@@ -31,7 +30,7 @@ import modbuspal.automation.Automation;
 import modbuspal.link.*;
 import modbuspal.master.ModbusMaster;
 import modbuspal.master.ModbusMasterDialog;
-import modbuspal.script.ScriptManagerDialog;
+import modbuspal.python.ScriptManagerDialog;
 import modbuspal.slave.ModbusSlave;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
@@ -346,7 +345,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
     {
         scriptManagerDialog = new ScriptManagerDialog(this);
         scriptManagerDialog.addWindowListener(this);
-        ModbusPal.addModbusPalListener(scriptManagerDialog);
+        //ModbusPal.addModbusPalListener(scriptManagerDialog);
 
         if( verifyPython() == false )
         {
@@ -1002,6 +1001,14 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
         {
             Logger.getLogger(ModbusPalGui.class.getName()).log(Level.SEVERE, null, ex);
         }
+        catch (InstantiationException ex)
+        {
+            Logger.getLogger(ModbusPalGui.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        catch (IllegalAccessException ex)
+        {
+            Logger.getLogger(ModbusPalGui.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
 }//GEN-LAST:event_loadButtonActionPerformed
 
@@ -1313,9 +1320,6 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
         }
     }
 
-    @Override
-    public void scriptManagerAdded(ScriptManager script) {
-    }
 
 
 }

@@ -104,7 +104,7 @@ implements ModbusConst, ModbusSlaveListener
 //    }
 
     private void importSlave(File importFile)
-    throws ParserConfigurationException, SAXException, IOException
+    throws ParserConfigurationException, SAXException, IOException, InstantiationException, IllegalAccessException
     {
         DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
@@ -143,7 +143,6 @@ implements ModbusConst, ModbusSlaveListener
         
         if( importAutomations==true )
         {
-            //TODO: import automations
             ModbusPal.loadAutomations(doc);
         }
 

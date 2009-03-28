@@ -39,7 +39,7 @@
           <Properties>
             <Property name="horizontalAlignment" type="int" value="0"/>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.form.RADConnectionPropertyEditor">
-              <Connection code="generator.getGeneratorName()" type="code"/>
+              <Connection code="generator.getClassName()" type="code"/>
             </Property>
           </Properties>
           <Constraints>

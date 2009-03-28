@@ -10,7 +10,6 @@ import java.io.OutputStream;
 import javax.swing.JPanel;
 import modbuspal.automation.*;
 import modbuspal.main.XMLTools;
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -29,26 +28,8 @@ extends Generator
 
     public LinearGenerator()
     {
-        super("LinearGenerator.png");
+        setIcon("LinearGenerator.png");
         panel = new LinearControlPanel(this);
-    }
-
-    public LinearGenerator(NamedNodeMap attributes)
-    {
-        super("LinearGenerator.png",attributes);
-        panel = new LinearControlPanel(this);
-    }
-
-    @Override
-    public String getGeneratorName()
-    {
-        return "Linear";
-    }
-
-    @Override
-    public JPanel getPanel()
-    {
-        return panel;
     }
 
     @Override
@@ -70,7 +51,7 @@ extends Generator
     }
 
     @Override
-    protected void saveGenerator(OutputStream out)
+    protected void saveSettings(OutputStream out)
     throws IOException
     {
         StringBuffer start = new StringBuffer("<start");
@@ -87,7 +68,7 @@ extends Generator
     }
 
     @Override
-    public void load(NodeList childNodes)
+    protected void loadSettings(NodeList childNodes)
     {
         Node startNode = XMLTools.getNode(childNodes, "start");
         loadStart(startNode);
@@ -124,6 +105,12 @@ extends Generator
         // update generator's panel
         panel.startTextField.setText( String.valueOf(startValue) );
         panel.startRelativeCheckBox.setSelected(relativeStart);
+    }
+
+    @Override
+    public JPanel getControlPanel()
+    {
+        return panel;
     }
 
 }

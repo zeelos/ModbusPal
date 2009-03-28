@@ -12,5 +12,11 @@ package modbuspal.automation;
  */
 public interface AutomationValueListener
 {
+    /**
+     * this event is triggered when the current value of the automation is
+     * modified.
+     * @param source
+     * @param value
+     */
     public void automationValueHasChanged(Automation source, double value);
 }

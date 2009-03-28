@@ -111,6 +111,7 @@ implements WindowListener, AutomationStateListener
     }// </editor-fold>//GEN-END:initComponents
 
     private void showToggleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showToggleButtonActionPerformed
+
         if( showToggleButton.isSelected() == true )
         {
             if( automationEditor == null )
@@ -146,7 +147,7 @@ implements WindowListener, AutomationStateListener
 
     private void nameTextFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_nameTextFieldFocusLost
         String newName = nameTextField.getText().trim();
-        newName = ModbusPal.checkAutomationUniqueName(automation, newName);
+        newName = ModbusPal.checkAutomationNewName(automation, newName);
         nameTextField.setText(newName);
         automation.setName(newName);
     }//GEN-LAST:event_nameTextFieldFocusLost

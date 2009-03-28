@@ -5,17 +5,16 @@
 
 package modbuspal.automation;
 
+import java.awt.BorderLayout;
+import java.io.File;
 import java.io.IOException;
-import java.io.InvalidClassException;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
-import modbuspal.automation.linear.LinearGenerator;
-import modbuspal.automation.random.RandomGenerator;
-import modbuspal.main.XMLTools;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -24,88 +23,112 @@ import org.w3c.dom.NodeList;
  * Defines a generator. An automation is made of a list of generators.
  * @author nnovic
  */
-public abstract class Generator
-{
-
-    public static Generator create(Node node)
-    throws InvalidClassException
-    {
-        String value = XMLTools.getAttribute("class", node);
-        if( value.compareTo("LinearGenerator")==0 )
-        {
-            return new LinearGenerator(node.getAttributes());
-        }
-        else if( value.compareTo("RandomGenerator")==0 )
-        {
-            return new RandomGenerator(node.getAttributes());
-        }
-        else
-        {
-            throw new InvalidClassException(value,"Unknown generator class");
-        }
-    }
-
-
+public class Generator
+{   
     private ImageIcon icon;
     protected int duration = 10;
     protected double initialValue = 0.0;
     private ArrayList<GeneratorListener> generatorListeners = new ArrayList<GeneratorListener>();
+    private JPanel controlPanel;
 
-    protected Generator(String iconUrl)
+    /**
+     * Creates a generator with default values, icon and control panel.
+     */
+    public Generator()
     {
+        setIcon("/modbuspal/automation/Generator.png");
+        controlPanel = createControlPanel();
+    }
+
+    private JPanel createControlPanel()
+    {
+        JPanel panel = new JPanel();
+        panel.setLayout( new BorderLayout() );
+        JLabel defaultLabel = new JLabel("No parameters.");
+        panel.add(defaultLabel, BorderLayout.CENTER);
+        return panel;
+    }
+
+
+    /**
+     * The subclass can use this mehod to change the default icon of the generator.
+     * The icon is the image that is visible on the left of the generator's control
+     * panel, in the automation editor.
+     * @param iconUrl
+     */
+    protected void setIcon(String iconUrl)
+    {
+        // test current direcory
+        File file = new File(iconUrl);
+        System.out.println(file.getAbsolutePath());
+
         URL url = getClass().getResource(iconUrl);
         icon = new ImageIcon(url);
     }
 
-    protected Generator(String iconUrl, NamedNodeMap attributes)
-    {
-        URL url = getClass().getResource(iconUrl);
-        icon = new ImageIcon(url);
 
-        Node durNode = attributes.getNamedItem("duration");
-        String durVal= durNode.getNodeValue();
-        duration = Integer.parseInt(durVal);
-    }
 
-    public abstract String getGeneratorName();
 
+    /**
+     * Get the icon that is associated with this generator.
+     * @return icon of the generator.
+     */
     public Icon getIcon()
     {
         return icon;
     }
 
+    /**
+     * Get the configured duration of the generator.
+     * @return duration of the generator, in seconds.
+     */
     public int getDuration()
     {
         return duration;
     }
 
-    public abstract JPanel getPanel();
+    /**
+     * Get the control panel of the generator.
+     * @return the control panel of the generator.
+     */
+    public JPanel getControlPanel()
+    {
+        return controlPanel;
+    }
 
-    public void setInitialValue(double value)
+    
+    void setInitialValue(double value)
     {
         initialValue = value;
     }
 
-    public abstract double getValue(double time);
-
-    public void save(OutputStream out)
-    throws IOException
+    public double getValue(double time)
     {
-        String openTag = createOpenTag();
-        out.write(openTag.getBytes());
-
-        saveGenerator(out);
-
-        String closeTag = "</generator>\r\n";
-        out.write(closeTag.getBytes());
+        return 0.0;
     }
 
-    public abstract void load(NodeList childNodes) ;
 
-    public void setDuration(int val)
+    public final void load(Node genNode)
+    {
+        NamedNodeMap attributes = genNode.getAttributes();
+
+        Node durNode = attributes.getNamedItem("duration");
+        String durVal= durNode.getNodeValue();
+        duration = Integer.parseInt(durVal);
+
+        loadSettings( genNode.getChildNodes() );
+    }
+
+    protected void loadSettings(NodeList childNodes)
+    {
+        return;
+    }
+
+    void setDuration(int val)
     {
         duration = val;
     }
+
 
     void notifyGeneratorHasEnded()
     {
@@ -128,16 +151,38 @@ public abstract class Generator
         generatorListeners.clear();
     }
 
+    public final void save(OutputStream out)
+    throws IOException
+    {
+        String openTag = createOpenTag();
+        out.write(openTag.getBytes());
+
+        saveSettings(out);
+
+        String closeTag = "</generator>\r\n";
+        out.write(closeTag.getBytes());
+    }
+
+    
+    public String getClassName()
+    {
+        return getClass().getSimpleName();
+    }
+
     private String createOpenTag()
     {
         StringBuffer tag = new StringBuffer("<generator");
-        tag.append(" class=\""+ getClass().getSimpleName() +"\"");
+        tag.append(" class=\""+ getClassName() +"\"");
         tag.append(" duration=\""+ String.valueOf(duration) +"\"");
         tag.append(">\r\n");
         return tag.toString();
     }
 
-    protected abstract void saveGenerator(OutputStream out) throws IOException;
+    protected void saveSettings(OutputStream out)
+    throws IOException
+    {
+        return;
+    }
 
     public void addGeneratorListener(GeneratorListener l)
     {

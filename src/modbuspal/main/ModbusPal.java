@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InvalidClassException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Vector;
@@ -19,8 +18,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import modbuspal.automation.Automation;
+import modbuspal.automation.GeneratorFactory;
 import modbuspal.binding.Binding;
-import modbuspal.script.ScriptManager;
 import modbuspal.slave.ModbusSlave;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -35,12 +34,13 @@ import org.xml.sax.SAXException;
 public class ModbusPal
 implements ModbusPalXML
 {
+    public static final String BASE_REGISTRY_KEY = "modbuspal";
     private static ModbusSlave[] knownSlaves = new ModbusSlave[256];
     private static Vector<Automation> automations = new Vector<Automation>();
     private static IdGenerator idGenerator = new IdGenerator();
     private static ArrayList<ModbusPalListener> listeners = new ArrayList<ModbusPalListener>();
     private static boolean learnModeEnabled = false;
-    private static Vector<ScriptManager> scriptManagers = new Vector<ScriptManager>();
+
 
     //
     //
@@ -248,6 +248,7 @@ implements ModbusPalXML
         return true;
     }
 
+    
     //
     //
     // AUTOMATIONS
@@ -276,6 +277,12 @@ implements ModbusPalXML
     }
 
 
+    public static boolean automationExists(String name)
+    {
+        return (getAutomation(name)!=null);
+    }
+
+
     /**
      * the goal of this method is to verify that each automation in the project
      * has a unique name.
@@ -283,7 +290,7 @@ implements ModbusPalXML
      * @param name
      * @return
      */
-    static String checkAutomationUniqueName(Automation auto, String name)
+    static String checkAutomationNewName(Automation auto, String name)
     {
         // TODO: is synchronization required??
         //synchronized(this)
@@ -404,29 +411,6 @@ implements ModbusPalXML
     }
 
 
-    //
-    //
-    // SCRIPTS
-    //
-    //
-
-    private static void addScript(ScriptManager manager)
-    {
-        // add manager to list
-        scriptManagers.add(manager);
-
-        // notify
-        notifyScriptAdded(manager);
-    }
-
-    public static void addScript(File scriptFile)
-    {
-        ScriptManager manager = new ScriptManager(scriptFile);
-        addScript(manager);
-    }
-
-
-
 
 
     //TODO: is this method really necessary???
@@ -476,14 +460,6 @@ implements ModbusPalXML
         for(ModbusPalListener l:listeners)
         {
             l.tilt();
-        }
-    }
-
-    private static void notifyScriptAdded(ScriptManager script)
-    {
-        for(ModbusPalListener l:listeners)
-        {
-            l.scriptManagerAdded(script);
         }
     }
 
@@ -540,9 +516,9 @@ implements ModbusPalXML
         out.write( openTag.getBytes() );
 
         saveParameters(out);
+        GeneratorFactory.saveInstanciators(out);
         saveAutomations(out);
         saveSlaves(out);
-        saveScripts(out);
 
         String closeTag = "</modbuspal_project>\r\n";
         out.write( closeTag.getBytes() );
@@ -564,6 +540,9 @@ implements ModbusPalXML
         // save link parameters
         ModbusPalGui.saveLinks(out);
     }
+
+
+
 
 
     private static void saveAutomations(OutputStream out)
@@ -589,15 +568,6 @@ implements ModbusPalXML
         }
     }
 
-    private static void saveScripts(OutputStream out)
-    throws IOException
-    {
-        for( int i=0; i<scriptManagers.size(); i++)
-        {
-            ScriptManager man = scriptManagers.get(i);
-            man.save(out);
-        }
-    }
 
 
     //
@@ -608,7 +578,7 @@ implements ModbusPalXML
 
 
     public static void loadProject(File source)
-    throws ParserConfigurationException, SAXException, IOException
+    throws ParserConfigurationException, SAXException, IOException, InstantiationException, IllegalAccessException
     {
         DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
@@ -622,17 +592,17 @@ implements ModbusPalXML
 
 
     private static void loadProject(Document doc)
-    throws InvalidClassException
+    throws InstantiationException, IllegalAccessException
     {
         // get the root node
         String name = doc.getDocumentElement().getNodeName();
         System.out.println("load "+name);
 
         loadParameters(doc);
+        GeneratorFactory.loadInstanciators(doc);
         loadAutomations(doc);
         loadSlaves(doc);
         loadBindings(doc);
-        loadScripts(doc);
     }
 
 
@@ -667,8 +637,9 @@ implements ModbusPalXML
         ModbusPalGui.loadLinks(doc);
     }
 
-    public static void loadAutomations(Document doc)
-    throws InvalidClassException
+
+
+    public static void loadAutomations(Document doc) throws InstantiationException, IllegalAccessException
     {
         NodeList automationsList = doc.getElementsByTagName("automation");
         for(int i=0; i<automationsList.getLength(); i++)
@@ -811,26 +782,6 @@ implements ModbusPalXML
             }
         }
     }
-
-
-
-    private static void loadScripts(Document doc)
-    {
-        NodeList list = doc.getElementsByTagName("script");
-        for(int i=0; i<list.getLength(); i++ )
-        {
-            Node node = list.item(i);
-            loadScript(node);
-        }
-    }
-
-
-    private static void loadScript(Node node)
-    {
-        ScriptManager man = new ScriptManager(node);
-        addScript(man);
-    }
-
 
     //
     //

@@ -24,25 +24,30 @@ import javax.swing.UIManager;
  * @author nnovic
  */
 public class GeneratorRenderer
-        extends javax.swing.JPanel
-        implements GeneratorListener {
+extends javax.swing.JPanel
+implements GeneratorListener
+{
 
     private Generator generator;
     private JPanel customPanel;
     private AutomationEditor editor;
 
+
     /** Creates new form GeneratorRenderer */
-    public GeneratorRenderer(AutomationEditor parent, Generator gen) {
+    public GeneratorRenderer(AutomationEditor parent, Generator gen)
+    {
         editor = parent;
         generator = gen;
-        customPanel = gen.getPanel();
+        customPanel = gen.getControlPanel();
         customPanel.setOpaque(false);
-        setName(gen.getGeneratorName());
+        setName( generator.getClassName() );
         initComponents();
     }
 
+
     @Override
-    public void setEnabled(boolean enabled) {
+    public void setEnabled(boolean enabled)
+    {
         super.setEnabled(enabled);
         upButton.setEnabled(enabled);
         deleteButton.setEnabled(enabled);
@@ -83,7 +88,7 @@ public class GeneratorRenderer
         jPanel1.setLayout(new java.awt.GridBagLayout());
 
         titleLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        titleLabel.setText(generator.getGeneratorName());
+        titleLabel.setText(generator.getClassName());
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
