@@ -18,7 +18,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import modbuspal.automation.Automation;
-import modbuspal.automation.GeneratorFactory;
+import modbuspal.automation.InstanciatorFactory;
 import modbuspal.binding.Binding;
 import modbuspal.slave.ModbusSlave;
 import org.w3c.dom.Document;
@@ -516,7 +516,7 @@ implements ModbusPalXML
         out.write( openTag.getBytes() );
 
         saveParameters(out);
-        GeneratorFactory.saveInstanciators(out);
+        InstanciatorFactory.saveInstanciators(out);
         saveAutomations(out);
         saveSlaves(out);
 
@@ -599,7 +599,7 @@ implements ModbusPalXML
         System.out.println("load "+name);
 
         loadParameters(doc);
-        GeneratorFactory.loadInstanciators(doc);
+        InstanciatorFactory.loadInstanciators(doc);
         loadAutomations(doc);
         loadSlaves(doc);
         loadBindings(doc);

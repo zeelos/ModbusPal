@@ -30,12 +30,12 @@ import org.w3c.dom.NodeList;
  *
  * @author nnovic
  */
-public class GeneratorFactory
+public class InstanciatorFactory
 {
 
 
     private static final String REGISTRY_KEY = ModbusPal.BASE_REGISTRY_KEY + "/instanciators";
-    private static ArrayList<GeneratorFactoryListener> listeners = new ArrayList<GeneratorFactoryListener>();
+    private static ArrayList<InstanciatorFactoryListener> listeners = new ArrayList<InstanciatorFactoryListener>();
 
     /**
      * List of predefined generators:
@@ -65,13 +65,13 @@ public class GeneratorFactory
                     Node genNode = list.item(i);
                     loadInstanciator(genNode);
                 }
+
                 catch (FileNotFoundException ex)
                 {
-                    Logger.getLogger(GeneratorFactory.class.getName()).log(Level.SEVERE, null, ex);
-                }
-                catch (IOException ex)
+                    Logger.getLogger(InstanciatorFactory.class.getName()).log(Level.SEVERE, null, ex);
+                }                catch (IOException ex)
                 {
-                    Logger.getLogger(GeneratorFactory.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(InstanciatorFactory.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }
@@ -91,7 +91,7 @@ public class GeneratorFactory
         ScriptInstanciator gen = ScriptInstanciator.create(scriptFile);
 
         // add the handler to the factory:
-        GeneratorFactory.add(gen);
+        InstanciatorFactory.add(gen);
 
     }
 
@@ -144,13 +144,13 @@ public class GeneratorFactory
         notifyGeneratorInstanciatorAdded(gi.getClassName());
     }
 
-    static void addGeneratorFactoryListener(GeneratorFactoryListener l)
+    static void addGeneratorFactoryListener(InstanciatorFactoryListener l)
     {
         if( listeners.contains(l)==false )
             listeners.add(l);
     }
 
-    static void removeGeneratorFactoryListener(GeneratorFactoryListener l)
+    static void removeGeneratorFactoryListener(InstanciatorFactoryListener l)
     {
         if( listeners.contains(l)==true )
             listeners.remove(l);
@@ -237,7 +237,7 @@ public class GeneratorFactory
             try {
                 appPrefs.flush();
             } catch (BackingStoreException ex) {
-                Logger.getLogger(GeneratorFactory.class.getName()).log(Level.SEVERE, null, ex);
+                Logger.getLogger(InstanciatorFactory.class.getName()).log(Level.SEVERE, null, ex);
             }
             return fileChooser.getSelectedFile();
         }
@@ -247,7 +247,7 @@ public class GeneratorFactory
 
     private static void notifyGeneratorInstanciatorAdded(String className)
     {
-        for(GeneratorFactoryListener l:listeners)
+        for(InstanciatorFactoryListener l:listeners)
             l.generatorInstanciatorAdded(className);
     }
 

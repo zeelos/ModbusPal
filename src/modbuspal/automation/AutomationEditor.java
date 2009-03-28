@@ -46,7 +46,7 @@ import org.xml.sax.SAXException;
  */
 public class AutomationEditor
 extends javax.swing.JDialog
-implements AutomationStateListener, AutomationValueListener, GeneratorFactoryListener
+implements AutomationStateListener, AutomationValueListener, InstanciatorFactoryListener
 {
     private Automation automation = null;
     private ListLayout listLayout;
@@ -64,7 +64,7 @@ implements AutomationStateListener, AutomationValueListener, GeneratorFactoryLis
         pack();
         automation.addAutomationStateListener(this);
         automation.addAutomationValueListener(this);
-        GeneratorFactory.addGeneratorFactoryListener(this);
+        InstanciatorFactory.addGeneratorFactoryListener(this);
     }
 
     @Override
@@ -73,7 +73,7 @@ implements AutomationStateListener, AutomationValueListener, GeneratorFactoryLis
         super.dispose();
         automation.removeAutomationStateListener(this);
         automation.removeAutomationValueListener(this);
-        GeneratorFactory.removeGeneratorFactoryListener(this);
+        InstanciatorFactory.removeGeneratorFactoryListener(this);
     }
 
     
@@ -86,7 +86,7 @@ implements AutomationStateListener, AutomationValueListener, GeneratorFactoryLis
             {
                 try 
                 {
-                    Generator gen = GeneratorFactory.newInstance(className);
+                    Generator gen = InstanciatorFactory.newInstance(className);
                     automation.addGenerator(gen);
                 }
                 catch (InstantiationException ex)
@@ -106,7 +106,7 @@ implements AutomationStateListener, AutomationValueListener, GeneratorFactoryLis
     private void addGeneratorButtons()
     {
         // get the list of generators:
-        String list[] = GeneratorFactory.getList();
+        String list[] = InstanciatorFactory.getList();
 
         // for each generator, add a button;
         for( int i=0; i<list.length; i++ )
@@ -548,7 +548,7 @@ implements AutomationStateListener, AutomationValueListener, GeneratorFactoryLis
     private void addGeneratorScriptButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addGeneratorScriptButtonActionPerformed
 
         // get the selected file, in any.
-        File scriptFile = GeneratorFactory.chooseScriptFile(this);
+        File scriptFile = InstanciatorFactory.chooseScriptFile(this);
         if( scriptFile==null )
         {
             //setStatus("Cancelled by user.");
@@ -562,7 +562,7 @@ implements AutomationStateListener, AutomationValueListener, GeneratorFactoryLis
             ScriptInstanciator gen = ScriptInstanciator.create(scriptFile);
             
             // add the handler to the factory:
-            GeneratorFactory.add(gen);
+            InstanciatorFactory.add(gen);
         }
         catch (FileNotFoundException ex)
         {

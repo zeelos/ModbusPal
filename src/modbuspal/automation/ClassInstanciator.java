@@ -45,7 +45,7 @@ implements GeneratorInstanciator
         }
         catch (Exception ex)
         {
-            Logger.getLogger(GeneratorFactory.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(InstanciatorFactory.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
     }
