@@ -20,7 +20,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import modbuspal.automation.linear.LinearGenerator;
 import modbuspal.automation.random.RandomGenerator;
 import modbuspal.main.ModbusPal;
-import modbuspal.python.ScriptInstanciator;
+import modbuspal.script.ScriptInstanciator;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;

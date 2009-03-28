@@ -1,4 +1,4 @@
-from modbuspal.python import PythonGenerator
+from modbuspal.script import PythonGenerator
 
 class CustomGenerator(PythonGenerator):
 

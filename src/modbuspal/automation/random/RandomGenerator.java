@@ -10,7 +10,6 @@ import java.io.OutputStream;
 import javax.swing.JPanel;
 import modbuspal.automation.*;
 import modbuspal.main.XMLTools;
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 

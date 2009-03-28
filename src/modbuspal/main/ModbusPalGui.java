@@ -30,7 +30,7 @@ import modbuspal.automation.Automation;
 import modbuspal.link.*;
 import modbuspal.master.ModbusMaster;
 import modbuspal.master.ModbusMasterDialog;
-import modbuspal.python.ScriptManagerDialog;
+import modbuspal.script.ScriptManagerDialog;
 import modbuspal.slave.ModbusSlave;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
