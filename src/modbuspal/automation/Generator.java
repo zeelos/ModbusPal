@@ -9,8 +9,11 @@ import java.awt.BorderLayout;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -53,21 +56,46 @@ public class Generator
     /**
      * The subclass can use this mehod to change the default icon of the generator.
      * The icon is the image that is visible on the left of the generator's control
-     * panel, in the automation editor.
+     * panel, in the automation editor. 
      * @param iconUrl
      */
-    protected void setIcon(String iconUrl)
+    protected boolean setIcon(String iconUrl)
     {
-        // test current direcory
+        URL url = null;
+
+        // try to use class loader
+        url = getClass().getResource(iconUrl);
+        if( url!=null )
+        {
+            icon = new ImageIcon(url);
+            return true;
+        }
+
+        // try to create an url
+        try
+        {
+            url = new URL(iconUrl);
+            if( url != null )
+            {
+                icon = new ImageIcon(url);
+                return true;
+            }
+        }
+        catch (MalformedURLException ex)
+        {
+            url = null;
+        }
+
+        // try to use url directly:
         File file = new File(iconUrl);
-        System.out.println(file.getAbsolutePath());
+        if( file.exists() )
+        {
+            icon = new ImageIcon(file.getAbsolutePath());
+            return true;
+        }
 
-        URL url = getClass().getResource(iconUrl);
-        icon = new ImageIcon(url);
+        return false;
     }
-
-
-
 
     /**
      * Get the icon that is associated with this generator.

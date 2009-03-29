@@ -58,6 +58,7 @@ extends ScriptInstanciator
         //PyObject instance =  new PyObject(pythonType);
         PythonGenerator gen = (PythonGenerator)instance.__tojava__(PythonGenerator.class);
         gen.install(this);
+        gen.init();
         return gen;
     }
 }
