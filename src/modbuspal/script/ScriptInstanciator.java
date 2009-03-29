@@ -24,6 +24,10 @@ implements GeneratorInstanciator
     throws FileNotFoundException, IOException
     {
         String extension = FileTools.getExtension(scriptFile);
+        if( extension==null)
+        {
+            return null;
+        }
 
         if( extension.compareToIgnoreCase("py")==0 )
         {
@@ -47,18 +51,63 @@ implements GeneratorInstanciator
     public void save(OutputStream out)
     throws IOException
     {
+        save(out,null);
+    }
+
+    public void save(OutputStream out, File projectFile)
+    throws IOException
+    {
         // create open tag
         String openTag = "<instanciator>";
         out.write(openTag.getBytes());
 
-        // write file path
-        String path = scriptFile.getPath();
-        out.write(path.getBytes());
+        // write absolute file projectPath
+        saveAbs(out);
+
+        // write relative file projectPath
+        if( projectFile!=null)
+        {
+            saveRel(out,projectFile);
+        }
 
         // create close tag
         String closeTag = "</instanciator>\r\n";
         out.write(closeTag.getBytes());
+    }
 
+    private void saveAbs(OutputStream out)
+    throws IOException
+    {
+        // create open tag
+        String openTag = "<abs>";
+        out.write(openTag.getBytes());
+
+        // write abs file projectPath
+        String path = scriptFile.getPath();
+        out.write(path.getBytes());
+
+        // create close tag
+        String closeTag = "</abs>\r\n";
+        out.write(closeTag.getBytes());
+    }
+
+    private void saveRel(OutputStream out, File projectFile)
+    throws IOException
+    {
+        String rel = FileTools.makeRelative(projectFile, scriptFile);
+
+        if( rel != null )
+        {
+            // create open tag
+            String openTag = "<rel>";
+            out.write(openTag.getBytes());
+
+            out.write( rel.getBytes() );
+
+            // create close tag
+            String closeTag = "</rel>\r\n";
+            out.write(closeTag.getBytes());
+        }
     }
 
 

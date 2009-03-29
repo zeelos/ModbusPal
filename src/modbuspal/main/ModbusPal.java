@@ -506,17 +506,17 @@ implements ModbusPalXML
     {
         // create output stream
         FileOutputStream out = new FileOutputStream(target);
-        saveProject(out);
+        saveProject(out, target);
     }
 
-    private static void saveProject(OutputStream out)
+    private static void saveProject(OutputStream out, File projectFile)
     throws IOException
     {
         String openTag = "<modbuspal_project>\r\n";
         out.write( openTag.getBytes() );
 
         saveParameters(out);
-        InstanciatorFactory.saveInstanciators(out);
+        InstanciatorFactory.saveInstanciators(out, projectFile);
         saveAutomations(out);
         saveSlaves(out);
 
@@ -587,11 +587,11 @@ implements ModbusPalXML
         // normalize text representation
          doc.getDocumentElement().normalize();
 
-         loadProject(doc);
+         loadProject(doc, source);
     }
 
 
-    private static void loadProject(Document doc)
+    private static void loadProject(Document doc, File projectFile)
     throws InstantiationException, IllegalAccessException
     {
         // get the root node
@@ -599,7 +599,7 @@ implements ModbusPalXML
         System.out.println("load "+name);
 
         loadParameters(doc);
-        InstanciatorFactory.loadInstanciators(doc);
+        InstanciatorFactory.loadInstanciators(doc, projectFile);
         loadAutomations(doc);
         loadSlaves(doc);
         loadBindings(doc);

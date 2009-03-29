@@ -19,7 +19,9 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import modbuspal.automation.linear.LinearGenerator;
 import modbuspal.automation.random.RandomGenerator;
+import modbuspal.main.FileTools;
 import modbuspal.main.ModbusPal;
+import modbuspal.main.XMLTools;
 import modbuspal.script.ScriptInstanciator;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -53,7 +55,7 @@ public class InstanciatorFactory
 
 
 
-    public static void loadInstanciators(Document doc)
+    public static void loadInstanciators(Document doc, File projectFile)
     {
         NodeList list = doc.getElementsByTagName("instanciator");
         if( list!=null )
@@ -63,7 +65,7 @@ public class InstanciatorFactory
                 try
                 {
                     Node genNode = list.item(i);
-                    loadInstanciator(genNode);
+                    loadInstanciator(genNode, projectFile);
                 }
 
                 catch (FileNotFoundException ex)
@@ -78,7 +80,65 @@ public class InstanciatorFactory
     }
 
 
-    private static void loadInstanciator(Node node)
+    private static void loadInstanciator(Node node, File projectFile)
+    throws FileNotFoundException, IOException
+    {
+        boolean ok = false;
+
+        // get "rel" node and try to get the file by using a relative
+        // path (relative to projectFile)
+        Node rel = XMLTools.findChild(node, "rel");
+        if( rel != null )
+        {
+            ok = loadRel(rel, projectFile);
+        }
+
+        if( ok == true )
+        {
+            return;
+        }
+
+        // get "abs" node and try to get the file using the absolute path
+        Node abs = XMLTools.findChild(node, "abs");
+        if( abs != null )
+        {
+            loadAbs(abs);
+        }
+    }
+    
+    private static boolean loadRel(Node node, File projectFile)
+    throws FileNotFoundException, IOException
+    {
+        // extract filename from xml file
+        String filename = node.getTextContent();
+
+        // create file object
+        File scriptFile = new File(filename);
+
+        // make it absolute
+        String abs = FileTools.makeAbsolute(projectFile, scriptFile);
+        if( abs==null )
+        {
+            return false;
+        }
+
+        scriptFile = new File(abs);
+        if( scriptFile.exists()==false )
+        {
+            return false;
+        }
+
+        // newInstance a scripted generator handler
+        ScriptInstanciator gen = ScriptInstanciator.create(scriptFile);
+
+        // add the handler to the factory:
+        InstanciatorFactory.add(gen);
+
+        return true;
+    }
+
+
+    private static void loadAbs(Node node)
     throws FileNotFoundException, IOException
     {
         // extract filename from xml file
@@ -92,7 +152,6 @@ public class InstanciatorFactory
 
         // add the handler to the factory:
         InstanciatorFactory.add(gen);
-
     }
 
 
@@ -129,12 +188,12 @@ public class InstanciatorFactory
         return ( findInstanciator(className)!=null );
     }
 
-    public static void saveInstanciators(OutputStream out)
+    public static void saveInstanciators(OutputStream out, File projectFile)
     throws IOException
     {
         for( ScriptInstanciator gi:scriptInstanciators)
         {
-            gi.save(out);
+            gi.save(out,projectFile);
         }
     }
 
