@@ -33,7 +33,9 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import modbuspal.main.ListLayout;
+import modbuspal.main.ModbusPalGui;
 import modbuspal.script.ScriptInstanciator;
+import modbuspal.script.ScriptManagerDialog;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -50,11 +52,13 @@ implements AutomationStateListener, AutomationValueListener, InstanciatorFactory
 {
     private Automation automation = null;
     private ListLayout listLayout;
+    private ModbusPalGui mainGui;
 
     /** Creates new form AutomationEditor */
-    public AutomationEditor(java.awt.Frame frame, Automation parent)
+    public AutomationEditor(ModbusPalGui gui, Automation parent)
     {
-        super(frame, false);
+        super(gui, false);
+        mainGui = gui;
         setTitle( "Automation:"+parent.getName() );
         automation = parent;
         listLayout = new ListLayout();
@@ -102,6 +106,28 @@ implements AutomationStateListener, AutomationValueListener, InstanciatorFactory
         generatorsPanel.add(button);
         addGenPanel.validate();
     }
+
+
+    private void removeGeneratorButton(String className)
+    {
+        int max = generatorsPanel.getComponentCount();
+        for(int i=0; i<max; i++)
+        {
+            Component comp = generatorsPanel.getComponent(i);
+            if( comp instanceof JButton )
+            {
+                JButton button = (JButton)comp;
+                if( button.getText().compareTo(className)==0 )
+                {
+                    generatorsPanel.remove(button);
+                }
+            }
+        }
+        addGenPanel.validate();
+        repaint();
+    }
+
+
 
     private void addGeneratorButtons()
     {
@@ -258,7 +284,8 @@ implements AutomationStateListener, AutomationValueListener, InstanciatorFactory
         initTextField = new javax.swing.JTextField();
         addGenPanel = new javax.swing.JPanel();
         genButtonsPanel = new javax.swing.JPanel();
-        addGeneratorScriptButton = new javax.swing.JButton();
+        addInstanciatorButton = new javax.swing.JButton();
+        removeInstanciatorButton = new javax.swing.JButton();
         generatorsPanel = new javax.swing.JPanel();
         importExportPanel = new javax.swing.JPanel();
         importButton = new javax.swing.JButton();
@@ -378,13 +405,31 @@ implements AutomationStateListener, AutomationValueListener, InstanciatorFactory
         addGenPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Add generators"));
         addGenPanel.setLayout(new java.awt.BorderLayout());
 
-        addGeneratorScriptButton.setText("+");
-        addGeneratorScriptButton.addActionListener(new java.awt.event.ActionListener() {
+        genButtonsPanel.setLayout(new java.awt.GridBagLayout());
+
+        addInstanciatorButton.setText("+");
+        addInstanciatorButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                addGeneratorScriptButtonActionPerformed(evt);
+                addInstanciatorButtonActionPerformed(evt);
             }
         });
-        genButtonsPanel.add(addGeneratorScriptButton);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        genButtonsPanel.add(addInstanciatorButton, gridBagConstraints);
+
+        removeInstanciatorButton.setText("-");
+        removeInstanciatorButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removeInstanciatorButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        genButtonsPanel.add(removeInstanciatorButton, gridBagConstraints);
 
         addGenPanel.add(genButtonsPanel, java.awt.BorderLayout.EAST);
 
@@ -545,7 +590,7 @@ implements AutomationStateListener, AutomationValueListener, InstanciatorFactory
         automation.setInitialValue( dval );
     }//GEN-LAST:event_initTextFieldFocusLost
 
-    private void addGeneratorScriptButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addGeneratorScriptButtonActionPerformed
+    private void addInstanciatorButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addInstanciatorButtonActionPerformed
 
         // get the selected file, in any.
         File scriptFile = InstanciatorFactory.chooseScriptFile(this);
@@ -574,11 +619,18 @@ implements AutomationStateListener, AutomationValueListener, InstanciatorFactory
         }
 
         
-}//GEN-LAST:event_addGeneratorScriptButtonActionPerformed
+}//GEN-LAST:event_addInstanciatorButtonActionPerformed
+
+    private void removeInstanciatorButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeInstanciatorButtonActionPerformed
+
+        // ask script manager to appear, with the "generators" tab selected
+        mainGui.showScriptManagerDialog(ScriptManagerDialog.TAB_GENERATORS);
+
+    }//GEN-LAST:event_removeInstanciatorButtonActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel addGenPanel;
-    private javax.swing.JButton addGeneratorScriptButton;
+    private javax.swing.JButton addInstanciatorButton;
     private javax.swing.JPanel buttonsPanel;
     private javax.swing.JPanel controlsPanel;
     private javax.swing.JButton exportButton;
@@ -594,6 +646,7 @@ implements AutomationStateListener, AutomationValueListener, InstanciatorFactory
     private javax.swing.JLabel jLabel3;
     private javax.swing.JToggleButton loopToggleButton;
     private javax.swing.JToggleButton playToggleButton;
+    private javax.swing.JButton removeInstanciatorButton;
     private javax.swing.JTextField stepTextField;
     private javax.swing.JButton stopButton;
     private javax.swing.JTextField valueTextField;
@@ -730,9 +783,14 @@ implements AutomationStateListener, AutomationValueListener, InstanciatorFactory
     }
 
     @Override
-    public void generatorInstanciatorAdded(String className)
+    public void generatorInstanciatorAdded(GeneratorInstanciator def)
     {
-        addGeneratorButton(className);
+        addGeneratorButton(def.getClassName());
+    }
+
+    public void generatorInstanciatorRemoved(GeneratorInstanciator def)
+    {
+        removeGeneratorButton(def.getClassName());
     }
 
 }

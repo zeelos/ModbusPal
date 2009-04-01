@@ -11,19 +11,32 @@
 
 package modbuspal.script;
 
+import java.awt.Component;
+import modbuspal.automation.GeneratorInstanciator;
+import modbuspal.automation.InstanciatorFactoryListener;
+import modbuspal.main.ListLayout;
+
+
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 public class ScriptManagerDialog
 extends javax.swing.JDialog
+implements InstanciatorFactoryListener
 {
-
+    public static final int TAB_GENERATORS = 0;
+    
     /** Creates new form ScriptManagerDialog */
     public ScriptManagerDialog(java.awt.Frame parent)
     {
-        super(parent, true);
+        super(parent, false);
         initComponents();
+    }
+
+    public void setSelectedTab(int tabIndex)
+    {
+        jTabbedPane1.setSelectedIndex(tabIndex);
     }
 
     /** This method is called from within the constructor to
@@ -35,23 +48,80 @@ extends javax.swing.JDialog
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        jTabbedPane1 = new javax.swing.JTabbedPane();
+        generatorInstanciatorsTab = new javax.swing.JPanel();
+        generatorInstanciatorsScrollPane = new javax.swing.JScrollPane();
+        generatorInstanciatorsList = new javax.swing.JPanel();
 
-        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
-        getContentPane().setLayout(layout);
-        layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 400, Short.MAX_VALUE)
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 300, Short.MAX_VALUE)
-        );
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Script Manager");
+        setMinimumSize(new java.awt.Dimension(350, 250));
+
+        generatorInstanciatorsTab.setLayout(new java.awt.BorderLayout());
+
+        generatorInstanciatorsList.setBackground(javax.swing.UIManager.getDefaults().getColor("List.background"));
+        generatorInstanciatorsList.setLayout(null);
+        generatorInstanciatorsList.setLayout( new ListLayout() );
+        generatorInstanciatorsScrollPane.setViewportView(generatorInstanciatorsList);
+
+        generatorInstanciatorsTab.add(generatorInstanciatorsScrollPane, java.awt.BorderLayout.CENTER);
+
+        jTabbedPane1.addTab("Generators", generatorInstanciatorsTab);
+
+        getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel generatorInstanciatorsList;
+    private javax.swing.JScrollPane generatorInstanciatorsScrollPane;
+    private javax.swing.JPanel generatorInstanciatorsTab;
+    private javax.swing.JTabbedPane jTabbedPane1;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void generatorInstanciatorAdded(GeneratorInstanciator def)
+    {
+        if( def instanceof ScriptInstanciator )
+        {
+            ScriptInstanciator si = (ScriptInstanciator)def;
+            // create a new panel and add it
+            ScriptInstanciatorPanel panel = new ScriptInstanciatorPanel(si);
+            generatorInstanciatorsList.add(panel);
+            generatorInstanciatorsScrollPane.validate();
+        }
+    }
+
+    @Override
+    public void generatorInstanciatorRemoved(GeneratorInstanciator def)
+    {
+        if( def instanceof ScriptInstanciator )
+        {
+            ScriptInstanciator si = (ScriptInstanciator)def;
+            scriptInstanciatorRemoved(si);
+            return;
+
+        }
+    }
+
+    private void scriptInstanciatorRemoved(ScriptInstanciator si)
+    {
+        int max = generatorInstanciatorsList.getComponentCount();
+        for(int i=0; i<max; i++ )
+        {
+            Component comp = generatorInstanciatorsList.getComponent(i);
+            if( comp instanceof ScriptInstanciatorPanel )
+            {
+                ScriptInstanciatorPanel sip = (ScriptInstanciatorPanel)comp;
+                if( sip.contains(si)==true )
+                {
+                    generatorInstanciatorsList.remove(sip);
+                }
+            }
+        }
+        generatorInstanciatorsScrollPane.validate();
+        repaint();
+    }
 
 }

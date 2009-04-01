@@ -401,6 +401,17 @@ implements ModbusPalXML
     }
 
 
+    public static void removeAllGenerators(String classname)
+    {
+        int max = automations.size();
+        for(int i=0; i<max; i++)
+        {
+            Automation auto = automations.get(i);
+            auto.removeAllGenerators(classname);
+        }
+    }
+
+
     static void removeAutomation(Automation automation)
     {
         // the panel will be delete, so remove it from the listeners

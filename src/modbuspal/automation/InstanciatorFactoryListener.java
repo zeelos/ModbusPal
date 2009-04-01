@@ -10,7 +10,9 @@ package modbuspal.automation;
  *
  * @author nnovic
  */
-interface InstanciatorFactoryListener
+public interface InstanciatorFactoryListener
 {
-    public void generatorInstanciatorAdded(String className);
+    public void generatorInstanciatorAdded(GeneratorInstanciator def);
+
+    public void generatorInstanciatorRemoved(GeneratorInstanciator def);
 }

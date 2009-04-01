@@ -184,6 +184,25 @@ implements Runnable
         }
     }
 
+
+    /**
+     * Removes all generators from the automation.
+     */
+    public void removeAllGenerators(String classname)
+    {
+        Generator list[] = new Generator[0];
+        list = generators.toArray(list);
+        for( int i=0; i<list.length; i++ )
+        {
+            if( list[i].getClassName().compareTo(classname)==0 )
+            {
+                removeGenerator( list[i] );
+            }
+        }
+    }
+
+
+
     /**
      * This method is used to add generators into the automation, by
      * using the content of the node list.

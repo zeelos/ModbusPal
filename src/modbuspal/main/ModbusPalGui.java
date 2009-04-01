@@ -27,6 +27,7 @@ import javax.swing.UIManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.xml.parsers.ParserConfigurationException;
 import modbuspal.automation.Automation;
+import modbuspal.automation.InstanciatorFactory;
 import modbuspal.link.*;
 import modbuspal.master.ModbusMaster;
 import modbuspal.master.ModbusMasterDialog;
@@ -39,11 +40,11 @@ import org.xml.sax.SAXException;
  *
  * @author nnovic
  */
-class ModbusPalGui
+public class ModbusPalGui
 extends JFrame
 implements ModbusPalXML, WindowListener, ModbusPalListener
 {
-    private static final String APP_STRING = "ModbusPal 1.3";
+    private static final String APP_STRING = "ModbusPal 1.4";
     private static ModbusPalGui uniqueInstance;
 
 
@@ -108,6 +109,13 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
     static void loadLinks(Document doc)
     {
         uniqueInstance.loadLinkParameters(doc);
+    }
+
+    public void showScriptManagerDialog(int tabIndex)
+    {
+        scriptManagerDialog.setVisible(true);
+        scriptsToggleButton.setSelected(true);
+        scriptManagerDialog.setSelectedTab(tabIndex);
     }
 
     void loadLinkParameters(Document doc)
@@ -302,7 +310,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
 
 
     /** Creates new form ModbusPalGui */
-    public ModbusPalGui()
+    ModbusPalGui()
     {
         initComponents();
         setTitle(APP_STRING);
@@ -345,6 +353,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
     {
         scriptManagerDialog = new ScriptManagerDialog(this);
         scriptManagerDialog.addWindowListener(this);
+        InstanciatorFactory.addGeneratorFactoryListener(scriptManagerDialog);
         //ModbusPal.addModbusPalListener(scriptManagerDialog);
 
         if( verifyPython() == false )

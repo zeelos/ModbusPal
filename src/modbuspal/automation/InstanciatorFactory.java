@@ -80,6 +80,7 @@ public class InstanciatorFactory
     }
 
 
+
     private static void loadInstanciator(Node node, File projectFile)
     throws FileNotFoundException, IOException
     {
@@ -199,17 +200,31 @@ public class InstanciatorFactory
 
     static void add(ScriptInstanciator gi)
     {
-        scriptInstanciators.add(gi);
-        notifyGeneratorInstanciatorAdded(gi.getClassName());
+        if( scriptInstanciators.contains(gi)==false )
+        {
+            scriptInstanciators.add(gi);
+            notifyGeneratorInstanciatorAdded(gi);
+        }
     }
 
-    static void addGeneratorFactoryListener(InstanciatorFactoryListener l)
+    
+    public static void remove(ScriptInstanciator si)
+    {
+        if( scriptInstanciators.contains(si)==true )
+        {
+            scriptInstanciators.remove(si);
+            notifyGeneratorInstanciatorRemoved(si);
+        }
+    }
+
+
+    public static void addGeneratorFactoryListener(InstanciatorFactoryListener l)
     {
         if( listeners.contains(l)==false )
             listeners.add(l);
     }
 
-    static void removeGeneratorFactoryListener(InstanciatorFactoryListener l)
+    public static void removeGeneratorFactoryListener(InstanciatorFactoryListener l)
     {
         if( listeners.contains(l)==true )
             listeners.remove(l);
@@ -304,10 +319,15 @@ public class InstanciatorFactory
         return null;
     }
 
-    private static void notifyGeneratorInstanciatorAdded(String className)
+    private static void notifyGeneratorInstanciatorAdded(GeneratorInstanciator def)
     {
         for(InstanciatorFactoryListener l:listeners)
-            l.generatorInstanciatorAdded(className);
+            l.generatorInstanciatorAdded(def);
     }
 
+    private static void notifyGeneratorInstanciatorRemoved(GeneratorInstanciator def)
+    {
+        for(InstanciatorFactoryListener l:listeners)
+            l.generatorInstanciatorRemoved(def);
+    }
 }
