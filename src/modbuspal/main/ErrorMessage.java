@@ -35,15 +35,15 @@ implements ActionListener
     }
 
     /** Creates new form ErrorMessage */
-    public ErrorMessage(java.awt.Frame parent, int nbButtons)
+    public ErrorMessage(java.awt.Window parent, int nbButtons)
     {
-        super(parent, true);
+        super(parent, ModalityType.DOCUMENT_MODAL);
         create(nbButtons);
     }
 
-    public ErrorMessage(java.awt.Frame parent, String text)
+    public ErrorMessage(java.awt.Window parent, String text)
     {
-        super(parent, true);
+        super(parent, ModalityType.DOCUMENT_MODAL);
         create(1);
         setButton(0, text);
     }

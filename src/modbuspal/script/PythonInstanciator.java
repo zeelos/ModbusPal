@@ -27,6 +27,7 @@ extends ScriptInstanciator
     {
         super(file);
         pythonClass = executeScript();
+        Generator tmp = newInstance();
     }
 
 
@@ -55,7 +56,6 @@ extends ScriptInstanciator
     public Generator newInstance() 
     {
         PyObject instance = pythonClass.__call__();
-        //PyObject instance =  new PyObject(pythonType);
         PythonGenerator gen = (PythonGenerator)instance.__tojava__(PythonGenerator.class);
         gen.install(this);
         gen.init();

@@ -32,6 +32,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import modbuspal.main.ErrorMessage;
 import modbuspal.main.ListLayout;
 import modbuspal.main.ModbusPalGui;
 import modbuspal.script.ScriptInstanciator;
@@ -609,13 +610,21 @@ implements AutomationStateListener, AutomationValueListener, InstanciatorFactory
             // add the handler to the factory:
             InstanciatorFactory.add(gen);
         }
-        catch (FileNotFoundException ex)
-        {
-            Logger.getLogger(AutomationEditor.class.getName()).log(Level.SEVERE, null, ex);
-        }
         catch (IOException ex)
         {
             Logger.getLogger(AutomationEditor.class.getName()).log(Level.SEVERE, null, ex);
+            ErrorMessage dialog = new ErrorMessage(this,"Close");
+            dialog.setTitle("File error");
+            dialog.append("An error occured while reading the file. The scripted generator cannot be used.");
+            dialog.setVisible(true);
+        }
+        catch (Exception ex)
+        {
+            Logger.getLogger(AutomationEditor.class.getName()).log(Level.SEVERE, null, ex);
+            ErrorMessage dialog = new ErrorMessage(this,"Close");
+            dialog.setTitle("Script error");
+            dialog.append("The script probably contains errors and cannot be executed properly.");
+            dialog.setVisible(true);
         }
 
         
