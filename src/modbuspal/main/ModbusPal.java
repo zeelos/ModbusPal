@@ -18,8 +18,10 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import modbuspal.automation.Automation;
-import modbuspal.automation.InstanciatorFactory;
+import modbuspal.generator.GeneratorFactory;
 import modbuspal.binding.Binding;
+import modbuspal.script.ScriptListener;
+import modbuspal.script.ScriptRunner;
 import modbuspal.slave.ModbusSlave;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -40,6 +42,32 @@ implements ModbusPalXML
     private static IdGenerator idGenerator = new IdGenerator();
     private static ArrayList<ModbusPalListener> listeners = new ArrayList<ModbusPalListener>();
     private static boolean learnModeEnabled = false;
+    private static ArrayList<ScriptRunner> startupScripts = new ArrayList<ScriptRunner>();
+    private static ArrayList<ScriptRunner> ondemandScripts = new ArrayList<ScriptRunner>();
+    private static ArrayList<ScriptListener> scriptListeners = new ArrayList<ScriptListener>();
+
+
+    //
+    //
+    // SCRIPTS
+    //
+    //
+
+    public static void addScript(File scriptFile)
+    {
+        ScriptRunner runner = ScriptRunner.create(scriptFile);
+        ondemandScripts.add(runner);
+        notifyScriptAdded(runner);
+    }
+
+
+    public static void addStartupScript(File scriptFile)
+    {
+        // create a new script handler
+        ScriptRunner runner = ScriptRunner.create(scriptFile);
+        startupScripts.add(runner);
+        notifyStartupScriptAdded(runner);
+    }
 
 
     //
@@ -214,7 +242,6 @@ implements ModbusPalXML
      */
     public static boolean isSlaveEnabled(int slaveID)
     {
-
         if( knownSlaves[slaveID] == null )
         {
             if( learnModeEnabled == true )
@@ -440,6 +467,7 @@ implements ModbusPalXML
     public static void removeAllListeners()
     {
         listeners.clear();
+        scriptListeners.clear();
     }
 
     public static void addModbusPalListener(ModbusPalListener l)
@@ -458,6 +486,21 @@ implements ModbusPalXML
         }
     }
 
+    public static void addScriptListener(ScriptListener l)
+    {
+        if( scriptListeners.contains(l)==false )
+        {
+            scriptListeners.add(l);
+        }
+    }
+
+    public static void removeScriptListener(ScriptListener l)
+    {
+        if( scriptListeners.contains(l)==true )
+        {
+            scriptListeners.remove(l);
+        }
+    }
 
     //
     //
@@ -506,6 +549,22 @@ implements ModbusPalXML
         }
     }
 
+    private static void notifyStartupScriptAdded(ScriptRunner runner)
+    {
+        for(ScriptListener l:scriptListeners)
+        {
+            l.startupScriptAdded(runner);
+        }
+    }
+
+    private static void notifyScriptAdded(ScriptRunner runner)
+    {
+        for(ScriptListener l:scriptListeners)
+        {
+            l.scriptAdded(runner);
+        }
+    }
+
     //
     //
     // SAVE PROJECT
@@ -523,13 +582,20 @@ implements ModbusPalXML
     private static void saveProject(OutputStream out, File projectFile)
     throws IOException
     {
+        String xmlTag = "<?xml version=\"1.0\"?>\r\n";
+        out.write( xmlTag.getBytes() );
+
+        String docTag = "<!DOCTYPE modbuspal_project SYSTEM \"modbuspal.dtd\">\r\n";
+        out.write( docTag.getBytes() );
+
         String openTag = "<modbuspal_project>\r\n";
         out.write( openTag.getBytes() );
 
         saveParameters(out);
-        InstanciatorFactory.saveInstanciators(out, projectFile);
+        GeneratorFactory.saveInstanciators(out, projectFile);
         saveAutomations(out);
         saveSlaves(out);
+        saveScripts(out, projectFile);
 
         String closeTag = "</modbuspal_project>\r\n";
         out.write( closeTag.getBytes() );
@@ -580,6 +646,52 @@ implements ModbusPalXML
     }
 
 
+    private static void saveScripts(OutputStream out, File projectFile)
+    throws IOException
+    {
+        saveStartupScripts(out,projectFile);
+        saveOndemandScripts(out,projectFile);
+    }
+
+    private static void saveStartupScripts(OutputStream out, File projectFile)
+    throws IOException
+    {
+        if( startupScripts.isEmpty() )
+        {
+            return;
+        }
+        
+        String openTag = "<startup>\r\n";
+        out.write( openTag.getBytes() );
+
+        for(ScriptRunner runner:startupScripts)
+        {
+            runner.save(out,projectFile);
+        }
+
+        String closeTag = "</startup>\r\n";
+        out.write(closeTag.getBytes());
+    }
+
+    private static void saveOndemandScripts(OutputStream out, File projectFile)
+    throws IOException
+    {
+        if( ondemandScripts.isEmpty() )
+        {
+            return;
+        }
+        
+        String openTag = "<ondemand>\r\n";
+        out.write( openTag.getBytes() );
+
+        for(ScriptRunner runner:ondemandScripts)
+        {
+            runner.save(out,projectFile);
+        }
+
+        String closeTag = "</ondemand>\r\n";
+        out.write(closeTag.getBytes());
+    }
 
     //
     //
@@ -610,7 +722,7 @@ implements ModbusPalXML
         System.out.println("load "+name);
 
         loadParameters(doc);
-        InstanciatorFactory.loadInstanciators(doc, projectFile);
+        GeneratorFactory.loadInstanciators(doc, projectFile);
         loadAutomations(doc);
         loadSlaves(doc);
         loadBindings(doc);

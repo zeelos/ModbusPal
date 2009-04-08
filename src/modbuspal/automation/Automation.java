@@ -4,11 +4,14 @@
  */
 package modbuspal.automation;
 
+import modbuspal.generator.Generator;
+import modbuspal.generator.GeneratorFactory;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import modbuspal.generator.GeneratorListener;
 import modbuspal.main.XMLTools;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -31,6 +34,7 @@ implements Runnable
     private boolean quit = false;
     private ArrayList<AutomationStateListener> automationStateListeners = new ArrayList<AutomationStateListener>();
     private ArrayList<AutomationValueListener> automationValueListeners = new ArrayList<AutomationValueListener>();
+    private ArrayList<GeneratorListener> generatorListeners = new ArrayList<GeneratorListener>();
     private double currentValue = 0.0;
     private double initialValue = 0.0;
 
@@ -167,7 +171,6 @@ implements Runnable
     public void removeGenerator(Generator gen)
     {
         generators.remove(gen);
-        gen.removeAllGeneratorListeners();
         fireGeneratorRemoved(gen);
     }
 
@@ -202,6 +205,37 @@ implements Runnable
     }
 
 
+    void notifyGeneratorHasEnded(Generator gen)
+    {
+        for(GeneratorListener l:generatorListeners)
+        {
+            l.generatorHasEnded(gen);
+        }
+    }
+
+    void notifyGeneratorHasStarted(Generator gen)
+    {
+        for(GeneratorListener l:generatorListeners)
+        {
+            l.generatorHasStarted(gen);
+        }
+    }
+
+
+
+    public void addGeneratorListener(GeneratorListener l)
+    {
+        assert( generatorListeners.contains(l) == false );
+        generatorListeners.add(l);
+    }
+
+    public void removeGeneratorListener(GeneratorListener l)
+    {
+        assert( generatorListeners.contains(l) == true );
+        generatorListeners.remove(l);
+    }
+
+
 
     /**
      * This method is used to add generators into the automation, by
@@ -219,7 +253,7 @@ implements Runnable
             if( node.getNodeName().compareTo("generator")==0 )
             {
                 String className = XMLTools.getAttribute("class", node);
-                Generator gen = InstanciatorFactory.newInstance( className );
+                Generator gen = GeneratorFactory.newInstance( className );
                 gen.load(node);
                 addGenerator(gen);
             }
@@ -392,7 +426,7 @@ implements Runnable
             currentGen.setInitialValue(currentValue);
             double duration = currentGen.getDuration();
             startTime = currentTime;
-            currentGen.notifyGeneratorHasStarted();
+            notifyGeneratorHasStarted(currentGen);
 
             while( (currentTime < startTime + duration) && (quit==false) )
             {
@@ -430,7 +464,7 @@ implements Runnable
             // finish the execution of the generator
             previousValue = currentValue;
             currentValue = currentGen.getValue(duration);
-            currentGen.notifyGeneratorHasEnded();
+            notifyGeneratorHasEnded(currentGen);
 
             currentIndex++;
             if( currentIndex >= genList.length )

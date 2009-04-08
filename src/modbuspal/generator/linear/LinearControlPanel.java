@@ -9,7 +9,7 @@
  * Created on 22 déc. 2008, 22:01:06
  */
 
-package modbuspal.automation.linear;
+package modbuspal.generator.linear;
 
 /**
  *

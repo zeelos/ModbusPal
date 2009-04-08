@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package modbuspal.automation;
+package modbuspal.generator;
 
 import java.awt.BorderLayout;
 import java.io.File;
@@ -11,9 +11,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -31,7 +28,7 @@ public class Generator
     private ImageIcon icon;
     protected int duration = 10;
     protected double initialValue = 0.0;
-    private ArrayList<GeneratorListener> generatorListeners = new ArrayList<GeneratorListener>();
+    
     private JPanel controlPanel;
 
     /**
@@ -125,7 +122,7 @@ public class Generator
     }
 
     
-    void setInitialValue(double value)
+    public void setInitialValue(double value)
     {
         initialValue = value;
     }
@@ -158,26 +155,6 @@ public class Generator
     }
 
 
-    void notifyGeneratorHasEnded()
-    {
-        for(GeneratorListener l:generatorListeners)
-        {
-            l.generatorHasEnded(this);
-        }
-    }
-
-    void notifyGeneratorHasStarted()
-    {
-        for(GeneratorListener l:generatorListeners)
-        {
-            l.generatorHasStarted(this);
-        }
-    }
-
-    void removeAllGeneratorListeners()
-    {
-        generatorListeners.clear();
-    }
 
     public final void save(OutputStream out)
     throws IOException
@@ -211,17 +188,4 @@ public class Generator
     {
         return;
     }
-
-    public void addGeneratorListener(GeneratorListener l)
-    {
-        assert( generatorListeners.contains(l) == false );
-        generatorListeners.add(l);
-    }
-
-    public void removeGeneratorListener(GeneratorListener l)
-    {
-        assert( generatorListeners.contains(l) == true );
-        generatorListeners.remove(l);
-    }
-
 }

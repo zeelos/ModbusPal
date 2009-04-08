@@ -5,8 +5,7 @@
 
 package modbuspal.script;
 
-import java.io.File;
-import modbuspal.automation.Generator;
+import modbuspal.generator.Generator;
 
 /**
  *
@@ -15,7 +14,7 @@ import modbuspal.automation.Generator;
 public class PythonGenerator
 extends Generator
 {
-    private PythonInstanciator instanciator;
+    private PythonRunner instanciator;
     
     public PythonGenerator()
     {
@@ -54,7 +53,7 @@ extends Generator
     }
 
 
-    void install(PythonInstanciator inst)
+    void install(PythonRunner inst)
     {
         instanciator = inst;
     }

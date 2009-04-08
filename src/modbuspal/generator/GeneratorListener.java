@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package modbuspal.automation;
+package modbuspal.generator;
 
 /**
  * Specifies the method that a class must implement in order to receive notifications

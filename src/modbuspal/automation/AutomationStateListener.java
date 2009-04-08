@@ -5,6 +5,8 @@
 
 package modbuspal.automation;
 
+import modbuspal.generator.Generator;
+
 /**
  * This interface defines method that a class must implement in order to receive
  * notifications about the status of automations.

@@ -17,7 +17,7 @@ import java.awt.event.WindowListener;
 import modbuspal.automation.Automation;
 import modbuspal.automation.AutomationEditor;
 import modbuspal.automation.AutomationStateListener;
-import modbuspal.automation.Generator;
+import modbuspal.generator.Generator;
 
 /**
  *

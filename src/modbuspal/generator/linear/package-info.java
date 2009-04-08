@@ -6,5 +6,5 @@
 /**
  * Defines the linear function generator for automations.
  */
-package modbuspal.automation.linear;
+package modbuspal.generator.linear;
 

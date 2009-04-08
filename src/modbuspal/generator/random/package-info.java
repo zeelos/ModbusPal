@@ -6,5 +6,5 @@
 /**
  * Defines the random values generator for automations.
  */
-package modbuspal.automation.random;
+package modbuspal.generator.random;
 

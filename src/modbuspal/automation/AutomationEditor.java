@@ -15,6 +15,11 @@
 
 package modbuspal.automation;
 
+import modbuspal.generator.Generator;
+import modbuspal.generator.GeneratorFactory;
+import modbuspal.generator.Instanciator;
+import modbuspal.generator.InstanciatorListener;
+import modbuspal.generator.GeneratorRenderer;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -32,10 +37,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import modbuspal.main.ErrorMessage;
 import modbuspal.main.ListLayout;
 import modbuspal.main.ModbusPalGui;
-import modbuspal.script.ScriptInstanciator;
 import modbuspal.script.ScriptManagerDialog;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -49,7 +52,7 @@ import org.xml.sax.SAXException;
  */
 public class AutomationEditor
 extends javax.swing.JDialog
-implements AutomationStateListener, AutomationValueListener, InstanciatorFactoryListener
+implements AutomationStateListener, AutomationValueListener, InstanciatorListener
 {
     private Automation automation = null;
     private ListLayout listLayout;
@@ -69,7 +72,7 @@ implements AutomationStateListener, AutomationValueListener, InstanciatorFactory
         pack();
         automation.addAutomationStateListener(this);
         automation.addAutomationValueListener(this);
-        InstanciatorFactory.addGeneratorFactoryListener(this);
+        GeneratorFactory.addInstanciatorListener(this);
     }
 
     @Override
@@ -78,7 +81,7 @@ implements AutomationStateListener, AutomationValueListener, InstanciatorFactory
         super.dispose();
         automation.removeAutomationStateListener(this);
         automation.removeAutomationValueListener(this);
-        InstanciatorFactory.removeGeneratorFactoryListener(this);
+        GeneratorFactory.removeInstanciatorListener(this);
     }
 
     
@@ -91,7 +94,7 @@ implements AutomationStateListener, AutomationValueListener, InstanciatorFactory
             {
                 try 
                 {
-                    Generator gen = InstanciatorFactory.newInstance(className);
+                    Generator gen = GeneratorFactory.newInstance(className);
                     automation.addGenerator(gen);
                 }
                 catch (InstantiationException ex)
@@ -133,7 +136,7 @@ implements AutomationStateListener, AutomationValueListener, InstanciatorFactory
     private void addGeneratorButtons()
     {
         // get the list of generators:
-        String list[] = InstanciatorFactory.getList();
+        String list[] = GeneratorFactory.getList();
 
         // for each generator, add a button;
         for( int i=0; i<list.length; i++ )
@@ -142,13 +145,13 @@ implements AutomationStateListener, AutomationValueListener, InstanciatorFactory
         }
     }
 
-    void down(GeneratorRenderer source)
+    public void down(GeneratorRenderer source)
     {
         Generator gen = source.getGenerator();
         automation.down(gen);
     }
 
-    void remove(GeneratorRenderer renderer)
+    public void remove(GeneratorRenderer renderer)
     {
         // get the generator
         Generator gen = renderer.getGenerator();
@@ -157,7 +160,7 @@ implements AutomationStateListener, AutomationValueListener, InstanciatorFactory
         automation.removeGenerator(gen);
     }
 
-    void up(GeneratorRenderer source)
+    public void up(GeneratorRenderer source)
     {
         Generator gen = source.getGenerator();
         automation.up(gen);
@@ -174,7 +177,7 @@ implements AutomationStateListener, AutomationValueListener, InstanciatorFactory
         for(int i=0; i<generators.length; i++)
         {
             GeneratorRenderer renderer = new GeneratorRenderer(this, generators[i]);
-            generators[i].addGeneratorListener(renderer);
+            automation.addGeneratorListener(renderer);
             generatorsListPanel.add( renderer, new Integer(i) );
         }
         generatorsListScrollPane.validate();
@@ -285,7 +288,6 @@ implements AutomationStateListener, AutomationValueListener, InstanciatorFactory
         initTextField = new javax.swing.JTextField();
         addGenPanel = new javax.swing.JPanel();
         genButtonsPanel = new javax.swing.JPanel();
-        addInstanciatorButton = new javax.swing.JButton();
         removeInstanciatorButton = new javax.swing.JButton();
         generatorsPanel = new javax.swing.JPanel();
         importExportPanel = new javax.swing.JPanel();
@@ -408,19 +410,7 @@ implements AutomationStateListener, AutomationValueListener, InstanciatorFactory
 
         genButtonsPanel.setLayout(new java.awt.GridBagLayout());
 
-        addInstanciatorButton.setText("+");
-        addInstanciatorButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                addInstanciatorButtonActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        genButtonsPanel.add(addInstanciatorButton, gridBagConstraints);
-
-        removeInstanciatorButton.setText("-");
+        removeInstanciatorButton.setText("...");
         removeInstanciatorButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 removeInstanciatorButtonActionPerformed(evt);
@@ -591,45 +581,6 @@ implements AutomationStateListener, AutomationValueListener, InstanciatorFactory
         automation.setInitialValue( dval );
     }//GEN-LAST:event_initTextFieldFocusLost
 
-    private void addInstanciatorButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addInstanciatorButtonActionPerformed
-
-        // get the selected file, in any.
-        File scriptFile = InstanciatorFactory.chooseScriptFile(this);
-        if( scriptFile==null )
-        {
-            //setStatus("Cancelled by user.");
-            return;
-        }
-
-        
-        try
-        {
-            // newInstance a scripted generator handler
-            ScriptInstanciator gen = ScriptInstanciator.create(scriptFile);
-            
-            // add the handler to the factory:
-            InstanciatorFactory.add(gen);
-        }
-        catch (IOException ex)
-        {
-            Logger.getLogger(AutomationEditor.class.getName()).log(Level.SEVERE, null, ex);
-            ErrorMessage dialog = new ErrorMessage(this,"Close");
-            dialog.setTitle("File error");
-            dialog.append("An error occured while reading the file. The scripted generator cannot be used.");
-            dialog.setVisible(true);
-        }
-        catch (Exception ex)
-        {
-            Logger.getLogger(AutomationEditor.class.getName()).log(Level.SEVERE, null, ex);
-            ErrorMessage dialog = new ErrorMessage(this,"Close");
-            dialog.setTitle("Script error");
-            dialog.append("The script probably contains errors and cannot be executed properly.");
-            dialog.setVisible(true);
-        }
-
-        
-}//GEN-LAST:event_addInstanciatorButtonActionPerformed
-
     private void removeInstanciatorButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeInstanciatorButtonActionPerformed
 
         // ask script manager to appear, with the "generators" tab selected
@@ -639,7 +590,6 @@ implements AutomationStateListener, AutomationValueListener, InstanciatorFactory
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel addGenPanel;
-    private javax.swing.JButton addInstanciatorButton;
     private javax.swing.JPanel buttonsPanel;
     private javax.swing.JPanel controlsPanel;
     private javax.swing.JButton exportButton;
@@ -748,7 +698,7 @@ implements AutomationStateListener, AutomationValueListener, InstanciatorFactory
     {
         // add slave panel into the gui and refresh gui
         GeneratorRenderer renderer = new GeneratorRenderer(this, generator);
-        generator.addGeneratorListener(renderer);
+        automation.addGeneratorListener(renderer);
         generatorsListPanel.add( renderer, new Integer(index) );
         generatorsListScrollPane.validate();
     }
@@ -792,12 +742,12 @@ implements AutomationStateListener, AutomationValueListener, InstanciatorFactory
     }
 
     @Override
-    public void generatorInstanciatorAdded(GeneratorInstanciator def)
+    public void instanciatorAdded(Instanciator def)
     {
         addGeneratorButton(def.getClassName());
     }
 
-    public void generatorInstanciatorRemoved(GeneratorInstanciator def)
+    public void instanciatorRemoved(Instanciator def)
     {
         removeGeneratorButton(def.getClassName());
     }

@@ -5,6 +5,7 @@
 
 package modbuspal.script;
 
+import modbuspal.generator.Instanciator;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import modbuspal.automation.*;
@@ -16,12 +17,18 @@ import modbuspal.main.FileTools;
  
  * @author avincon
  */
-public abstract class ScriptInstanciator
-implements GeneratorInstanciator
+public abstract class ScriptRunner
+implements Instanciator
 {
 
-    public static ScriptInstanciator create(File scriptFile)
-    throws FileNotFoundException, IOException
+    /**
+     * creates an appropriate script runner for the specified file.
+     * @param scriptFile
+     * @return
+     * @throws java.io.FileNotFoundException
+     * @throws java.io.IOException
+     */
+    public static ScriptRunner create(File scriptFile)
     {
         String extension = FileTools.getExtension(scriptFile);
         if( extension==null)
@@ -31,7 +38,7 @@ implements GeneratorInstanciator
 
         if( extension.compareToIgnoreCase("py")==0 )
         {
-            return new PythonInstanciator(scriptFile);
+            return new PythonRunner(scriptFile);
         }
 
         return null;
@@ -42,23 +49,19 @@ implements GeneratorInstanciator
     protected File scriptFile = null;
 
     
-    public ScriptInstanciator(File file)
+    public ScriptRunner(File file)
     {
         scriptFile = file;
     }
 
 
-    public void save(OutputStream out)
-    throws IOException
-    {
-        save(out,null);
-    }
 
+    @Override
     public void save(OutputStream out, File projectFile)
     throws IOException
     {
         // create open tag
-        String openTag = "<instanciator>";
+        String openTag = "<script>";
         out.write(openTag.getBytes());
 
         // write absolute file projectPath
@@ -71,7 +74,7 @@ implements GeneratorInstanciator
         }
 
         // create close tag
-        String closeTag = "</instanciator>\r\n";
+        String closeTag = "</script>\r\n";
         out.write(closeTag.getBytes());
     }
 
@@ -110,6 +113,8 @@ implements GeneratorInstanciator
         }
     }
 
+
+    public abstract void execute();
 
     public abstract String getFileExtension();
 

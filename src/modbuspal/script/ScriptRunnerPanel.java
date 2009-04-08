@@ -4,36 +4,40 @@
  */
 
 /*
- * ScriptInstanciatorPanel.java
+ * ScriptRunnerPanel.java
  *
  * Created on 30 mars 2009, 13:51:06
  */
 
 package modbuspal.script;
 
-import modbuspal.automation.GeneratorInstanciator;
-import modbuspal.automation.InstanciatorFactory;
+import modbuspal.generator.Instanciator;
+import modbuspal.generator.GeneratorFactory;
 import modbuspal.main.ModbusPal;
 
 /**
  *
  * @author nnovic
  */
-public class ScriptInstanciatorPanel
+public class ScriptRunnerPanel
 extends javax.swing.JPanel
 {
-    private ScriptInstanciator instanciator;
+    private ScriptRunner runner;
 
-    /** Creates new form ScriptInstanciatorPanel */
-    public ScriptInstanciatorPanel(ScriptInstanciator def)
+    /** Creates new form ScriptRunnerPanel */
+    public ScriptRunnerPanel(ScriptRunner def, boolean canExecute)
     {
-        instanciator = def;
+        runner = def;
         initComponents();
+        if( !canExecute )
+        {
+            remove(executeButton);
+        }
     }
 
-    boolean contains(ScriptInstanciator si)
+    boolean contains(ScriptRunner sr)
     {
-        return (si==instanciator);
+        return (sr==runner);
     }
 
     /** This method is called from within the constructor to
@@ -46,13 +50,22 @@ extends javax.swing.JPanel
     private void initComponents() {
 
         classnameLabel = new javax.swing.JLabel();
+        executeButton = new javax.swing.JButton();
         deleteButton = new javax.swing.JButton();
 
         setBorder(javax.swing.BorderFactory.createEtchedBorder());
         setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
-        classnameLabel.setText(instanciator.getClassName());
+        classnameLabel.setText(runner.getClassName());
         add(classnameLabel);
+
+        executeButton.setText("Execute");
+        executeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                executeButtonActionPerformed(evt);
+            }
+        });
+        add(executeButton);
 
         deleteButton.setText("Delete");
         deleteButton.addActionListener(new java.awt.event.ActionListener() {
@@ -65,14 +78,19 @@ extends javax.swing.JPanel
 
     private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
         // add the handler to the factory:
-        ModbusPal.removeAllGenerators(instanciator.getClassName());
-        InstanciatorFactory.remove(instanciator);
+        ModbusPal.removeAllGenerators(runner.getClassName());
+        GeneratorFactory.remove(runner);
     }//GEN-LAST:event_deleteButtonActionPerformed
+
+    private void executeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_executeButtonActionPerformed
+        runner.execute();
+    }//GEN-LAST:event_executeButtonActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel classnameLabel;
     private javax.swing.JButton deleteButton;
+    private javax.swing.JButton executeButton;
     // End of variables declaration//GEN-END:variables
 
 }

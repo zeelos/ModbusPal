@@ -12,8 +12,9 @@
  *
  * Created on 21 déc. 2008, 21:03:38
  */
-package modbuspal.automation;
+package modbuspal.generator;
 
+import modbuspal.automation.*;
 import java.awt.BorderLayout;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
@@ -56,7 +57,7 @@ implements GeneratorListener
         durationTextField.setEnabled(enabled);
     }
 
-    Generator getGenerator() {
+    public Generator getGenerator() {
         return generator;
     }
 

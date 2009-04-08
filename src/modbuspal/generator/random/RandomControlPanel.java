@@ -9,7 +9,7 @@
  * Created on 22 déc. 2008, 22:01:06
  */
 
-package modbuspal.automation.random;
+package modbuspal.generator.random;
 
 /**
  *

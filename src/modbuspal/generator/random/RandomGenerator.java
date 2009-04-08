@@ -3,8 +3,9 @@
  * and open the template in the editor.
  */
 
-package modbuspal.automation.random;
+package modbuspal.generator.random;
 
+import modbuspal.generator.Generator;
 import java.io.IOException;
 import java.io.OutputStream;
 import javax.swing.JPanel;
