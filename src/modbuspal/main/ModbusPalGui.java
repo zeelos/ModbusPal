@@ -301,6 +301,8 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
         flowControl.append("rtscts=\""+ String.valueOf( rtsctsCheckBox.isSelected() ) +"\" ");
         flowControl.append("/>\r\n");
 
+        out.write( flowControl.toString().getBytes() );
+
         String closeTag = "</serial>\r\n";
         out.write( closeTag.getBytes() );
     }

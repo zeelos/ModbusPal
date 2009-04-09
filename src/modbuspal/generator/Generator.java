@@ -36,7 +36,7 @@ public class Generator
      */
     public Generator()
     {
-        setIcon("/modbuspal/automation/Generator.png");
+        setIcon("/modbuspal/generator/Generator.png");
         controlPanel = createControlPanel();
     }
 

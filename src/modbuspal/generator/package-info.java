@@ -7,5 +7,5 @@
  * Contains the various type of bindings that you can use to link automations
  * with modbus registers/coils.
  */
-package modbuspal.binding;
+package modbuspal.generator;
 
