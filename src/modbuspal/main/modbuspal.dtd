@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+
+<!--
+    TODO define vocabulary identification data
+    PUBLIC ID  : -//vendor//vocabulary//EN
+    SYSTEM ID  : http://server/path/__NAME__
+-->
+
+<!-- TODO define your own vocabulary/syntax. Example follows:  -->
+
+<!ELEMENT modbuspal_project (idgen,links,instanciators?,automation*,slave*,startup?,ondemand?)>
+
+<!ELEMENT idgen ANY>
+<!ATTLIST idgen value CDATA #REQUIRED>
+
+<!ELEMENT links (tcpip,serial)>
+<!ATTLIST links selected (tcpip|serial) #REQUIRED>
+
+<!ELEMENT serial ANY>
+<!ATTLIST serial com CDATA #IMPLIED>
+<!ATTLIST serial baudrate CDATA "19200">
+<!ATTLIST serial parity (none|odd|even) "even">
+
+<!ELEMENT tcpip ANY>
+<!ATTLIST tcpip port CDATA #REQUIRED>
+
+<!ELEMENT instanciators ANY>
+
+<!ELEMENT automation ANY>
+
+<!ELEMENT slave ANY>
+
+<!ELEMENT startup ANY>
+
+<!ELEMENT ondemand ANY>
