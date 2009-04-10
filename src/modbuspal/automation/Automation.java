@@ -63,7 +63,6 @@ implements Runnable
         uniqueName = name;
     }
 
-
     /**
      * Changes the order of the generators by putting the specified generator
      * one rank down in the list. A "generators swapped" event is then fired.
@@ -503,10 +502,12 @@ implements Runnable
         return suspended;
     }
 
-    public void removeAllListeners()
+    public void disconnect()
     {
         automationStateListeners.clear();
         automationValueListeners.clear();
+        generatorListeners.clear();
+        generators.clear();
     }
 
     public void addAutomationStateListener(AutomationStateListener l)

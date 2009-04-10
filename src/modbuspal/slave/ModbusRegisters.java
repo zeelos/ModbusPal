@@ -16,7 +16,6 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 import modbuspal.binding.Binding;
-import modbuspal.link.ModbusSlaveDispatcher;
 import modbuspal.main.ModbusConst;
 import modbuspal.main.ModbusPalXML;
 import org.w3c.dom.NamedNodeMap;
@@ -97,6 +96,15 @@ implements TableModel, ModbusPalXML, ModbusConst
         {
             return values.get(address);
         }
+    }
+
+    void clear()
+    {
+        registers.clear();
+        values.clear();
+        names.clear();
+        bindings.clear();
+        notifyTableChanged();
     }
 
 

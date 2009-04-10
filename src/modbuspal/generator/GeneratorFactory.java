@@ -47,6 +47,7 @@ public class GeneratorFactory
 
 
 
+
     public static void loadInstanciators(Document doc, File projectFile)
     {
         NodeList list = doc.getElementsByTagName("instanciators");
@@ -229,6 +230,17 @@ public class GeneratorFactory
             notifyGeneratorInstanciatorRemoved(si);
         }
     }
+
+    public static void removeAll()
+    {
+        Instanciator list[] = new Instanciator[0];
+        list=scriptedInstanciators.toArray(list);
+        for( int i=0; i<list.length; i++ )
+        {
+            remove( list[i] );
+        }
+    }
+
 
 
     public static void addInstanciatorListener(InstanciatorListener l)

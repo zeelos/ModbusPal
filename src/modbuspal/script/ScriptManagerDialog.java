@@ -13,12 +13,12 @@ package modbuspal.script;
 
 import java.awt.Component;
 import java.io.File;
-import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import javax.swing.JFileChooser;
+import javax.swing.JPanel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import modbuspal.generator.Instanciator;
 import modbuspal.generator.GeneratorFactory;
@@ -356,6 +356,39 @@ implements InstanciatorListener, ScriptListener
         ScriptRunnerPanel panel = new ScriptRunnerPanel(runner,true);
         ondemandScriptsList.add(panel);
         ondemandScriptsScrollPane.validate();
+    }
+
+
+    private ScriptRunnerPanel findPanel(JPanel panel, ScriptRunner runner)
+    {
+        for( int i=0; i<panel.getComponentCount(); i++ )
+        {
+            Component comp = panel.getComponent(i);
+            if( comp instanceof ScriptRunnerPanel )
+            {
+                ScriptRunnerPanel srp = (ScriptRunnerPanel)comp;
+                if( srp.contains(runner)==true )
+                {
+                    return srp;
+                }
+            }
+        }
+        return null;
+    }
+
+
+    public void scriptRemoved(ScriptRunner runner)
+    {
+        ScriptRunnerPanel panel = findPanel(ondemandScriptsList,runner);
+        ondemandScriptsList.remove(panel);
+        ondemandScriptsScrollPane.validate();
+    }
+
+    public void startupScriptRemoved(ScriptRunner runner)
+    {
+        ScriptRunnerPanel panel = findPanel(startupScriptsList,runner);
+        startupScriptsList.remove(panel);
+        startupScriptsScrollPane.validate();
     }
 
 }

@@ -458,6 +458,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
         projectPanel = new javax.swing.JPanel();
         loadButton = new javax.swing.JButton();
         saveProjectButton = new javax.swing.JButton();
+        clearProjectButton = new javax.swing.JButton();
         toolsPanel = new javax.swing.JPanel();
         masterToggleButton = new javax.swing.JToggleButton();
         scriptsToggleButton = new javax.swing.JToggleButton();
@@ -618,6 +619,14 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
         projectPanel.add(saveProjectButton, gridBagConstraints);
+
+        clearProjectButton.setText("Clear");
+        clearProjectButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                clearProjectButtonActionPerformed(evt);
+            }
+        });
+        projectPanel.add(clearProjectButton, new java.awt.GridBagConstraints());
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -1146,6 +1155,10 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
         }
     }//GEN-LAST:event_helpButtonActionPerformed
 
+    private void clearProjectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearProjectButtonActionPerformed
+        ModbusPal.clearProject();
+    }//GEN-LAST:event_clearProjectButtonActionPerformed
+
 
 
 
@@ -1155,6 +1168,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
     private javax.swing.JScrollPane automationListScrollPane;
     private javax.swing.JPanel automationsListPanel;
     private javax.swing.JComboBox baudRateComboBox;
+    private javax.swing.JButton clearProjectButton;
     private javax.swing.JComboBox comPortComboBox;
     private javax.swing.JButton disableAllSlavesButton;
     private javax.swing.JButton enableAllSlavesButton;
@@ -1266,7 +1280,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
         
         if( panel != null )
         {
-            // the dialog will be delete, so remove it to:
+            // the dialog will be disconnect, so remove it to:
             panel.delete();
 
             // remove panel from the list
@@ -1287,7 +1301,6 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
         // add slave panel into the gui and refresh gui
         AutomationPanel panel = new AutomationPanel(this,automation);
         automationsListPanel.add( panel, new Integer(index) );
-        automation.addAutomationStateListener(panel);
         automationListScrollPane.validate();
     }
 
@@ -1317,8 +1330,8 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
 
         if( panel != null )
         {
-            // the dialog will be delete, so remove it too:
-            panel.delete();
+            // the dialog will be disconnect, so remove it too:
+            panel.dispose();
 
             // remove panel from the list
             automationsListPanel.remove( panel );

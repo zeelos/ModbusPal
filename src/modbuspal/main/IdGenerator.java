@@ -30,6 +30,14 @@ class IdGenerator
         return newID;
     }
 
+    void reset()
+    {
+        synchronized(this)
+        {
+            idCreator=0;
+        }
+    }
+
     void save(OutputStream out) throws IOException
     {
         StringBuffer idGenTag = new StringBuffer("<idgen ");

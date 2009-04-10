@@ -27,6 +27,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 /**
@@ -45,7 +47,6 @@ implements ModbusPalXML
     private static ArrayList<ScriptRunner> startupScripts = new ArrayList<ScriptRunner>();
     private static ArrayList<ScriptRunner> ondemandScripts = new ArrayList<ScriptRunner>();
     private static ArrayList<ScriptListener> scriptListeners = new ArrayList<ScriptListener>();
-
 
     //
     //
@@ -69,6 +70,54 @@ implements ModbusPalXML
         notifyStartupScriptAdded(runner);
     }
 
+
+
+
+
+    private static void removeAllScripts()
+    {
+        removeStartupScripts();
+        removeOndemandScripts();
+    }
+    
+    private static void removeStartupScripts()
+    {
+        ScriptRunner list[] = new ScriptRunner[0];
+        list = startupScripts.toArray(list);
+        for( int i=0; i<list.length; i++ )
+        {
+            removeStartupScript( list[i] );
+        }
+    }
+
+    private static void removeStartupScript(ScriptRunner script)
+    {
+        if( startupScripts.contains(script) )
+        {
+            startupScripts.remove(script);
+            notifyStartupScriptRemove(script);
+        }
+    }
+
+    private static void removeOndemandScripts()
+    {
+        ScriptRunner list[] = new ScriptRunner[0];
+        list = ondemandScripts.toArray(list);
+        for( int i=0; i<list.length; i++ )
+        {
+            removeOndemandScript( list[i] );
+        }
+    }
+
+    private static void removeOndemandScript(ScriptRunner script)
+    {
+        if( ondemandScripts.contains(script) )
+        {
+            ondemandScripts.remove(script);
+            notifyScriptRemoved(script);
+        }
+
+    }
 
     //
     //
@@ -223,10 +272,23 @@ implements ModbusPalXML
     public static void removeModbusSlave(ModbusSlave slave)
     {
         int slaveID = slave.getSlaveId();
-        slave.removeAllListeners();
-        // delete slave from list
+        slave.clear();
+        
+        // disconnect slave from list
         knownSlaves[slaveID] = null;
         notifySlaveRemoved(slave);
+    }
+
+
+    private static void removeAllModbusSlaves()
+    {
+        for(int i=0; i<knownSlaves.length; i++ )
+        {
+            if( knownSlaves[i]!=null )
+            {
+                removeModbusSlave( knownSlaves[i] );
+            }
+        }
     }
 
 
@@ -441,14 +503,22 @@ implements ModbusPalXML
 
     static void removeAutomation(Automation automation)
     {
-        // the panel will be delete, so remove it from the listeners
-        automation.removeAllListeners();
-        // delete slave from list
+        // disconnect the automation from the rest of the project
+        automation.disconnect();
+        // remove automation from list
         automations.remove(automation);
         notifyAutomationRemoved(automation);
     }
 
-
+    private static void removeAllAutomations()
+    {
+        Automation list[] = new Automation[0];
+        list = automations.toArray(list);
+        for( int i=0; i<list.length; i++ )
+        {
+            removeAutomation(list[i]);
+        }
+    }
 
 
     //TODO: is this method really necessary???
@@ -562,6 +632,30 @@ implements ModbusPalXML
         for(ScriptListener l:scriptListeners)
         {
             l.scriptAdded(runner);
+        }
+    }
+
+    private static void notifyStartupScriptRemoved(ScriptRunner runner)
+    {
+        for(ScriptListener l:scriptListeners)
+        {
+            l.startupScriptRemoved(runner);
+        }
+    }
+
+    private static void notifyScriptRemoved(ScriptRunner runner)
+    {
+        for(ScriptListener l:scriptListeners)
+        {
+            l.scriptRemoved(runner);
+        }
+    }
+
+    private static void notifyStartupScriptRemove(ScriptRunner script)
+    {
+        for(ScriptListener l:scriptListeners)
+        {
+            l.startupScriptRemoved(script);
         }
     }
 
@@ -705,6 +799,21 @@ implements ModbusPalXML
     {
         DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
+
+        docBuilder.setEntityResolver( new EntityResolver()
+        {
+            public InputSource resolveEntity(String publicId, String systemId)
+            throws SAXException, IOException
+            {
+                if( systemId.endsWith("modbuspal.dtd") )
+                {
+                    return new InputSource( ModbusPal.class.getResourceAsStream("modbuspal.dtd") );
+                }
+                return null;
+            }
+        });
+
+        // the parse will fail if xml doc doesn't match the dtd.
         Document doc = docBuilder.parse(source);
 
         // normalize text representation
@@ -726,6 +835,13 @@ implements ModbusPalXML
         loadAutomations(doc);
         loadSlaves(doc);
         loadBindings(doc);
+        loadScripts(doc, projectFile);
+
+        // execute startup scripts
+        for( ScriptRunner runner:startupScripts )
+        {
+            runner.execute();
+        }
     }
 
 
@@ -906,6 +1022,100 @@ implements ModbusPalXML
         }
     }
 
+    private static void loadScripts(Document doc, File projectFile)
+    {
+        // look for "startup" scripts section
+        NodeList startup = doc.getElementsByTagName("startup");
+        for( int i=0; i<startup.getLength(); i++ )
+        {
+            loadStartupScripts( startup.item(i), projectFile );
+        }
+
+        // look for "ondemand" scripts section
+        NodeList ondemand = doc.getElementsByTagName("ondemand");
+        for( int i=0; i<startup.getLength(); i++ )
+        {
+            loadOndemandScripts( ondemand.item(i), projectFile );
+        }
+    }
+
+
+
+    private static void loadStartupScripts(Node node, File projectFile)
+    {
+        // get list of sub nodes
+        NodeList nodes = node.getChildNodes();
+
+        for(int i=0; i<nodes.getLength(); i++ )
+        {
+            Node scriptNode = nodes.item(i);
+            if( scriptNode.getNodeName().compareTo("script")==0 )
+            {
+                File scriptFile = loadScript(scriptNode, projectFile);
+                if( scriptFile!=null )
+                {
+                    addStartupScript(scriptFile);
+                }
+            }
+        }
+    }
+
+
+    private static File loadScript(Node node, File projectFile)
+    {
+        // find "rel"
+        Node rel = XMLTools.findChild(node, "rel");
+        if( rel != null )
+        {
+            // try to load file from relative path
+            String relativePath = rel.getTextContent();
+            String absolutePath = FileTools.makeAbsolute(projectFile, relativePath);
+            File file = new File(absolutePath);
+            if( file.exists()==true )
+            {
+                return file;
+            }
+        }
+        
+        // find "abs"
+        Node abs = XMLTools.findChild(node, "abs");
+        if( abs != null )
+        {
+            String path = abs.getTextContent();
+            File file = new File(path);
+            if( file.exists()==true )
+            {
+                return file;
+            }
+        }
+
+        return null;
+    }
+
+    private static void loadOndemandScripts(Node node, File projectFile)
+    {
+        // get list of sub nodes
+        NodeList nodes = node.getChildNodes();
+
+        for(int i=0; i<nodes.getLength(); i++ )
+        {
+            Node scriptNode = nodes.item(i);
+            if( scriptNode.getNodeName().compareTo("script")==0 )
+            {
+                File scriptFile = loadScript(scriptNode, projectFile);
+                if( scriptFile!=null )
+                {
+                    addScript(scriptFile);
+                }
+            }
+        }
+    }
+
+
+
+
+    
+
     //
     //
     // GETTERS AND SETTERS
@@ -952,6 +1162,33 @@ implements ModbusPalXML
             return false;
         }
     }
+
+
+
+    public static void clearProject()
+    {
+        //TODO: put link in modbuspal instead of modbuspalgui
+//        if( isRunning()==true )
+//        {
+//            stop();
+//        }
+
+        resetParameters();
+        removeAllModbusSlaves();
+        removeAllAutomations();
+        GeneratorFactory.removeAll();
+        removeAllScripts();
+        return;
+    }
+
+
+    private static void resetParameters()
+    {
+        // save id creator:
+        idGenerator.reset();
+    }
+
+
 
 
 }

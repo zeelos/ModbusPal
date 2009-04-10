@@ -11,8 +11,11 @@ package modbuspal.script;
  */
 public interface ScriptListener
 {
-
     public void scriptAdded(ScriptRunner runner);
+
+    public void scriptRemoved(ScriptRunner runner);
     
     public void startupScriptAdded(ScriptRunner runner);
+
+    public void startupScriptRemoved(ScriptRunner runner);
 }

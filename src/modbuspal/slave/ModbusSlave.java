@@ -56,6 +56,18 @@ implements ModbusPalXML, ModbusConst
         loadAttributes(attributes);
     }
 
+
+
+    public void clear()
+    {
+        // remove listeners
+        listeners.clear();
+        
+        // propage clear
+        holdingRegisters.clear();
+    }
+
+
     public String getName()
     {
         return customName;
@@ -319,11 +331,6 @@ implements ModbusPalXML, ModbusConst
         {
             listeners.remove(l);
         }
-    }
-
-    public void removeAllListeners()
-    {
-        listeners.clear();
     }
 
     public void setImplementation(int impl)

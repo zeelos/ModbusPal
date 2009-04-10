@@ -37,12 +37,12 @@ implements WindowListener, AutomationStateListener
     {
         mainGui = gui;
         automation = parent;
-        //automation.addAutomationStateListener(this);
+        automation.addAutomationStateListener(this);
         initComponents();
     }
 
 
-    void delete()
+    void dispose()
     {
        if( automationEditor != null )
        {
@@ -51,6 +51,8 @@ implements WindowListener, AutomationStateListener
             automationEditor.dispose();
             automationEditor = null;
        }
+
+       automation.removeAutomationStateListener(this);
     }
 
     Automation getAutomation()

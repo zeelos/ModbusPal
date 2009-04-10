@@ -46,7 +46,14 @@ public class FileTools
     }
 
 
+
     public static String makeAbsolute(File reference, File target)
+    {
+        return makeAbsolute(reference, target.getPath() );
+    }
+
+
+    public static String makeAbsolute(File reference, String target)
     {
         // if reference is a file, extract the directory of that file:
         if( reference.isDirectory()==false )
@@ -59,7 +66,7 @@ public class FileTools
         URI referenceURI = reference.toURI();
 
         // make an absolute uri from the reference + the target
-        URI result = referenceURI.resolve(target.getPath());
+        URI result = referenceURI.resolve(target);
         result.normalize();
 
         // check that the resulting uri is absolute
