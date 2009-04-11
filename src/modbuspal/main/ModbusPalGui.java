@@ -96,7 +96,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
     private static File projectFile = null;
     private ScriptManagerDialog scriptManagerDialog = null;
     private ModbusLink currentLink = null;
-
+    private AppConsole console = null;
 
 
 
@@ -110,6 +110,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
     {
         uniqueInstance.loadLinkParameters(doc);
     }
+
 
     public void showScriptManagerDialog(int tabIndex)
     {
@@ -463,6 +464,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
         masterToggleButton = new javax.swing.JToggleButton();
         scriptsToggleButton = new javax.swing.JToggleButton();
         helpButton = new javax.swing.JButton();
+        consoleToggleButton = new javax.swing.JToggleButton();
         jSplitPane1 = new javax.swing.JSplitPane();
         jPanel1 = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
@@ -654,7 +656,9 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
                 scriptsToggleButtonActionPerformed(evt);
             }
         });
-        toolsPanel.add(scriptsToggleButton, new java.awt.GridBagConstraints());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        toolsPanel.add(scriptsToggleButton, gridBagConstraints);
 
         helpButton.setText("Help");
         helpButton.addActionListener(new java.awt.event.ActionListener() {
@@ -667,6 +671,18 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
         gridBagConstraints.gridy = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         toolsPanel.add(helpButton, gridBagConstraints);
+
+        consoleToggleButton.setText("Console");
+        consoleToggleButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                consoleToggleButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        toolsPanel.add(consoleToggleButton, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -955,17 +971,17 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
             saveDialog.showSaveDialog(this);
             projectFile = saveDialog.getSelectedFile();
 
-            // if project file already exists, ask "are you sure?"
-            if( projectFile.exists() )
-            {
-                // TODO: ARE YOUR SURE?
-            }
-
             // if no project file is selected, do not save
             // the project (leave method)
             if( projectFile == null )
             {
                 return;
+            }
+
+            // if project file already exists, ask "are you sure?"
+            if( projectFile.exists() )
+            {
+                // TODO: ARE YOUR SURE?
             }
         }
 
@@ -1004,32 +1020,30 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
             return;
         }
 
-        try
+        final WorkInProgressDialog dialog = new WorkInProgressDialog(this,"Load project","Loading project...");
+        Thread loader = new Thread( new Runnable()
         {
-            ModbusPal.loadProject(projectFile);
-            setTitle(APP_STRING+" ("+projectFile.getName()+")");
-        } 
-        catch (ParserConfigurationException ex)
-        {
-            Logger.getLogger(ModbusPalGui.class.getName()).log(Level.SEVERE, null, ex);
-        } 
-        catch (SAXException ex)
-        {
-            Logger.getLogger(ModbusPalGui.class.getName()).log(Level.SEVERE, null, ex);
-        } 
-        catch (IOException ex)
-        {
-            Logger.getLogger(ModbusPalGui.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        catch (InstantiationException ex)
-        {
-            Logger.getLogger(ModbusPalGui.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        catch (IllegalAccessException ex)
-        {
-            Logger.getLogger(ModbusPalGui.class.getName()).log(Level.SEVERE, null, ex);
-        }
+            public void run()
+            {
+                try
+                {
+                    ModbusPal.loadProject(projectFile);
+                    setTitle(APP_STRING+" ("+projectFile.getName()+")");
+                }
+                catch (Exception ex)
+                {
+                    Logger.getLogger(ModbusPalGui.class.getName()).log(Level.SEVERE, null, ex);
+                }
 
+                if( dialog.isVisible() )
+                {
+                    dialog.setVisible(false);
+                }
+            }
+        });
+
+        loader.start();
+        dialog.setVisible(true);
 }//GEN-LAST:event_loadButtonActionPerformed
 
 
@@ -1156,8 +1170,36 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
     }//GEN-LAST:event_helpButtonActionPerformed
 
     private void clearProjectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearProjectButtonActionPerformed
+        
+        projectFile=null;
         ModbusPal.clearProject();
+        setTitle(APP_STRING);
+
     }//GEN-LAST:event_clearProjectButtonActionPerformed
+
+    private void consoleToggleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_consoleToggleButtonActionPerformed
+
+        if( consoleToggleButton.isSelected()==true )
+        {
+            if( console==null )
+            {
+                try
+                {
+                    console = new AppConsole(this);
+                    console.addWindowListener(this);
+                }
+                catch (IOException ex)
+                {
+                    Logger.getLogger(ModbusPalGui.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            console.setVisible(true);
+        }
+        else
+        {
+            console.setVisible(false);
+        }
+    }//GEN-LAST:event_consoleToggleButtonActionPerformed
 
 
 
@@ -1170,6 +1212,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
     private javax.swing.JComboBox baudRateComboBox;
     private javax.swing.JButton clearProjectButton;
     private javax.swing.JComboBox comPortComboBox;
+    private javax.swing.JToggleButton consoleToggleButton;
     private javax.swing.JButton disableAllSlavesButton;
     private javax.swing.JButton enableAllSlavesButton;
     private javax.swing.JButton helpButton;
@@ -1223,6 +1266,10 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
         else if( source==scriptManagerDialog )
         {
             scriptsToggleButton.setSelected(false);
+        }
+        else if( source==console )
+        {
+            consoleToggleButton.setSelected(false);
         }
     }
 

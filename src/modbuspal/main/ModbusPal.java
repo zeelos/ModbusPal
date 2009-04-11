@@ -830,6 +830,8 @@ implements ModbusPalXML
         String name = doc.getDocumentElement().getNodeName();
         System.out.println("load "+name);
 
+        clearProject();
+        
         loadParameters(doc);
         GeneratorFactory.loadInstanciators(doc, projectFile);
         loadAutomations(doc);
@@ -1033,7 +1035,7 @@ implements ModbusPalXML
 
         // look for "ondemand" scripts section
         NodeList ondemand = doc.getElementsByTagName("ondemand");
-        for( int i=0; i<startup.getLength(); i++ )
+        for( int i=0; i<ondemand.getLength(); i++ )
         {
             loadOndemandScripts( ondemand.item(i), projectFile );
         }
@@ -1178,7 +1180,6 @@ implements ModbusPalXML
         removeAllAutomations();
         GeneratorFactory.removeAll();
         removeAllScripts();
-        return;
     }
 
 
