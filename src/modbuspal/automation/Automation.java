@@ -502,6 +502,12 @@ implements Runnable
         return suspended;
     }
 
+
+    public boolean isRunning()
+    {
+        return (thread!=null);
+    }
+
     public void disconnect()
     {
         automationStateListeners.clear();

@@ -31,7 +31,10 @@ implements WindowListener, ModbusSlaveListener
     public ModbusSlavePanel(ModbusSlave parent)
     {
         modbusSlave = parent;
+        modbusSlaveDialog = new ModbusSlaveDialog(GUITools.findFrame(this), modbusSlave);
+        modbusSlaveDialog.addWindowListener(this);
         initComponents();
+        setBackground();
     }
 
 
@@ -114,25 +117,17 @@ implements WindowListener, ModbusSlaveListener
     }// </editor-fold>//GEN-END:initComponents
 
     private void enableToggleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_enableToggleButtonActionPerformed
-        modbusSlave.changeEnabled( enableToggleButton.isSelected() );
+        modbusSlave.setEnabled( enableToggleButton.isSelected() );
     }//GEN-LAST:event_enableToggleButtonActionPerformed
 
     private void showToggleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showToggleButtonActionPerformed
         if( showToggleButton.isSelected() == true )
         {
-            if( modbusSlaveDialog == null )
-            {
-                modbusSlaveDialog = new ModbusSlaveDialog(GUITools.findFrame(this), modbusSlave);
-                modbusSlaveDialog.addWindowListener(this);
-            }
             modbusSlaveDialog.setVisible(true);
         }
         else
         {
-            if( modbusSlaveDialog != null )
-            {
-                modbusSlaveDialog.setVisible(false);
-            }
+            modbusSlaveDialog.setVisible(false);
         }
     }//GEN-LAST:event_showToggleButtonActionPerformed
 
@@ -203,6 +198,25 @@ implements WindowListener, ModbusSlaveListener
         if(slave==modbusSlave)
         {
             enableToggleButton.setSelected(enabled);
+            setBackground(enabled);
+        }
+    }
+
+
+    private void setBackground()
+    {
+        setBackground( modbusSlave.isEnabled() );
+    }
+
+    private void setBackground(boolean enabled)
+    {
+        if( enabled )
+        {
+            setBackground( javax.swing.UIManager.getDefaults().getColor("Panel.background") );
+        }
+        else
+        {
+            setBackground( javax.swing.UIManager.getDefaults().getColor("List.background") );
         }
     }
 

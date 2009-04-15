@@ -301,14 +301,9 @@ implements ModbusPalXML, ModbusConst
         out.write( closeTag.getBytes() );
     }
 
-    void changeEnabled(boolean b)
-    {
-        enabled = b;
-    }
-
     public void setEnabled(boolean b)
     {
-        changeEnabled(b);
+        enabled = b;
         notifyModbusSlaveEnabled(enabled);
     }
 

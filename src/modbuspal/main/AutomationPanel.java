@@ -38,28 +38,44 @@ implements WindowListener, AutomationStateListener
         mainGui = gui;
         automation = parent;
         automation.addAutomationStateListener(this);
+        automationEditor = new AutomationEditor(mainGui,automation);
+        automationEditor.addWindowListener(this);
         initComponents();
+        setBackground();
     }
 
 
     void dispose()
     {
-       if( automationEditor != null )
-       {
-            automationEditor.removeWindowListener(this);
-            automationEditor.setVisible(false);
-            automationEditor.dispose();
-            automationEditor = null;
-       }
-
-       automation.removeAutomationStateListener(this);
+        automationEditor.removeWindowListener(this);
+        automationEditor.setVisible(false);
+        automationEditor.dispose();
+        automation.removeAutomationStateListener(this);
     }
+
 
     Automation getAutomation()
     {
         return automation;
     }
 
+
+    private void setBackground()
+    {
+        setBackground( automation.isRunning() );
+    }
+
+    private void setBackground(boolean running)
+    {
+        if( running )
+        {
+            setBackground( javax.swing.UIManager.getDefaults().getColor("Panel.background") );
+        }
+        else
+        {
+            setBackground( javax.swing.UIManager.getDefaults().getColor("List.background") );
+        }
+    }
 
     /** This method is called from within the constructor to
      * initialize the form.
@@ -113,22 +129,13 @@ implements WindowListener, AutomationStateListener
     }// </editor-fold>//GEN-END:initComponents
 
     private void showToggleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showToggleButtonActionPerformed
-
         if( showToggleButton.isSelected() == true )
         {
-            if( automationEditor == null )
-            {
-                automationEditor = new AutomationEditor(mainGui,automation);
-                automationEditor.addWindowListener(this);
-            }
             automationEditor.setVisible(true);
         }
         else
         {
-            if( automationEditor != null )
-            {
-                automationEditor.setVisible(false);
-            }
+            automationEditor.setVisible(false);
         }
     }//GEN-LAST:event_showToggleButtonActionPerformed
 
@@ -210,6 +217,7 @@ implements WindowListener, AutomationStateListener
     {
         playToggleButton.setText("Start");
         playToggleButton.setSelected(false);
+        setBackground(false);
     }
 
     @Override
@@ -217,7 +225,7 @@ implements WindowListener, AutomationStateListener
     {
         playToggleButton.setText("Stop");
         playToggleButton.setSelected(true);
-
+        setBackground(true);
     }
 
     @Override
