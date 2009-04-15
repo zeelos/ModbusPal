@@ -280,16 +280,17 @@ implements AutomationStateListener, AutomationValueListener, InstanciatorListene
         playToggleButton = new javax.swing.JToggleButton();
         stopButton = new javax.swing.JButton();
         loopToggleButton = new javax.swing.JToggleButton();
-        valueTextField = new javax.swing.JTextField();
-        stepTextField = new javax.swing.JTextField();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-        initTextField = new javax.swing.JTextField();
         addGenPanel = new javax.swing.JPanel();
         genButtonsPanel = new javax.swing.JPanel();
         removeInstanciatorButton = new javax.swing.JButton();
         generatorsPanel = new javax.swing.JPanel();
+        valuePanel = new javax.swing.JPanel();
+        valueTextField = new javax.swing.JTextField();
+        settingsPanel = new javax.swing.JPanel();
+        jLabel3 = new javax.swing.JLabel();
+        initTextField = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
+        stepTextField = new javax.swing.JTextField();
         importExportPanel = new javax.swing.JPanel();
         importButton = new javax.swing.JButton();
         exportButton = new javax.swing.JButton();
@@ -318,8 +319,7 @@ implements AutomationStateListener, AutomationValueListener, InstanciatorListene
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.gridheight = 2;
+        gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
         controlsPanel.add(playToggleButton, gridBagConstraints);
 
@@ -331,8 +331,7 @@ implements AutomationStateListener, AutomationValueListener, InstanciatorListene
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.gridheight = 2;
+        gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
         controlsPanel.add(stopButton, gridBagConstraints);
 
@@ -345,64 +344,14 @@ implements AutomationStateListener, AutomationValueListener, InstanciatorListene
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.gridheight = 2;
+        gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
         controlsPanel.add(loopToggleButton, gridBagConstraints);
 
-        valueTextField.setEditable(false);
-        valueTextField.setText("000.0000");
-        valueTextField.setPreferredSize(new java.awt.Dimension(60, 20));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 3;
-        gridBagConstraints.gridy = 3;
-        controlsPanel.add(valueTextField, gridBagConstraints);
-
-        stepTextField.setText(String.valueOf(automation.getStepDelay()));
-        stepTextField.setPreferredSize(new java.awt.Dimension(60, 20));
-        stepTextField.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                stepTextFieldFocusLost(evt);
-            }
-        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        controlsPanel.add(stepTextField, gridBagConstraints);
-
-        jLabel1.setText("Value:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 3;
-        gridBagConstraints.gridy = 2;
-        controlsPanel.add(jLabel1, gridBagConstraints);
-
-        jLabel2.setText("Step:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        controlsPanel.add(jLabel2, gridBagConstraints);
-
-        jLabel3.setText("Init:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        controlsPanel.add(jLabel3, gridBagConstraints);
-
-        initTextField.setText(String.valueOf( automation.getInitialValue() ));
-        initTextField.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusLost(java.awt.event.FocusEvent evt) {
-                initTextFieldFocusLost(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        controlsPanel.add(initTextField, gridBagConstraints);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         buttonsPanel.add(controlsPanel, gridBagConstraints);
 
         addGenPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Add generators"));
@@ -428,8 +377,70 @@ implements AutomationStateListener, AutomationValueListener, InstanciatorListene
         addGenPanel.add(generatorsPanel, java.awt.BorderLayout.CENTER);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         buttonsPanel.add(addGenPanel, gridBagConstraints);
+
+        valuePanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Value"));
+
+        valueTextField.setEditable(false);
+        valueTextField.setText("000.0000");
+        valueTextField.setPreferredSize(new java.awt.Dimension(60, 20));
+        valuePanel.add(valueTextField);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
+        buttonsPanel.add(valuePanel, gridBagConstraints);
+
+        settingsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Global settings"));
+        settingsPanel.setLayout(new java.awt.GridBagLayout());
+
+        jLabel3.setText("Init:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        settingsPanel.add(jLabel3, gridBagConstraints);
+
+        initTextField.setText(String.valueOf( automation.getInitialValue() ));
+        initTextField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                initTextFieldFocusLost(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        settingsPanel.add(initTextField, gridBagConstraints);
+
+        jLabel2.setText("Step:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        settingsPanel.add(jLabel2, gridBagConstraints);
+
+        stepTextField.setText(String.valueOf(automation.getStepDelay()));
+        stepTextField.setPreferredSize(new java.awt.Dimension(60, 20));
+        stepTextField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                stepTextFieldFocusLost(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        settingsPanel.add(stepTextField, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
+        buttonsPanel.add(settingsPanel, gridBagConstraints);
 
         getContentPane().add(buttonsPanel, java.awt.BorderLayout.SOUTH);
 
@@ -600,14 +611,15 @@ implements AutomationStateListener, AutomationValueListener, InstanciatorListene
     private javax.swing.JButton importButton;
     private javax.swing.JPanel importExportPanel;
     private javax.swing.JTextField initTextField;
-    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JToggleButton loopToggleButton;
     private javax.swing.JToggleButton playToggleButton;
     private javax.swing.JButton removeInstanciatorButton;
+    private javax.swing.JPanel settingsPanel;
     private javax.swing.JTextField stepTextField;
     private javax.swing.JButton stopButton;
+    private javax.swing.JPanel valuePanel;
     private javax.swing.JTextField valueTextField;
     // End of variables declaration//GEN-END:variables
 
@@ -633,8 +645,8 @@ implements AutomationStateListener, AutomationValueListener, InstanciatorListene
             playToggleButton.setText("Play");
             playToggleButton.setSelected(false);
 
-            // enable any input in "Controls" list
-            Component inputs[] = controlsPanel.getComponents();
+            // enable any input in "Settings" list
+            Component inputs[] = settingsPanel.getComponents();
             for(int i=0; i<inputs.length; i++)
             {
                 if( inputs[i] instanceof JTextField )
@@ -669,8 +681,8 @@ implements AutomationStateListener, AutomationValueListener, InstanciatorListene
         playToggleButton.setSelected(true);
         playToggleButton.setText("Pause");
 
-        // disable any input in "Controls" list
-        Component inputs[] = controlsPanel.getComponents();
+        // disable any input in "Global settings" list
+        Component inputs[] = settingsPanel.getComponents();
         for(int i=0; i<inputs.length; i++)
         {
             if( inputs[i] instanceof JTextField )
