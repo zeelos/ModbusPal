@@ -391,7 +391,7 @@ implements AutomationStateListener, AutomationValueListener, InstanciatorListene
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         buttonsPanel.add(valuePanel, gridBagConstraints);
 
         settingsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Global settings"));
@@ -439,7 +439,7 @@ implements AutomationStateListener, AutomationValueListener, InstanciatorListene
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         buttonsPanel.add(settingsPanel, gridBagConstraints);
 
         getContentPane().add(buttonsPanel, java.awt.BorderLayout.SOUTH);
