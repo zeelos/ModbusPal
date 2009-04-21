@@ -12,7 +12,7 @@ and open the template in the editor.
 
 <!-- TODO define your own vocabulary/syntax. Example follows:  -->
 
-<!ELEMENT modbuspal_project (idgen,links,instanciators?,automation*,slave*,startup?,ondemand?)>
+<!ELEMENT modbuspal_project (idgen,links,generators?,bindings?,automation*,slave*,startup?,ondemand?)>
 
 <!ELEMENT idgen EMPTY>
 <!ATTLIST idgen value CDATA #REQUIRED>
@@ -32,7 +32,9 @@ and open the template in the editor.
 <!ELEMENT tcpip EMPTY>
 <!ATTLIST tcpip port CDATA #REQUIRED>
 
-<!ELEMENT instanciators (script*)>
+<!ELEMENT generators (script*)>
+
+<!ELEMENT bindings (script*)>
 
 <!ELEMENT automation (generator*)>
 <!ATTLIST automation name CDATA #REQUIRED>

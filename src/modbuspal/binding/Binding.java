@@ -7,7 +7,6 @@ package modbuspal.binding;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Vector;
 import modbuspal.automation.Automation;
 import modbuspal.automation.AutomationValueListener;
 import modbuspal.slave.ModbusRegisters;
@@ -19,30 +18,6 @@ import modbuspal.slave.ModbusRegisters;
 public abstract class Binding
 implements AutomationValueListener
 {
-
-
-
-    public static Class getClass(String className)
-    {
-        Class[] list = getClassList();
-        for(int i=0; i<list.length; i++)
-        {
-            if( list[i].getSimpleName().compareTo(className)==0 )
-            {
-                return list[i];
-            }
-        }
-        return null;
-    }
-    
-    public static Class[] getClassList()
-    {
-        Vector<Class> list = new Vector<Class>();
-        list.add( Binding_SINT32.class );
-        list.add( Binding_FLOAT32.class );
-        Class[] array = new Class[0];
-        return list.toArray(array);
-    }
 
     protected Automation automation;
     protected int order;

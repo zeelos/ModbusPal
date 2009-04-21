@@ -20,6 +20,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import modbuspal.automation.Automation;
 import modbuspal.generator.GeneratorFactory;
 import modbuspal.binding.Binding;
+import modbuspal.binding.BindingFactory;
 import modbuspal.script.ScriptListener;
 import modbuspal.script.ScriptRunner;
 import modbuspal.slave.ModbusSlave;
@@ -686,7 +687,7 @@ implements ModbusPalXML
         out.write( openTag.getBytes() );
 
         saveParameters(out);
-        GeneratorFactory.saveInstanciators(out, projectFile);
+        GeneratorFactory.getFactory().save(out, projectFile);
         saveAutomations(out);
         saveSlaves(out);
         saveScripts(out, projectFile);
@@ -833,7 +834,7 @@ implements ModbusPalXML
         clearProject();
         
         loadParameters(doc);
-        GeneratorFactory.loadInstanciators(doc, projectFile);
+        GeneratorFactory.getFactory().load(doc, projectFile);
         loadAutomations(doc);
         loadSlaves(doc);
         loadBindings(doc);
@@ -965,7 +966,7 @@ implements ModbusPalXML
         // extract the "class" attribute
         Node classNode = attributes.getNamedItem("class");
         String className = classNode.getNodeValue();
-        Class bindingClass = Binding.getClass(className);
+        //Class bindingClass = Binding.getClass(className);
 
         // extract the "order" attribute.
         Node orderNode = attributes.getNamedItem("order");
@@ -983,7 +984,7 @@ implements ModbusPalXML
         int slaveId = Integer.parseInt(slaveAddress);
 
         // Instanciate the binding:
-        Binding binding = (Binding)bindingClass.newInstance();
+        Binding binding = BindingFactory.newBinding(className);
         binding.setup(automation, wordOrder);
 
         // bind the register and the automation
@@ -1178,7 +1179,7 @@ implements ModbusPalXML
         resetParameters();
         removeAllModbusSlaves();
         removeAllAutomations();
-        GeneratorFactory.removeAll();
+        GeneratorFactory.getFactory().clear();
         removeAllScripts();
     }
 

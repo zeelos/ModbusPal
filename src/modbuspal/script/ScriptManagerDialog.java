@@ -20,9 +20,9 @@ import java.util.prefs.Preferences;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import modbuspal.generator.Instanciator;
+import modbuspal.instanciator.Instanciator;
 import modbuspal.generator.GeneratorFactory;
-import modbuspal.generator.InstanciatorListener;
+import modbuspal.instanciator.InstanciatorListener;
 import modbuspal.main.ErrorMessage;
 import modbuspal.main.ListLayout;
 import modbuspal.main.ModbusPal;
@@ -243,7 +243,7 @@ implements InstanciatorListener, ScriptListener
         if( gen.newInstance() != null )
         {
             // add the handler to the factory:
-            GeneratorFactory.add(gen);
+            GeneratorFactory.getFactory().add(gen);
         }
         else
         {

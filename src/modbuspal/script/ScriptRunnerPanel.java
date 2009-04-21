@@ -11,7 +11,7 @@
 
 package modbuspal.script;
 
-import modbuspal.generator.Instanciator;
+import modbuspal.instanciator.Instanciator;
 import modbuspal.generator.GeneratorFactory;
 import modbuspal.main.ModbusPal;
 
@@ -79,7 +79,7 @@ extends javax.swing.JPanel
     private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
         // add the handler to the factory:
         ModbusPal.removeAllGenerators(runner.getClassName());
-        GeneratorFactory.remove(runner);
+        GeneratorFactory.getFactory().remove(runner);
     }//GEN-LAST:event_deleteButtonActionPerformed
 
     private void executeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_executeButtonActionPerformed

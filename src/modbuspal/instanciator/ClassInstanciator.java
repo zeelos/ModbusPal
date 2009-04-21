@@ -3,9 +3,8 @@
  * and open the template in the editor.
  */
 
-package modbuspal.generator;
+package modbuspal.instanciator;
 
-import modbuspal.automation.*;
 import java.io.File;
 import java.io.OutputStream;
 import java.util.logging.Level;
@@ -15,12 +14,11 @@ import java.util.logging.Logger;
 /**
  * The ClassInstanciator is an implementation of the
  * "Instanciator" interface which is designed to
- * instanciate the predefined generators, like LinearGenerator
- * and RandomGenerator.
+ * instanciate the built-in classes.
  * @author nnovic
  */
-class ClassInstanciator
-implements Instanciator
+public class ClassInstanciator<T>
+implements Instanciator<T>
 {
     private Class clazz;
 
@@ -28,7 +26,7 @@ implements Instanciator
      * Constructor a the ClassInstanciator.
      * @param cl the class definition of the generator that will be instanciated.
      */
-    ClassInstanciator(Class cl)
+    public ClassInstanciator(Class cl)
     {
         clazz = cl;
     }
@@ -40,19 +38,21 @@ implements Instanciator
     }
 
     @Override
-    public Generator newInstance()
+    public T newInstance()
     {
         try
         {
-            return (Generator) clazz.newInstance();
+            return (T)clazz.newInstance();
         }
         catch (Exception ex)
         {
-            Logger.getLogger(GeneratorFactory.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ClassInstanciator.class.getName()).log(Level.SEVERE, null, ex);
             return null;
         }
     }
 
+
+    @Override
     public void save(OutputStream out, File projectFile)
     {
         throw new UnsupportedOperationException("Not supported yet.");

@@ -5,7 +5,7 @@
 
 package modbuspal.script;
 
-import modbuspal.generator.Instanciator;
+import modbuspal.instanciator.Instanciator;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import modbuspal.automation.*;

@@ -252,7 +252,13 @@ implements Runnable
             if( node.getNodeName().compareTo("generator")==0 )
             {
                 String className = XMLTools.getAttribute("class", node);
-                Generator gen = GeneratorFactory.newInstance( className );
+                Generator gen = GeneratorFactory.newGenerator( className );
+
+                if( gen==null )
+                {
+                    throw new InstantiationException("Generator "+className+" cannot be instanciated");
+                }
+                
                 gen.load(node);
                 addGenerator(gen);
             }

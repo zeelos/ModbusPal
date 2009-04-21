@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package modbuspal.generator;
+package modbuspal.binding;
 
 import modbuspal.instanciator.Instanciator;
 import java.io.File;
@@ -19,31 +19,31 @@ import org.w3c.dom.NodeList;
  *
  * @author nnovic
  */
-public class GeneratorFactory
-extends InstanciatorManager<Generator>
+public class BindingFactory
+extends InstanciatorManager<Binding>
 {
-    private static GeneratorFactory factory = new GeneratorFactory();
+    private static BindingFactory factory = new BindingFactory();
 
 
-    public static GeneratorFactory getFactory()
+    public static BindingFactory getFactory()
     {
         return factory;
     }
 
     
-    public static Generator newGenerator(String classname)
+    public static Binding newBinding(String classname)
     throws InstantiationException, IllegalAccessException
     {
         return factory.newInstance(classname);
     }
 
     /**
-     * List of predefined generators:
+     * List of predefined bindings:
      */
     private final ClassInstanciator classInstanciators[] =
     {
-        new ClassInstanciator<Generator>(modbuspal.generator.linear.LinearGenerator.class),
-        new ClassInstanciator<Generator>(modbuspal.generator.random.RandomGenerator.class)
+        new ClassInstanciator<Binding>(modbuspal.binding.Binding_SINT32.class),
+        new ClassInstanciator<Binding>(modbuspal.binding.Binding_FLOAT32.class)
     };
 
 
@@ -51,7 +51,7 @@ extends InstanciatorManager<Generator>
     @Override
     public void load(Document doc, File projectFile)
     {
-        NodeList list = doc.getElementsByTagName("generators");
+        NodeList list = doc.getElementsByTagName("bindings");
         loadInstanciators(list,projectFile);
     }
 
@@ -66,7 +66,7 @@ extends InstanciatorManager<Generator>
             return;
         }
         
-        String openTag = "<generators>\r\n";
+        String openTag = "<bindings>\r\n";
         out.write( openTag.getBytes() );
 
         for( Instanciator gi:scriptedInstanciators)
@@ -74,7 +74,7 @@ extends InstanciatorManager<Generator>
             gi.save(out,projectFile);
         }
 
-        String closeTag = "</generators>\r\n";
+        String closeTag = "</bindings>\r\n";
         out.write( closeTag.getBytes() );
     }
 
@@ -85,7 +85,7 @@ extends InstanciatorManager<Generator>
     }
 
     @Override
-    protected Instanciator<Generator> getClassInstanciator(int index)
+    protected Instanciator<Binding> getClassInstanciator(int index)
     {
         return classInstanciators[index];
     }

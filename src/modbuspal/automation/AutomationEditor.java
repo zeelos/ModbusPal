@@ -17,8 +17,8 @@ package modbuspal.automation;
 
 import modbuspal.generator.Generator;
 import modbuspal.generator.GeneratorFactory;
-import modbuspal.generator.Instanciator;
-import modbuspal.generator.InstanciatorListener;
+import modbuspal.instanciator.Instanciator;
+import modbuspal.instanciator.InstanciatorListener;
 import modbuspal.generator.GeneratorRenderer;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -72,7 +72,7 @@ implements AutomationStateListener, AutomationValueListener, InstanciatorListene
         pack();
         automation.addAutomationStateListener(this);
         automation.addAutomationValueListener(this);
-        GeneratorFactory.addInstanciatorListener(this);
+        GeneratorFactory.getFactory().addInstanciatorListener(this);
     }
 
     @Override
@@ -81,7 +81,7 @@ implements AutomationStateListener, AutomationValueListener, InstanciatorListene
         super.dispose();
         automation.removeAutomationStateListener(this);
         automation.removeAutomationValueListener(this);
-        GeneratorFactory.removeInstanciatorListener(this);
+        GeneratorFactory.getFactory().removeInstanciatorListener(this);
     }
 
     
@@ -94,7 +94,7 @@ implements AutomationStateListener, AutomationValueListener, InstanciatorListene
             {
                 try 
                 {
-                    Generator gen = GeneratorFactory.newInstance(className);
+                    Generator gen = GeneratorFactory.newGenerator(className);
                     automation.addGenerator(gen);
                 }
                 catch (InstantiationException ex)
@@ -136,7 +136,7 @@ implements AutomationStateListener, AutomationValueListener, InstanciatorListene
     private void addGeneratorButtons()
     {
         // get the list of generators:
-        String list[] = GeneratorFactory.getList();
+        String list[] = GeneratorFactory.getFactory().getList();
 
         // for each generator, add a button;
         for( int i=0; i<list.length; i++ )

@@ -3,8 +3,7 @@
  * and open the template in the editor.
  */
 
-package modbuspal.generator;
-
+package modbuspal.instanciator;
 
 /**
  *

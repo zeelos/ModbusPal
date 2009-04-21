@@ -16,7 +16,7 @@ import modbuspal.automation.*;
 import javax.swing.ComboBoxModel;
 import javax.swing.ListModel;
 import javax.swing.event.ListDataListener;
-import modbuspal.binding.Binding;
+import modbuspal.binding.BindingFactory;
 import modbuspal.main.ModbusPal;
 
 /**
@@ -59,10 +59,10 @@ extends javax.swing.JDialog
     class BindingList
     implements ComboBoxModel
     {
-        private Class[] bindings;
+        private String[] bindings;
         private String selected;
 
-        public BindingList(Class[] list) {
+        public BindingList(String[] list) {
             bindings = list;
         }
 
@@ -79,7 +79,7 @@ extends javax.swing.JDialog
         }
 
         public Object getElementAt(int index) {
-            return bindings[index].getSimpleName();
+            return bindings[index];
         }
 
         public void addListDataListener(ListDataListener l) {
@@ -88,10 +88,6 @@ extends javax.swing.JDialog
 
         public void removeListDataListener(ListDataListener l) {
             return;
-        }
-
-        public Class getClass(int index) {
-            return bindings[index];
         }
     }
 
@@ -103,16 +99,15 @@ extends javax.swing.JDialog
     {
         super(frame, true);
         automations = new AutomationList( ModbusPal.getAutomations() );
-        bindings = new BindingList( Binding.getClassList() );
+        bindings = new BindingList( BindingFactory.getFactory().getList() );
         initComponents();
         orderComboBox.setEnabled(allowOrderSelection);
         bindingsComboBox.setSelectedIndex(0);
     }
 
-    public Class getSelectedClass()
+    public String getSelectedClass()
     {
-        int index = bindingsComboBox.getSelectedIndex();
-        return bindings.getClass(index);
+        return (String)bindingsComboBox.getSelectedItem();
     }
 
     public Automation getSelectedAutomation()

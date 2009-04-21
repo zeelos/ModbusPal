@@ -15,6 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import modbuspal.automation.Automation;
 import modbuspal.binding.Binding;
+import modbuspal.binding.BindingFactory;
 import modbuspal.main.GUITools;
 import modbuspal.main.ModbusConst;
 
@@ -164,12 +165,12 @@ implements ModbusConst
             // retrieve the parameters of the binding :
             int selectedAddress = ((ModbusRegistersTable)registersTable).getSelectedAddress();
             int selectedOrder = dialog.getSelectedOrder();
-            Class selectedClass = dialog.getSelectedClass();
+            String selectedClass = dialog.getSelectedClass();
 
             try
             {
                 // instanciate the binding:
-                Binding binding = (Binding) selectedClass.newInstance();
+                Binding binding = BindingFactory.newBinding(selectedClass);
                 binding.setup(source, selectedOrder);
 
                 // do the binding:
@@ -197,7 +198,7 @@ implements ModbusConst
             }
 
             // get the selected binding class
-            Class selectedClass = dialog.getSelectedClass();
+            String selectedClass = dialog.getSelectedClass();
 
             // get the selected registers rows
             int selectedAddresses[] = ((ModbusRegistersTable)registersTable).getSelectedAddresses();
@@ -208,7 +209,7 @@ implements ModbusConst
                 try
                 {
                     // instanciate the binding:
-                    Binding binding = (Binding) selectedClass.newInstance();
+                    Binding binding = BindingFactory.newBinding(selectedClass);
                     binding.setup(source, i);
                     // do the binding:
                     registers.bind(selectedAddresses[i],binding);

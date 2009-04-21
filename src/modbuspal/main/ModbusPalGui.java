@@ -25,7 +25,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import javax.xml.parsers.ParserConfigurationException;
 import modbuspal.automation.Automation;
 import modbuspal.generator.GeneratorFactory;
 import modbuspal.link.*;
@@ -34,7 +33,6 @@ import modbuspal.master.ModbusMasterDialog;
 import modbuspal.script.ScriptManagerDialog;
 import modbuspal.slave.ModbusSlave;
 import org.w3c.dom.*;
-import org.xml.sax.SAXException;
 
 /**
  *
@@ -356,7 +354,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
     {
         scriptManagerDialog = new ScriptManagerDialog(this);
         scriptManagerDialog.addWindowListener(this);
-        GeneratorFactory.addInstanciatorListener(scriptManagerDialog);
+        GeneratorFactory.getFactory().addInstanciatorListener(scriptManagerDialog);
         ModbusPal.addScriptListener(scriptManagerDialog);
 
         if( verifyPython() == false )
