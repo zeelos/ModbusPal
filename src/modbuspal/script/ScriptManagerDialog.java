@@ -20,6 +20,9 @@ import java.util.prefs.Preferences;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import modbuspal.binding.Binding;
+import modbuspal.binding.BindingFactory;
+import modbuspal.generator.Generator;
 import modbuspal.instanciator.Instanciator;
 import modbuspal.generator.GeneratorFactory;
 import modbuspal.instanciator.InstanciatorListener;
@@ -38,6 +41,7 @@ implements InstanciatorListener, ScriptListener
 {
     private static final String REGISTRY_KEY = ModbusPal.BASE_REGISTRY_KEY + "/instanciators";
     public static final int TAB_GENERATORS = 2;
+    public static final int TAB_BINDINGS = 3;
     
     /** Creates new form ScriptManagerDialog */
     public ScriptManagerDialog(java.awt.Frame parent)
@@ -76,6 +80,11 @@ implements InstanciatorListener, ScriptListener
         generatorInstanciatorsList = new javax.swing.JPanel();
         generatorInstanciatorButtons = new javax.swing.JPanel();
         addGeneratorInstanciatorButton = new javax.swing.JButton();
+        bindingInstanciatorsTab = new javax.swing.JPanel();
+        bindingInstanciatorsScrollPane = new javax.swing.JScrollPane();
+        bindingInstanciatorsList = new javax.swing.JPanel();
+        bindingInstanciatorButtons = new javax.swing.JPanel();
+        addBindingInstanciatorButton = new javax.swing.JButton();
         statusPanel = new javax.swing.JPanel();
         statusLabel = new javax.swing.JLabel();
 
@@ -151,6 +160,29 @@ implements InstanciatorListener, ScriptListener
         generatorInstanciatorsTab.add(generatorInstanciatorButtons, java.awt.BorderLayout.PAGE_START);
 
         jTabbedPane1.addTab("Generator scripts", generatorInstanciatorsTab);
+
+        bindingInstanciatorsTab.setLayout(new java.awt.BorderLayout());
+
+        bindingInstanciatorsList.setBackground(javax.swing.UIManager.getDefaults().getColor("List.background"));
+        bindingInstanciatorsList.setLayout(null);
+        generatorInstanciatorsList.setLayout( new ListLayout() );
+        bindingInstanciatorsScrollPane.setViewportView(bindingInstanciatorsList);
+
+        bindingInstanciatorsTab.add(bindingInstanciatorsScrollPane, java.awt.BorderLayout.CENTER);
+
+        bindingInstanciatorButtons.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+
+        addBindingInstanciatorButton.setText("Add");
+        addBindingInstanciatorButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addBindingInstanciatorButtonActionPerformed(evt);
+            }
+        });
+        bindingInstanciatorButtons.add(addBindingInstanciatorButton);
+
+        bindingInstanciatorsTab.add(bindingInstanciatorButtons, java.awt.BorderLayout.PAGE_START);
+
+        jTabbedPane1.addTab("Binding scripts", bindingInstanciatorsTab);
 
         getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
 
@@ -237,13 +269,13 @@ implements InstanciatorListener, ScriptListener
         }
 
         // newInstance a scripted generator handler
-        ScriptRunner gen = ScriptRunner.create(scriptFile);
+        ScriptRunner sr = ScriptRunner.create(scriptFile);
 
         // test if newInstance would work:
-        if( gen.newInstance() != null )
+        if( sr.newGenerator() != null )
         {
             // add the handler to the factory:
-            GeneratorFactory.getFactory().add(gen);
+            GeneratorFactory.getFactory().add(sr);
         }
         else
         {
@@ -271,10 +303,44 @@ implements InstanciatorListener, ScriptListener
 
 }//GEN-LAST:event_addOndemandScriptButtonActionPerformed
 
+    private void addBindingInstanciatorButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addBindingInstanciatorButtonActionPerformed
+
+        // get the selected file, in any.
+        File scriptFile = chooseScriptFile(this);
+        if( scriptFile==null )
+        {
+            setStatus("Cancelled by user.");
+            return;
+        }
+
+        // newInstance a scripted generator handler
+        ScriptRunner sr = ScriptRunner.create(scriptFile);
+
+        // test if newInstance would work:
+        if( sr.newBinding() != null )
+        {
+            // add the handler to the factory:
+            BindingFactory.getFactory().add(sr);
+        }
+        else
+        {
+            ErrorMessage dialog = new ErrorMessage(this,"Close");
+            dialog.setTitle("Script error");
+            dialog.append("The script probably contains errors and cannot be executed properly.");
+            dialog.setVisible(true);
+        }
+
+}//GEN-LAST:event_addBindingInstanciatorButtonActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton addBindingInstanciatorButton;
     private javax.swing.JButton addGeneratorInstanciatorButton;
     private javax.swing.JButton addOndemandScriptButton;
     private javax.swing.JButton addStartupScriptButton;
+    private javax.swing.JPanel bindingInstanciatorButtons;
+    private javax.swing.JPanel bindingInstanciatorsList;
+    private javax.swing.JScrollPane bindingInstanciatorsScrollPane;
+    private javax.swing.JPanel bindingInstanciatorsTab;
     private javax.swing.JPanel generatorInstanciatorButtons;
     private javax.swing.JPanel generatorInstanciatorsList;
     private javax.swing.JScrollPane generatorInstanciatorsScrollPane;

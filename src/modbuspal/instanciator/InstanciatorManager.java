@@ -14,6 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import modbuspal.main.FileTools;
 import modbuspal.main.XMLTools;
+import modbuspal.script.PythonRunner;
 import modbuspal.script.ScriptRunner;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -24,14 +25,18 @@ import org.w3c.dom.NodeList;
  *
  * @author nnovic
  */
-public abstract class InstanciatorManager<T>
+public abstract class InstanciatorManager
 {
+    /**
+     * List of listeners that are interested in receiving events from this
+     * manager.
+     */
     protected ArrayList<InstanciatorListener> listeners = new ArrayList<InstanciatorListener>();
 
     /**
      * List of generators that are dynimacally inserted by the user.
      */
-    protected ArrayList<Instanciator<T>> scriptedInstanciators = new ArrayList<Instanciator<T>>();
+    protected ArrayList<Instanciator> scriptedInstanciators = new ArrayList<Instanciator>();
 
 
     public abstract void load(Document doc, File projectFile);
@@ -148,26 +153,9 @@ public abstract class InstanciatorManager<T>
     }
 
 
-    
 
-    /**
-     * Creates a generator instance by specifying the name of the generator's class.
-     * @param className
-     * @return
-     * @throws java.lang.InstantiationException
-     * @throws java.lang.IllegalAccessException
-     */
-    public T newInstance(String className)
-    throws InstantiationException, IllegalAccessException
-    {
-        Instanciator<T> gi = findInstanciator(className);
-        if( gi!=null )
-        {
-            T obj = gi.newInstance();
-            return obj;
-        }
-        return null;
-    }
+ 
+
 
 
 
@@ -178,7 +166,7 @@ public abstract class InstanciatorManager<T>
      */
     public boolean exists(String className)
     {
-        return ( findInstanciator(className)!=null );
+        return ( getInstanciator(className)!=null );
     }
 
 
@@ -223,7 +211,7 @@ public abstract class InstanciatorManager<T>
 
     public void clear()
     {
-        Instanciator<T> list[] = new Instanciator[0];
+        Instanciator list[] = new Instanciator[0];
         list=scriptedInstanciators.toArray(list);
         for( int i=0; i<list.length; i++ )
         {
@@ -249,10 +237,10 @@ public abstract class InstanciatorManager<T>
 
     protected abstract int getClassInstanciatorsCount();
 
-    protected abstract Instanciator<T> getClassInstanciator(int index);
+    protected abstract Instanciator getClassInstanciator(int index);
 
 
-    private Instanciator<T> findInstanciator(String className)
+    public Instanciator getInstanciator(String className)
     {
         // look into the list of predefined classes
         for( int i=0; i<getClassInstanciatorsCount(); i++ )

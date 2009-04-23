@@ -15,6 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import modbuspal.automation.Automation;
 import modbuspal.binding.Binding;
+import modbuspal.binding.BindingEditor;
 import modbuspal.binding.BindingFactory;
 import modbuspal.main.GUITools;
 import modbuspal.main.ModbusConst;
@@ -112,6 +113,7 @@ implements ModbusConst
         add(jPanel2, java.awt.BorderLayout.NORTH);
 
         registersTable.setAutoCreateRowSorter(true);
+        registersTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
         jScrollPane1.setViewportView(registersTable);
 
         add(jScrollPane1, java.awt.BorderLayout.CENTER);
@@ -150,7 +152,7 @@ implements ModbusConst
         else if( rowCount == 1)
         {
             // display the bind dialog
-            AutomationBindingDialog dialog = new AutomationBindingDialog(GUITools.findFrame(this), true);
+            BindingEditor dialog = new BindingEditor(GUITools.findFrame(this), true);
             slaveDialog.setStatus("Binding...");
             dialog.setVisible(true);
 
@@ -186,7 +188,7 @@ implements ModbusConst
         else
         {
             // display the bind dialog
-            AutomationBindingDialog dialog = new AutomationBindingDialog(GUITools.findFrame(this), false);
+            BindingEditor dialog = new BindingEditor(GUITools.findFrame(this), false);
             slaveDialog.setStatus("Binding...");
             dialog.setVisible(true);
 

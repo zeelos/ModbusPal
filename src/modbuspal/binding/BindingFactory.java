@@ -20,7 +20,7 @@ import org.w3c.dom.NodeList;
  * @author nnovic
  */
 public class BindingFactory
-extends InstanciatorManager<Binding>
+extends InstanciatorManager
 {
     private static BindingFactory factory = new BindingFactory();
 
@@ -34,7 +34,8 @@ extends InstanciatorManager<Binding>
     public static Binding newBinding(String classname)
     throws InstantiationException, IllegalAccessException
     {
-        return factory.newInstance(classname);
+        Instanciator is = factory.getInstanciator(classname);
+        return is.newBinding();
     }
 
     /**
@@ -42,8 +43,8 @@ extends InstanciatorManager<Binding>
      */
     private final ClassInstanciator classInstanciators[] =
     {
-        new ClassInstanciator<Binding>(modbuspal.binding.Binding_SINT32.class),
-        new ClassInstanciator<Binding>(modbuspal.binding.Binding_FLOAT32.class)
+        new ClassInstanciator(modbuspal.binding.Binding_SINT32.class),
+        new ClassInstanciator(modbuspal.binding.Binding_FLOAT32.class)
     };
 
 
@@ -85,9 +86,8 @@ extends InstanciatorManager<Binding>
     }
 
     @Override
-    protected Instanciator<Binding> getClassInstanciator(int index)
+    protected Instanciator getClassInstanciator(int index)
     {
         return classInstanciators[index];
     }
-
 }

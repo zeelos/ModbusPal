@@ -5,10 +5,9 @@
 
 package modbuspal.script;
 
+import modbuspal.script.PythonRunner;
 import modbuspal.instanciator.Instanciator;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import modbuspal.automation.*;
 import java.io.File;
 import java.io.OutputStream;
 import modbuspal.main.FileTools;
@@ -21,13 +20,6 @@ public abstract class ScriptRunner
 implements Instanciator
 {
 
-    /**
-     * creates an appropriate script runner for the specified file.
-     * @param scriptFile
-     * @return
-     * @throws java.io.FileNotFoundException
-     * @throws java.io.IOException
-     */
     public static ScriptRunner create(File scriptFile)
     {
         String extension = FileTools.getExtension(scriptFile);
@@ -45,7 +37,6 @@ implements Instanciator
     }
 
 
-    
     protected File scriptFile = null;
 
     

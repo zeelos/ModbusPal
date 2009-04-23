@@ -21,6 +21,10 @@ extends Generator
 
     }
 
+    /**
+     * the script should override this method and put
+     * its initialization commands in here.
+     */
     public void init()
     {
         return;

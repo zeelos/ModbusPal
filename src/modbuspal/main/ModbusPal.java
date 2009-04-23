@@ -688,6 +688,7 @@ implements ModbusPalXML
 
         saveParameters(out);
         GeneratorFactory.getFactory().save(out, projectFile);
+        BindingFactory.getFactory().save(out, projectFile);
         saveAutomations(out);
         saveSlaves(out);
         saveScripts(out, projectFile);
@@ -835,6 +836,7 @@ implements ModbusPalXML
         
         loadParameters(doc);
         GeneratorFactory.getFactory().load(doc, projectFile);
+        BindingFactory.getFactory().load(doc, projectFile);
         loadAutomations(doc);
         loadSlaves(doc);
         loadBindings(doc);
@@ -1180,6 +1182,7 @@ implements ModbusPalXML
         removeAllModbusSlaves();
         removeAllAutomations();
         GeneratorFactory.getFactory().clear();
+        BindingFactory.getFactory().clear();
         removeAllScripts();
     }
 

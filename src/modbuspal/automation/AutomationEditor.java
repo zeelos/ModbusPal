@@ -595,7 +595,7 @@ implements AutomationStateListener, AutomationValueListener, InstanciatorListene
     private void removeInstanciatorButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeInstanciatorButtonActionPerformed
 
         // ask script manager to appear, with the "generators" tab selected
-        mainGui.showScriptManagerDialog(ScriptManagerDialog.TAB_GENERATORS);
+        ModbusPalGui.showScriptManagerDialog(ScriptManagerDialog.TAB_GENERATORS);
 
     }//GEN-LAST:event_removeInstanciatorButtonActionPerformed
 

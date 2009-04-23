@@ -18,6 +18,13 @@ extends Binding
         super();
     }
 
+
+    @Override
+    public int getSize()
+    {
+        return 32;
+    }
+
     @Override
     public int getRegister()
     {

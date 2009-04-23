@@ -8,6 +8,8 @@ package modbuspal.instanciator;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import modbuspal.binding.Binding;
+import modbuspal.generator.Generator;
 
 /**
  * A Instanciator is an object that is able to create object instances of a given class.
@@ -15,7 +17,7 @@ import java.io.OutputStream;
  * instanciate objects.
  * @author nnovic
  */
-public interface Instanciator<T>
+public interface Instanciator
 {
     /**
      * Get the classname of the instanciated object. This function
@@ -24,12 +26,6 @@ public interface Instanciator<T>
      * @return the classname of the objects that are instanciated.
      */
     public String getClassName();
-    
-    /**
-     * Creates a new object instance.
-     * @return an instance of the object as defined by this instanciator.
-     */
-    public T newInstance();
 
     /**
      * writes the instanciator's description into the output stream, making
@@ -38,4 +34,16 @@ public interface Instanciator<T>
      * @param projectFile
      */
     public void save(OutputStream out, File projectFile) throws IOException;
+
+    /**
+     * Creates a new object instance.
+     * @return an instance of the object as defined by this instanciator.
+     */
+    public Generator newGenerator();
+
+    /**
+     * Creates a new object instance.
+     * @return an instance of the object as defined by this instanciator.
+     */
+    public Binding newBinding();
 }

@@ -47,7 +47,10 @@ implements AutomationValueListener
         registers.notifyRegisterChanged(registerAddress);
     }
 
+    
+    public abstract int getSize();
 
+    
     public void save(OutputStream out)
     throws IOException
     {

@@ -110,11 +110,11 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
     }
 
 
-    public void showScriptManagerDialog(int tabIndex)
+    public static void showScriptManagerDialog(int tabIndex)
     {
-        scriptManagerDialog.setVisible(true);
-        scriptsToggleButton.setSelected(true);
-        scriptManagerDialog.setSelectedTab(tabIndex);
+        uniqueInstance.scriptManagerDialog.setVisible(true);
+        uniqueInstance.scriptsToggleButton.setSelected(true);
+        uniqueInstance.scriptManagerDialog.setSelectedTab(tabIndex);
     }
 
     void loadLinkParameters(Document doc)

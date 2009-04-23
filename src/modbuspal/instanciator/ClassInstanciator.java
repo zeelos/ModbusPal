@@ -9,6 +9,8 @@ import java.io.File;
 import java.io.OutputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import modbuspal.binding.Binding;
+import modbuspal.generator.Generator;
 
 
 /**
@@ -17,8 +19,8 @@ import java.util.logging.Logger;
  * instanciate the built-in classes.
  * @author nnovic
  */
-public class ClassInstanciator<T>
-implements Instanciator<T>
+public class ClassInstanciator
+implements Instanciator
 {
     private Class clazz;
 
@@ -38,11 +40,11 @@ implements Instanciator<T>
     }
 
     @Override
-    public T newInstance()
+    public Generator newGenerator()
     {
         try
         {
-            return (T)clazz.newInstance();
+            return (Generator)clazz.newInstance();
         }
         catch (Exception ex)
         {
@@ -51,6 +53,19 @@ implements Instanciator<T>
         }
     }
 
+    @Override
+    public Binding newBinding()
+    {
+        try
+        {
+            return (Binding)clazz.newInstance();
+        }
+        catch (Exception ex)
+        {
+            Logger.getLogger(ClassInstanciator.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
 
     @Override
     public void save(OutputStream out, File projectFile)

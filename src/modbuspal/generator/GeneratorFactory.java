@@ -20,7 +20,7 @@ import org.w3c.dom.NodeList;
  * @author nnovic
  */
 public class GeneratorFactory
-extends InstanciatorManager<Generator>
+extends InstanciatorManager
 {
     private static GeneratorFactory factory = new GeneratorFactory();
 
@@ -34,7 +34,8 @@ extends InstanciatorManager<Generator>
     public static Generator newGenerator(String classname)
     throws InstantiationException, IllegalAccessException
     {
-        return factory.newInstance(classname);
+        Instanciator is = factory.getInstanciator(classname);
+        return is.newGenerator();
     }
 
     /**
@@ -42,8 +43,8 @@ extends InstanciatorManager<Generator>
      */
     private final ClassInstanciator classInstanciators[] =
     {
-        new ClassInstanciator<Generator>(modbuspal.generator.linear.LinearGenerator.class),
-        new ClassInstanciator<Generator>(modbuspal.generator.random.RandomGenerator.class)
+        new ClassInstanciator(modbuspal.generator.linear.LinearGenerator.class),
+        new ClassInstanciator(modbuspal.generator.random.RandomGenerator.class)
     };
 
 
@@ -85,9 +86,8 @@ extends InstanciatorManager<Generator>
     }
 
     @Override
-    protected Instanciator<Generator> getClassInstanciator(int index)
+    protected Instanciator getClassInstanciator(int index)
     {
         return classInstanciators[index];
     }
-
 }
