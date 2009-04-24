@@ -7,7 +7,7 @@ package modbuspal.script;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 public interface ScriptListener
 {

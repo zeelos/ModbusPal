@@ -19,8 +19,8 @@ public abstract class Binding
 implements AutomationValueListener
 {
 
-    protected Automation automation;
-    protected int order;
+    private Automation automation;
+    private int order;
     private ModbusRegisters registers;
     private int registerAddress;
 
@@ -47,7 +47,10 @@ implements AutomationValueListener
         registers.notifyRegisterChanged(registerAddress);
     }
 
-    
+    /**
+     *
+     * @return size in bits
+     */
     public abstract int getSize();
 
     
@@ -56,7 +59,7 @@ implements AutomationValueListener
     {
         StringBuffer tag = new StringBuffer("<binding");
         tag.append(" automation=\""+ automation.getName() +"\"");
-        tag.append(" class=\""+ getClass().getSimpleName() +"\"");
+        tag.append(" class=\""+ getClassName() +"\"");
         tag.append(" order=\""+ String.valueOf(order) +"\"");
         tag.append("/>\r\n");
         out.write( tag.toString().getBytes() );
@@ -72,18 +75,37 @@ implements AutomationValueListener
         }
     }
 
-    public abstract int getRegister();
 
-    public abstract boolean getCoil();
+    public final int getRegister()
+    {
+        return getRegister(order, automation.getCurrentValue());
+    }
+
+
+    protected abstract int getRegister(int rank, double value);
+
+
+    public final boolean getCoil()
+    {
+        return getCoil(order, automation.getCurrentValue());
+    }
+
+
+    protected abstract boolean getCoil(int rank, double value);
 
     @Override
     public String toString()
     {
-        return automation.getName() + " (" +getClass().getSimpleName() + ":" + String.valueOf(order) + ")";
+        return automation.getName() + " (" + getClassName() + ":" + String.valueOf(order) + ")";
     }
 
     public String getAutomationName()
     {
         return automation.getName();
+    }
+
+    protected String getClassName()
+    {
+        return getClass().getSimpleName();
     }
 }

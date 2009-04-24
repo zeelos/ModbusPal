@@ -291,12 +291,12 @@ public abstract class InstanciatorManager
     protected void notifyInstanciatorAdded(Instanciator def)
     {
         for(InstanciatorListener l:listeners)
-            l.instanciatorAdded(def);
+            l.instanciatorAdded(this, def);
     }
 
     protected void notifyInstanciatorRemoved(Instanciator def)
     {
         for(InstanciatorListener l:listeners)
-            l.instanciatorRemoved(def);
+            l.instanciatorRemoved(this, def);
     }
 }

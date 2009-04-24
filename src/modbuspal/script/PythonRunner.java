@@ -19,7 +19,7 @@ import org.python.util.PythonInterpreter;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 public class PythonRunner
 extends ScriptRunner

@@ -26,6 +26,7 @@ import javax.swing.JFrame;
 import javax.swing.UIManager;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import modbuspal.automation.Automation;
+import modbuspal.binding.BindingFactory;
 import modbuspal.generator.GeneratorFactory;
 import modbuspal.link.*;
 import modbuspal.master.ModbusMaster;
@@ -355,6 +356,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
         scriptManagerDialog = new ScriptManagerDialog(this);
         scriptManagerDialog.addWindowListener(this);
         GeneratorFactory.getFactory().addInstanciatorListener(scriptManagerDialog);
+        BindingFactory.getFactory().addInstanciatorListener(scriptManagerDialog);
         ModbusPal.addScriptListener(scriptManagerDialog);
 
         if( verifyPython() == false )

@@ -11,7 +11,7 @@ package modbuspal.instanciator;
  */
 public interface InstanciatorListener
 {
-    public void instanciatorAdded(Instanciator def);
+    public void instanciatorAdded(InstanciatorManager factory, Instanciator def);
 
-    public void instanciatorRemoved(Instanciator def);
+    public void instanciatorRemoved(InstanciatorManager factory, Instanciator def);
 }

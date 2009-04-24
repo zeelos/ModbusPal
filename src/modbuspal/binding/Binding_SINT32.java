@@ -27,27 +27,27 @@ extends Binding
 
 
     @Override
-    public int getRegister()
+    protected int getRegister(int rank, double value)
     {
         // get current value and cast it as an int
-        int value = (int)automation.getCurrentValue();
+        int val = (int)value;
 
         // return "less significant word" of the int
-        if( order == 0 )
+        if( rank == 0 )
         {
-            return (value << 16) >> 16;
+            return (val << 16) >> 16;
         }
 
         // return "most significant word" of the int
-        else if( order == 1 )
+        else if( rank == 1 )
         {
-            return (value >> 16 );
+            return (val >> 16 );
         }
 
         // else, return 0 if value is positive, or FFFF if value is negative
         else
         {
-            if( value >= 0 )
+            if( val >= 0 )
             {
                 return 0x0000;
             }
@@ -59,7 +59,7 @@ extends Binding
     }
 
     @Override
-    public boolean getCoil()
+    protected boolean getCoil(int rank, double value)
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }

@@ -239,7 +239,7 @@
                     </Property>
                   </Properties>
                   <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_LayoutCodePre" type="java.lang.String" value="generatorInstanciatorsList.setLayout( new ListLayout() );"/>
+                    <AuxValue name="JavaCodeGenerator_LayoutCodePre" type="java.lang.String" value="bindingInstanciatorsList.setLayout( new ListLayout() );"/>
                   </AuxValues>
 
                   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignAbsoluteLayout">

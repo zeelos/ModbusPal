@@ -182,7 +182,7 @@ extends javax.swing.JDialog
         buttonsPanel = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         orderComboBox = new javax.swing.JComboBox();
-        jButton1 = new javax.swing.JButton();
+        scriptedBindingsButton = new javax.swing.JButton();
         okButton = new javax.swing.JButton();
         summaryPanel = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
@@ -206,13 +206,13 @@ extends javax.swing.JDialog
         orderComboBox.setPreferredSize(new java.awt.Dimension(80, 20));
         buttonsPanel.add(orderComboBox);
 
-        jButton1.setText("...");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        scriptedBindingsButton.setText("...");
+        scriptedBindingsButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                scriptedBindingsButtonActionPerformed(evt);
             }
         });
-        buttonsPanel.add(jButton1);
+        buttonsPanel.add(scriptedBindingsButton);
 
         okButton.setText("OK");
         okButton.addActionListener(new java.awt.event.ActionListener() {
@@ -262,12 +262,12 @@ extends javax.swing.JDialog
         setVisible(false);
 }//GEN-LAST:event_okButtonActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void scriptedBindingsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_scriptedBindingsButtonActionPerformed
 
         // ask script manager to appear, with the "generators" tab selected
         ModbusPalGui.showScriptManagerDialog(ScriptManagerDialog.TAB_BINDINGS);
 
-    }//GEN-LAST:event_jButton1ActionPerformed
+}//GEN-LAST:event_scriptedBindingsButtonActionPerformed
 
 
     private void bindingsListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_bindingsListValueChanged
@@ -307,11 +307,11 @@ extends javax.swing.JDialog
     private javax.swing.JPanel bindingsPanel;
     private javax.swing.JScrollPane bindingsScrollPane;
     private javax.swing.JPanel buttonsPanel;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JButton okButton;
     private javax.swing.JComboBox orderComboBox;
+    private javax.swing.JButton scriptedBindingsButton;
     private javax.swing.JPanel summaryPanel;
     // End of variables declaration//GEN-END:variables
 

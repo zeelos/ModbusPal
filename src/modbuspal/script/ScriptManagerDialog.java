@@ -20,12 +20,11 @@ import java.util.prefs.Preferences;
 import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import modbuspal.binding.Binding;
 import modbuspal.binding.BindingFactory;
-import modbuspal.generator.Generator;
 import modbuspal.instanciator.Instanciator;
 import modbuspal.generator.GeneratorFactory;
 import modbuspal.instanciator.InstanciatorListener;
+import modbuspal.instanciator.InstanciatorManager;
 import modbuspal.main.ErrorMessage;
 import modbuspal.main.ListLayout;
 import modbuspal.main.ModbusPal;
@@ -165,7 +164,7 @@ implements InstanciatorListener, ScriptListener
 
         bindingInstanciatorsList.setBackground(javax.swing.UIManager.getDefaults().getColor("List.background"));
         bindingInstanciatorsList.setLayout(null);
-        generatorInstanciatorsList.setLayout( new ListLayout() );
+        bindingInstanciatorsList.setLayout( new ListLayout() );
         bindingInstanciatorsScrollPane.setViewportView(bindingInstanciatorsList);
 
         bindingInstanciatorsTab.add(bindingInstanciatorsScrollPane, java.awt.BorderLayout.CENTER);
@@ -359,9 +358,9 @@ implements InstanciatorListener, ScriptListener
     // End of variables declaration//GEN-END:variables
 
     @Override
-    public void instanciatorAdded(Instanciator def)
+    public void instanciatorAdded(InstanciatorManager factory, Instanciator def)
     {
-        if( def instanceof ScriptRunner )
+        if( factory instanceof GeneratorFactory )
         {
             ScriptRunner si = (ScriptRunner)def;
             // create a new panel and add it
@@ -369,20 +368,34 @@ implements InstanciatorListener, ScriptListener
             generatorInstanciatorsList.add(panel);
             generatorInstanciatorsScrollPane.validate();
         }
-    }
 
-    @Override
-    public void instanciatorRemoved(Instanciator def)
-    {
-        if( def instanceof ScriptRunner )
+        else if( factory instanceof BindingFactory )
         {
             ScriptRunner si = (ScriptRunner)def;
-            scriptInstanciatorRemoved(si);
-            return;
+            // create a new panel and add it
+            ScriptRunnerPanel panel = new ScriptRunnerPanel(si,false);
+            bindingInstanciatorsList.add(panel);
+            bindingInstanciatorsScrollPane.validate();
         }
     }
 
-    private void scriptInstanciatorRemoved(ScriptRunner si)
+    @Override
+    public void instanciatorRemoved(InstanciatorManager factory, Instanciator def)
+    {
+        if( factory instanceof GeneratorFactory )
+        {
+            ScriptRunner si = (ScriptRunner)def;
+            generatorInstanciatorRemoved(si);
+        }
+
+        else if( factory instanceof BindingFactory )
+        {
+            ScriptRunner si = (ScriptRunner)def;
+            bindingInstanciatorRemoved(si);
+        }
+    }
+
+    private void generatorInstanciatorRemoved(ScriptRunner si)
     {
         int max = generatorInstanciatorsList.getComponentCount();
         for(int i=0; i<max; i++ )
@@ -400,6 +413,28 @@ implements InstanciatorListener, ScriptListener
         generatorInstanciatorsScrollPane.validate();
         repaint();
     }
+
+
+    private void bindingInstanciatorRemoved(ScriptRunner si)
+    {
+        int max = bindingInstanciatorsList.getComponentCount();
+        for(int i=0; i<max; i++ )
+        {
+            Component comp = bindingInstanciatorsList.getComponent(i);
+            if( comp instanceof ScriptRunnerPanel )
+            {
+                ScriptRunnerPanel sip = (ScriptRunnerPanel)comp;
+                if( sip.contains(si)==true )
+                {
+                    bindingInstanciatorsList.remove(sip);
+                }
+            }
+        }
+        bindingInstanciatorsScrollPane.validate();
+        repaint();
+    }
+
+
 
     private void setStatus(String status)
     {

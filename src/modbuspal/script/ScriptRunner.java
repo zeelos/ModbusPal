@@ -14,7 +14,7 @@ import modbuspal.main.FileTools;
 
 /**
  
- * @author avincon
+ * @author nnovic
  */
 public abstract class ScriptRunner
 implements Instanciator

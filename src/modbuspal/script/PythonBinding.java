@@ -9,7 +9,7 @@ import modbuspal.binding.Binding;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 public class PythonBinding
 extends Binding
@@ -39,15 +39,20 @@ extends Binding
     }
 
     @Override
-    public int getRegister()
+    public int getRegister(int rank, double value)
     {
         return 0;
     }
 
     @Override
-    public boolean getCoil()
+    public boolean getCoil(int rank, double value)
     {
         return false;
     }
 
+    @Override
+    protected String getClassName()
+    {
+        return instanciator.getClassName();
+    }
 }

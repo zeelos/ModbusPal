@@ -58,7 +58,8 @@ implements Instanciator
     {
         try
         {
-            return (Binding)clazz.newInstance();
+            Object obj = clazz.newInstance();
+            return (Binding)obj;
         }
         catch (Exception ex)
         {

@@ -9,7 +9,7 @@ import modbuspal.generator.Generator;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 public class PythonGenerator
 extends Generator

@@ -37,6 +37,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import modbuspal.instanciator.InstanciatorManager;
 import modbuspal.main.ListLayout;
 import modbuspal.main.ModbusPalGui;
 import modbuspal.script.ScriptManagerDialog;
@@ -754,14 +755,21 @@ implements AutomationStateListener, AutomationValueListener, InstanciatorListene
     }
 
     @Override
-    public void instanciatorAdded(Instanciator def)
+    public void instanciatorAdded(InstanciatorManager factory, Instanciator def)
     {
-        addGeneratorButton(def.getClassName());
+        if( factory instanceof GeneratorFactory )
+        {
+            addGeneratorButton(def.getClassName());
+        }
     }
 
-    public void instanciatorRemoved(Instanciator def)
+    @Override
+    public void instanciatorRemoved(InstanciatorManager factory, Instanciator def)
     {
-        removeGeneratorButton(def.getClassName());
+        if( factory instanceof GeneratorFactory )
+        {
+            removeGeneratorButton(def.getClassName());
+        }
     }
 
 }
