@@ -15,6 +15,7 @@ import java.net.URISyntaxException;
 import modbuspal.slave.ModbusSlavePanel;
 import java.awt.Component;
 import java.awt.Desktop;
+import java.awt.Dialog.ModalExclusionType;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.*;
@@ -113,6 +114,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
 
     public static void showScriptManagerDialog(int tabIndex)
     {
+        uniqueInstance.scriptManagerDialog.setModalExclusionType(ModalExclusionType.APPLICATION_EXCLUDE);
         uniqueInstance.scriptManagerDialog.setVisible(true);
         uniqueInstance.scriptsToggleButton.setSelected(true);
         uniqueInstance.scriptManagerDialog.setSelectedTab(tabIndex);
