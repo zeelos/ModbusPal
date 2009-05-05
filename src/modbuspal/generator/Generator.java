@@ -26,9 +26,8 @@ import org.w3c.dom.NodeList;
 public class Generator
 {   
     private ImageIcon icon;
-    protected int duration = 10;
-    protected double initialValue = 0.0;
-    
+    private int duration = 10;
+    private double initialValue = 0.0;
     private JPanel controlPanel;
 
     /**
@@ -110,6 +109,13 @@ public class Generator
     public int getDuration()
     {
         return duration;
+    }
+
+
+
+    public double getInitialValue()
+    {
+        return initialValue;
     }
 
     /**

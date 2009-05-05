@@ -9,7 +9,6 @@ import modbuspal.generator.Generator;
 import java.io.IOException;
 import java.io.OutputStream;
 import javax.swing.JPanel;
-import modbuspal.automation.*;
 import modbuspal.main.XMLTools;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -39,7 +38,7 @@ extends Generator
         double lowest = minValue;
         if( relativeMin == true )
         {
-            lowest += initialValue;
+            lowest += getInitialValue();
         }
 
         double highest = maxValue;

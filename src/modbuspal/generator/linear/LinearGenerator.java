@@ -9,7 +9,6 @@ import modbuspal.generator.Generator;
 import java.io.IOException;
 import java.io.OutputStream;
 import javax.swing.JPanel;
-import modbuspal.automation.*;
 import modbuspal.main.XMLTools;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -39,7 +38,7 @@ extends Generator
         double y1 = startValue;
         if( relativeStart == true )
         {
-            y1 += initialValue;
+            y1 += getInitialValue();
         }
 
         double y2 = endValue;
@@ -48,7 +47,7 @@ extends Generator
             y2 += y1;
         }
 
-        return y1 + time * (y2-y1) / duration;
+        return y1 + time * (y2-y1) / getDuration();
     }
 
     @Override
