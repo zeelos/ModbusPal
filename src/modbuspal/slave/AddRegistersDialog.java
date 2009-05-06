@@ -14,7 +14,7 @@ package modbuspal.slave;
 import java.awt.Frame;
 import modbuspal.main.GUITools;
 import modbuspal.main.ModbusConst;
-import modbuspal.main.NumericTextField;
+import modbuspal.toolkit.NumericTextField;
 
 /**
  *

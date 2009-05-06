@@ -11,6 +11,7 @@
 
 package modbuspal.slave;
 
+import modbuspal.toolkit.XMLTools;
 import java.awt.BorderLayout;
 import java.awt.Frame;
 import modbuspal.main.*;

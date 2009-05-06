@@ -5,6 +5,7 @@
 
 package modbuspal.main;
 
+import modbuspal.toolkit.XMLTools;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;

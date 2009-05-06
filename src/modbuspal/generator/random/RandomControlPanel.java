@@ -27,16 +27,6 @@ extends javax.swing.JPanel
         initComponents();
     }
 
-    @Override
-    public void setEnabled(boolean enabled)
-    {
-        super.setEnabled(enabled);
-        minTextField.setEnabled(enabled);
-        maxTextField.setEnabled(enabled);
-        minRelativeCheckBox.setEnabled(enabled);
-        maxRelativeCheckBox.setEnabled(enabled);
-    }
-
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is

@@ -13,8 +13,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import modbuspal.main.FileTools;
-import modbuspal.main.XMLTools;
-import modbuspal.script.PythonRunner;
+import modbuspal.toolkit.XMLTools;
 import modbuspal.script.ScriptRunner;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -160,9 +159,9 @@ public abstract class InstanciatorManager
 
 
     /**
-     * Check if the specified generator exists in the factory?.
-     * @param name
-     * @return
+     * Check if the specified instanciator exists in the factory.
+     * @param className name of the instanciator to find.
+     * @return true if the instanciator exists, false otherwise.
      */
     public boolean exists(String className)
     {

@@ -16,6 +16,8 @@ package modbuspal.generator;
 
 import modbuspal.automation.*;
 import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Container;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 
@@ -53,8 +55,25 @@ implements GeneratorListener
         upButton.setEnabled(enabled);
         deleteButton.setEnabled(enabled);
         downButton.setEnabled(enabled);
-        customPanel.setEnabled(enabled);
+        setEnabled(customPanel,enabled);
         durationTextField.setEnabled(enabled);
+    }
+
+
+    private void setEnabled(Component comp, boolean enabled)
+    {
+        comp.setEnabled(enabled);
+
+        if( comp instanceof Container )
+        {
+            Container container = (Container)comp;
+            int nb = container.getComponentCount();
+            for( int i=0; i<nb; i++ )
+            {
+                Component comp2 = container.getComponent(i);
+                setEnabled(comp2, enabled);
+            }
+        }
     }
 
     public Generator getGenerator() {

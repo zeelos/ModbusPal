@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import modbuspal.generator.GeneratorListener;
-import modbuspal.main.XMLTools;
+import modbuspal.toolkit.XMLTools;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;

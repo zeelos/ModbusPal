@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package modbuspal.main;
+package modbuspal.toolkit;
 
 import javax.swing.JTextField;
 import javax.swing.text.AttributeSet;
@@ -18,7 +18,32 @@ import javax.swing.text.PlainDocument;
 public class NumericTextField
 extends JTextField
 {
+    public NumericTextField()
+    {
 
+    }
+
+    public NumericTextField(int value)
+    {
+        setText( String.valueOf(value) );
+    }
+
+    public NumericTextField(double value)
+    {
+        setText( String.valueOf(value) );
+    }
+
+    public int getInteger()
+    {
+        return (int)getDouble();
+    }
+
+    
+    public double getDouble()
+    {
+        String txt = getText();
+        return Double.parseDouble(txt);
+    }
 
     @Override
     protected Document createDefaultModel()

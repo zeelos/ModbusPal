@@ -12,7 +12,7 @@ import java.util.Collection;
 import modbuspal.main.ModbusConst;
 import modbuspal.main.ModbusPalXML;
 import modbuspal.main.ModbusTools;
-import modbuspal.main.XMLTools;
+import modbuspal.toolkit.XMLTools;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;

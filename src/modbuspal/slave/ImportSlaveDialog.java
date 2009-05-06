@@ -13,7 +13,7 @@ package modbuspal.slave;
 
 import java.util.Collection;
 import javax.swing.DefaultComboBoxModel;
-import modbuspal.main.XMLTools;
+import modbuspal.toolkit.XMLTools;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
