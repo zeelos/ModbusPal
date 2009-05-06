@@ -124,7 +124,10 @@ extends javax.swing.JDialog
         consoleTextPane = new javax.swing.JTextPane();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Console");
 
+        consoleTextPane.setEditable(false);
+        consoleTextPane.setPreferredSize(new java.awt.Dimension(350, 200));
         jScrollPane1.setViewportView(consoleTextPane);
 
         getContentPane().add(jScrollPane1, java.awt.BorderLayout.CENTER);
