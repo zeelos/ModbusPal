@@ -1,7 +1,7 @@
 from modbuspal.script import PythonBinding
 from java.util import Calendar
 
-class CustomBinding(PythonBinding):
+class AdvancedBinding(PythonBinding):
 
   def getSize(self):
     return 3*16;
