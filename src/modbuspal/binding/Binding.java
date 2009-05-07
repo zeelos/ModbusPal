@@ -91,7 +91,14 @@ implements AutomationValueListener
     }
 
 
-    protected abstract boolean getCoil(int rank, double value);
+    protected boolean getCoil(int rank, double value)
+    {
+        int rankWord = rank / 16;
+        int rankBit = rank % 16;
+        int reg = getRegister(rankWord,value);
+        int mask = 1 << rankBit;
+        return (reg&mask)!=0;
+    }
 
     @Override
     public String toString()

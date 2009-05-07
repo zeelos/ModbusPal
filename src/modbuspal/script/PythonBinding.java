@@ -47,7 +47,7 @@ extends Binding
     @Override
     public boolean getCoil(int rank, double value)
     {
-        return false;
+        return super.getCoil(rank,value);
     }
 
     @Override

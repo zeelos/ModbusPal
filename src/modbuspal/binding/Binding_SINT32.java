@@ -57,11 +57,4 @@ extends Binding
             }
         }
     }
-
-    @Override
-    protected boolean getCoil(int rank, double value)
-    {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
 }
