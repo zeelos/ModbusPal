@@ -89,7 +89,7 @@ implements InstanciatorListener, ScriptListener
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Script Manager");
-        setMinimumSize(new java.awt.Dimension(350, 250));
+        setMinimumSize(new java.awt.Dimension(400, 250));
 
         startupScriptsTab.setLayout(new java.awt.BorderLayout());
 

@@ -22,7 +22,7 @@ extends javax.swing.JDialog
     /** Creates new form WorkInProgressDialog */
     public WorkInProgressDialog(java.awt.Frame parent, String title, String message)
     {
-        super(parent, true);
+        super(parent, ModalityType.DOCUMENT_MODAL);
         setTitle(title);
         initComponents();
         messageLabel.setText(message);
