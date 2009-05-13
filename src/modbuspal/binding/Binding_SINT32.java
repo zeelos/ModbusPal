@@ -35,13 +35,13 @@ extends Binding
         // return "less significant word" of the int
         if( rank == 0 )
         {
-            return (val << 16) >> 16;
+            return 0xFFFF & (val);
         }
 
         // return "most significant word" of the int
         else if( rank == 1 )
         {
-            return (val >> 16 );
+            return 0xFFFF & (val >> 16 );
         }
 
         // else, return 0 if value is positive, or FFFF if value is negative

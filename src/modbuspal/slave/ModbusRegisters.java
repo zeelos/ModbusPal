@@ -386,7 +386,8 @@ implements TableModel, ModbusPalXML, ModbusConst
 
             case VALUE_COLUMN_INDEX:
             {
-                return String.valueOf( getRegister(addr) );
+                int reg = getRegister(addr);
+                return String.valueOf( reg );
             }
             case NAME_COLUMN_INDEX:
             {
