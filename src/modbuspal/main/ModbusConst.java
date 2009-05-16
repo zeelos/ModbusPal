@@ -29,4 +29,7 @@ public interface ModbusConst
 
     public static final int IMPLEMENTATION_MODBUS = 0;
     public static final int IMPLEMENTATION_JBUS = 1;
+
+    public static final int FIRST_MODBUS_SLAVE = 1;
+    public static final int LAST_MODBUS_SLAVE = 247;
 }
