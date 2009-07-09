@@ -19,7 +19,7 @@ import javax.swing.DefaultComboBoxModel;
  *
  * @author nnovic
  */
-class AddSlaveDialog
+public class AddSlaveDialog
 extends javax.swing.JDialog
 {
     private boolean added = false;
@@ -27,6 +27,12 @@ extends javax.swing.JDialog
 
     /** Creates new form AddSlaveDialog */
     public AddSlaveDialog(Frame parent)
+    {
+        this(parent,null);
+    }
+
+    /** Creates new form AddSlaveDialog */
+    public AddSlaveDialog(Frame parent, String name)
     {
         super(parent, true);
 
@@ -40,8 +46,12 @@ extends javax.swing.JDialog
         }
 
         initComponents();
-        
         GUITools.align(parent,this);
+
+        if( name!=null )
+        {
+            nameTextField.setText(name);
+        }
     }
 
     public boolean isAdded()

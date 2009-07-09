@@ -11,6 +11,7 @@
 
 package modbuspal.slave;
 
+import java.awt.Frame;
 import modbuspal.main.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -67,11 +68,13 @@ implements WindowListener, ModbusSlaveListener
         nameTextField = new javax.swing.JTextField();
         enableToggleButton = new javax.swing.JToggleButton();
         showToggleButton = new javax.swing.JToggleButton();
+        duplicateButton = new javax.swing.JButton();
         deleteButton = new javax.swing.JButton();
 
         setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+        setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 3, 3));
 
+        slaveIdLabel.setFont(new java.awt.Font("Tahoma", 1, 11));
         slaveIdLabel.setText(String.valueOf(modbusSlave.getSlaveId()));
         slaveIdLabel.setPreferredSize(new java.awt.Dimension(30, 14));
         add(slaveIdLabel);
@@ -90,8 +93,11 @@ implements WindowListener, ModbusSlaveListener
         });
         add(nameTextField);
 
+        enableToggleButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/modbuspal/slave/img/disabled.png"))); // NOI18N
         enableToggleButton.setSelected(modbusSlave.isEnabled());
-        enableToggleButton.setText("Enable");
+        enableToggleButton.setToolTipText("Enable or disable this slave");
+        enableToggleButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
+        enableToggleButton.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/modbuspal/slave/img/enabled.png"))); // NOI18N
         enableToggleButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 enableToggleButtonActionPerformed(evt);
@@ -99,7 +105,9 @@ implements WindowListener, ModbusSlaveListener
         });
         add(enableToggleButton);
 
-        showToggleButton.setText("Show");
+        showToggleButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/modbuspal/slave/img/show.png"))); // NOI18N
+        showToggleButton.setToolTipText("Show or hide the editor of this slave");
+        showToggleButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
         showToggleButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 showToggleButtonActionPerformed(evt);
@@ -107,7 +115,19 @@ implements WindowListener, ModbusSlaveListener
         });
         add(showToggleButton);
 
-        deleteButton.setText("Delete");
+        duplicateButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/modbuspal/slave/img/duplicate.png"))); // NOI18N
+        duplicateButton.setToolTipText("Duplicate this slave");
+        duplicateButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
+        duplicateButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                duplicateButtonActionPerformed(evt);
+            }
+        });
+        add(duplicateButton);
+
+        deleteButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/modbuspal/slave/img/delete.png"))); // NOI18N
+        deleteButton.setToolTipText("Delete this slave");
+        deleteButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
         deleteButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 deleteButtonActionPerformed(evt);
@@ -150,9 +170,26 @@ implements WindowListener, ModbusSlaveListener
         // TODO add your handling code here:
     }//GEN-LAST:event_nameTextFieldActionPerformed
 
+    private void duplicateButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_duplicateButtonActionPerformed
+
+        Frame parent = GUITools.findFrame(this);
+        AddSlaveDialog dialog = new AddSlaveDialog(parent, modbusSlave.getName());
+        dialog.setVisible(true);
+
+        if( dialog.isAdded() )
+        {
+            int id = dialog.getSlaveId();
+            String name = dialog.getSlaveName();
+            ModbusPal.duplicateModbusSlave(id, name, modbusSlave);
+        }
+
+        
+    }//GEN-LAST:event_duplicateButtonActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton deleteButton;
+    private javax.swing.JButton duplicateButton;
     private javax.swing.JToggleButton enableToggleButton;
     private javax.swing.JTextField nameTextField;
     private javax.swing.JToggleButton showToggleButton;

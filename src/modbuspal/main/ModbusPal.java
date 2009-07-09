@@ -282,6 +282,42 @@ implements ModbusPalXML
     }
 
 
+
+    public static void duplicateModbusSlave(int id, String name, ModbusSlave model)
+    {
+        ModbusSlave newSlave = new ModbusSlave(id);
+        newSlave.setName(name);
+
+        try
+        {
+            // Create a temporary file in order to exportSlave the model
+            File tempFile = File.createTempFile("modbuspal", null);
+
+            // indicate that the file must be deleted at the end of the
+            // application, just in case...
+            tempFile.deleteOnExit();
+
+            // exportSlave model into xml
+            model.exportSlave(tempFile, true, false );
+
+            // import xml into new slave
+            newSlave.importSlave(tempFile, 0, true, false);
+
+            tempFile.delete();
+        }
+        catch (Exception ex)
+        {
+            Logger.getLogger(ModbusPal.class.getName()).log(Level.SEVERE, null, ex);
+            return;
+        }
+
+        // add it into the list
+        addModbusSlave(newSlave);
+    }
+
+
+
+
     private static void removeAllModbusSlaves()
     {
         for(int i=0; i<knownSlaves.length; i++ )

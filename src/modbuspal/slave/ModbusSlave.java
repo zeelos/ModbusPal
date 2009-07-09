@@ -5,17 +5,27 @@
 
 package modbuspal.slave;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import modbuspal.automation.Automation;
 import modbuspal.main.ModbusConst;
+import modbuspal.main.ModbusPal;
 import modbuspal.main.ModbusPalXML;
 import modbuspal.main.ModbusTools;
 import modbuspal.toolkit.XMLTools;
+import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 /**
  *
@@ -55,8 +65,6 @@ implements ModbusPalXML, ModbusConst
 
         loadAttributes(attributes);
     }
-
-
 
     public void clear()
     {
@@ -312,6 +320,66 @@ implements ModbusPalXML, ModbusConst
         return slaveId;
     }
 
+
+    public void exportSlave(File exportFile, boolean withBindings, boolean withAutomations)
+    throws FileNotFoundException, IOException
+    {
+        OutputStream out = new FileOutputStream(exportFile);
+
+        String openTag = "<modbuspal_slave>\r\n";
+        out.write( openTag.getBytes() );
+
+        // if needed, first exportSlave automations (they need to be imported first!)
+        if( withAutomations == true )
+        {
+            String names[] = getRequiredAutomations();
+            for(int i=0; i<names.length; i++)
+            {
+                Automation automation = ModbusPal.getAutomation( names[i] );
+                automation.save(out);
+            }
+        }
+        save(out,withBindings);
+
+        String closeTag = "</modbuspal_slave>\r\n";
+        out.write( closeTag.getBytes() );
+        out.close();
+    }
+
+
+    public void importSlave(File importFile, int index, boolean withBindings, boolean withAutomations)
+    throws ParserConfigurationException, SAXException, IOException, InstantiationException, IllegalAccessException
+    {
+        DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
+        Document doc = docBuilder.parse(importFile);
+
+        // normalize text representation
+        doc.getDocumentElement().normalize();
+
+        // how many slaves in the file?
+        NodeList slaves = doc.getElementsByTagName("slave");
+
+        Node slaveNode = slaves.item(index);
+
+        if( withAutomations==true )
+        {
+            ModbusPal.loadAutomations(doc);
+        }
+
+        load(slaveNode);
+
+        if( withBindings==true )
+        {
+            ModbusPal.loadBindings(doc);
+        }
+    }
+
+
+
+
+
+
     public void addModbusSlaveListener(ModbusSlaveListener l)
     {
         if(listeners.contains(l)==false)
@@ -342,4 +410,5 @@ implements ModbusPalXML, ModbusConst
                 break;
         }
     }
+
 }

@@ -61,13 +61,13 @@ extends javax.swing.JDialog
         slaveHasBeenSelected(0);
     }
 
-    public Node getImport()
+    public int getIndex()
     {
         if( validate == false )
         {
-            return null;
+            return -1;
         }
-        return slavesList.item( slaveComboBox.getSelectedIndex() );
+        return slaveComboBox.getSelectedIndex();
     }
 
     boolean importBindings()

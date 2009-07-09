@@ -16,10 +16,7 @@ import java.awt.BorderLayout;
 import java.awt.Frame;
 import modbuspal.main.*;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,7 +25,6 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import modbuspal.automation.Automation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -60,30 +56,7 @@ implements ModbusConst, ModbusSlaveListener
         return modbusSlave;
     }
 
-    private void exportSlave(File exportFile, boolean withBindings, boolean withAutomations)
-    throws FileNotFoundException, IOException
-    {
-        OutputStream out = new FileOutputStream(exportFile);
 
-        String openTag = "<modbuspal_slave>\r\n";
-        out.write( openTag.getBytes() );
-
-        // if needed, first export automations (they need to be imported first!)
-        if( withAutomations == true )
-        {
-            String names[] = modbusSlave.getRequiredAutomations();
-            for(int i=0; i<names.length; i++)
-            {
-                Automation automation = ModbusPal.getAutomation( names[i] );
-                automation.save(out);
-            }
-        }
-        modbusSlave.save(out,withBindings);
-
-        String closeTag = "</modbuspal_slave>\r\n";
-        out.write( closeTag.getBytes() );
-        out.close();
-    }
 
 //    private void importSlave(Document doc)
 //    {
@@ -132,27 +105,11 @@ implements ModbusConst, ModbusSlaveListener
         ImportSlaveDialog dialog = new ImportSlaveDialog(GUITools.findFrame(this), doc);
         dialog.setVisible(true);
 
-        Node importData = dialog.getImport();
-        if( importData == null )
-        {
-            setStatus("Import cancelled by user.");
-            return;
-        }
-
+        int index = dialog.getIndex();
         boolean importBindings = dialog.importBindings();
         boolean importAutomations = dialog.importAutomations();
-        
-        if( importAutomations==true )
-        {
-            ModbusPal.loadAutomations(doc);
-        }
 
-        modbusSlave.load(importData);
-
-        if( importBindings==true )
-        {
-            ModbusPal.loadBindings(doc);
-        }
+        modbusSlave.importSlave(importFile, index, importBindings, importAutomations);
     }
 
     /** This method is called getStartingAddress within the constructor getQuantity
@@ -263,7 +220,7 @@ implements ModbusConst, ModbusSlaveListener
         
         try
         {
-            exportSlave(exportFile, exportBindings, exportAutomations );
+            modbusSlave.exportSlave(exportFile, exportBindings, exportAutomations );
             setStatus("Export completed.");
         }
         catch (Exception ex)
