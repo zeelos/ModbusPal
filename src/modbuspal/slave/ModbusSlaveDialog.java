@@ -21,10 +21,10 @@ import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import modbuspal.toolkit.XFileChooser;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -201,10 +201,7 @@ implements ModbusConst, ModbusSlaveListener
         }
         
         // Create dialog
-        JFileChooser saveDialog = new JFileChooser();
-        FileNameExtensionFilter filter = new FileNameExtensionFilter(
-        "Slave export file (*.xmps)", "xmps");
-        saveDialog.setFileFilter(filter);
+        JFileChooser saveDialog = new XFileChooser(XFileChooser.SLAVE_FILE);
 
         // show dialog
         saveDialog.showSaveDialog(this);
@@ -233,10 +230,7 @@ implements ModbusConst, ModbusSlaveListener
     private void importButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_importButtonActionPerformed
 
         // create dialog
-        JFileChooser loadDialog = new JFileChooser();
-        FileNameExtensionFilter filter = new FileNameExtensionFilter(
-        "Slave export file (*.xmps)", "xmps");
-        loadDialog.setFileFilter(filter);
+        JFileChooser loadDialog = new XFileChooser(XFileChooser.SLAVE_FILE);
 
         // show dialog
         setStatus("Importing...");

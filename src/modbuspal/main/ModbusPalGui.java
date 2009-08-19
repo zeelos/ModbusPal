@@ -27,7 +27,6 @@ import java.util.logging.Logger;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.UIManager;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import modbuspal.automation.Automation;
 import modbuspal.binding.BindingFactory;
 import modbuspal.generator.GeneratorFactory;
@@ -36,6 +35,7 @@ import modbuspal.master.ModbusMaster;
 import modbuspal.master.ModbusMasterDialog;
 import modbuspal.script.ScriptManagerDialog;
 import modbuspal.slave.ModbusSlave;
+import modbuspal.toolkit.XFileChooser;
 import org.w3c.dom.*;
 
 /**
@@ -968,10 +968,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
         //
         if( projectFile == null )
         {
-            JFileChooser saveDialog = new JFileChooser();
-            FileNameExtensionFilter filter = new FileNameExtensionFilter("Project file", "xmpp");
-            saveDialog.setFileFilter(filter);
-
+            JFileChooser saveDialog = new XFileChooser(XFileChooser.PROJECT_FILE);
             saveDialog.showSaveDialog(this);
             projectFile = saveDialog.getSelectedFile();
 
@@ -1011,11 +1008,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
     private void loadButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadButtonActionPerformed
 
         // create loadGenerators dialog
-        JFileChooser loadDialog = new JFileChooser();
-        FileNameExtensionFilter filter = new FileNameExtensionFilter(
-        "Project file", "xmpp");
-        loadDialog.setFileFilter(filter);
-        
+        JFileChooser loadDialog = new XFileChooser(XFileChooser.PROJECT_FILE);
         loadDialog.showOpenDialog(this);
         projectFile = loadDialog.getSelectedFile();
 
