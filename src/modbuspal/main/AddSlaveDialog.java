@@ -13,7 +13,7 @@ package modbuspal.main;
 
 import java.awt.Frame;
 import modbuspal.slave.*;
-import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListModel;
 
 /**
  *
@@ -23,7 +23,7 @@ public class AddSlaveDialog
 extends javax.swing.JDialog
 {
     private boolean added = false;
-    private DefaultComboBoxModel model = new DefaultComboBoxModel();
+    private DefaultListModel model = new DefaultListModel();
 
     /** Creates new form AddSlaveDialog */
     public AddSlaveDialog(Frame parent)
@@ -59,10 +59,16 @@ extends javax.swing.JDialog
         return added;
     }
 
-    public int getSlaveId()
+    public int[] getSlaveIds()
     {
-        Integer id = (Integer)slaveIdComboBox.getSelectedItem();
-        return id;
+        Object sel[] = slaveIdList.getSelectedValues();
+        int ids[] = new int[sel.length];
+
+        for( int i=0; i<sel.length; i++)
+        {
+            ids[i] = (Integer)sel[i];
+        }
+        return ids;
     }
 
     public String getSlaveName()
@@ -83,9 +89,10 @@ extends javax.swing.JDialog
         addButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
-        slaveIdComboBox = new javax.swing.JComboBox();
         jLabel2 = new javax.swing.JLabel();
         nameTextField = new javax.swing.JTextField();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        slaveIdList = new javax.swing.JList();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("New slave");
@@ -122,14 +129,6 @@ extends javax.swing.JDialog
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 2, 2);
         getContentPane().add(jLabel1, gridBagConstraints);
 
-        slaveIdComboBox.setModel(model);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(10, 2, 2, 10);
-        getContentPane().add(slaveIdComboBox, gridBagConstraints);
-
         jLabel2.setText("Slave name:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -147,6 +146,17 @@ extends javax.swing.JDialog
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(2, 2, 10, 10);
         getContentPane().add(nameTextField, gridBagConstraints);
+
+        jScrollPane1.setPreferredSize(new java.awt.Dimension(120, 80));
+
+        slaveIdList.setModel(model);
+        jScrollPane1.setViewportView(slaveIdList);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(10, 2, 2, 10);
+        getContentPane().add(jScrollPane1, gridBagConstraints);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -166,8 +176,9 @@ extends javax.swing.JDialog
     private javax.swing.JButton cancelButton;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField nameTextField;
-    private javax.swing.JComboBox slaveIdComboBox;
+    private javax.swing.JList slaveIdList;
     // End of variables declaration//GEN-END:variables
 
 }

@@ -32,4 +32,5 @@ public interface ModbusConst
 
     public static final int FIRST_MODBUS_SLAVE = 1;
     public static final int LAST_MODBUS_SLAVE = 247;
+    public static final int MAX_MODBUS_SLAVE = LAST_MODBUS_SLAVE+1;
 }

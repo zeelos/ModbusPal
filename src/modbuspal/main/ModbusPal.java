@@ -38,10 +38,10 @@ import org.xml.sax.SAXException;
  * @author nnovic
  */
 public class ModbusPal
-implements ModbusPalXML
+implements ModbusPalXML, ModbusConst
 {
     public static final String BASE_REGISTRY_KEY = "modbuspal";
-    private static ModbusSlave[] knownSlaves = new ModbusSlave[256];
+    private static ModbusSlave[] knownSlaves = new ModbusSlave[MAX_MODBUS_SLAVE];
     private static Vector<Automation> automations = new Vector<Automation>();
     private static IdGenerator idGenerator = new IdGenerator();
     private static ArrayList<ModbusPalListener> listeners = new ArrayList<ModbusPalListener>();

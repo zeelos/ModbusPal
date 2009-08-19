@@ -173,14 +173,17 @@ implements WindowListener, ModbusSlaveListener
     private void duplicateButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_duplicateButtonActionPerformed
 
         Frame parent = GUITools.findFrame(this);
-        AddSlaveDialog dialog = new AddSlaveDialog(parent, modbusSlave.getName());
+        AddSlaveDialog dialog = new AddSlaveDialog(parent, modbusSlave.getName() );
         dialog.setVisible(true);
 
         if( dialog.isAdded() )
         {
-            int id = dialog.getSlaveId();
+            int ids[] = dialog.getSlaveIds();
             String name = dialog.getSlaveName();
-            ModbusPal.duplicateModbusSlave(id, name, modbusSlave);
+            for( int i=0; i<ids.length; i++ )
+            {
+                ModbusPal.duplicateModbusSlave(ids[i], name, modbusSlave);
+            }
         }
 
         

@@ -952,11 +952,20 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
         dialog.setVisible(true);
         if( dialog.isAdded() )
         {
-            int id = dialog.getSlaveId();
+            //int id = dialog.getSlaveId();
+            //String name = dialog.getSlaveName();
+            //ModbusSlave slave = new ModbusSlave(id);
+            //slave.setName(name);
+            //ModbusPal.addModbusSlave(slave);
+
+            int ids[] = dialog.getSlaveIds();
             String name = dialog.getSlaveName();
-            ModbusSlave slave = new ModbusSlave(id);
-            slave.setName(name);
-            ModbusPal.addModbusSlave(slave);
+            for( int i=0; i<ids.length; i++ )
+            {
+                ModbusSlave slave = new ModbusSlave(ids[i]);
+                slave.setName(name);
+                ModbusPal.addModbusSlave(slave);
+            }
         }
     }//GEN-LAST:event_addModbusSlaveButtonActionPerformed
 

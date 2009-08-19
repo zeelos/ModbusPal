@@ -23,10 +23,11 @@ implements ActionListener
     public static final String MODBUSPAL_REG_PATH = "modbuspal";
     public static final int PROJECT_FILE = 0;
     public static final int SLAVE_FILE = 1;
+    public static final int AUTOMATION_FILE = 2;
 
-    private static final String REG_KEYS[] =   {"project_file", "slave_file"};
-    private static final String PROF_TYPES[] = {"Project file", "Slave export file"};
-    private static final String PROF_EXT[] =   {"xmpp",         "xmps"};
+    private static final String REG_KEYS[] =   {"project_file", "slave_file",        "automation_file"};
+    private static final String PROF_TYPES[] = {"Project file", "Slave export file", "Automation export file"};
+    private static final String PROF_EXT[] =   {"xmpp",         "xmps",              "xmpa"};
 
     private Preferences preferences;
     private int selectedProfile;

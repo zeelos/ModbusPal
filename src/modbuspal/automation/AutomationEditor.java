@@ -33,7 +33,6 @@ import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JTextField;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -41,6 +40,7 @@ import modbuspal.instanciator.InstanciatorManager;
 import modbuspal.main.ListLayout;
 import modbuspal.main.ModbusPalGui;
 import modbuspal.script.ScriptManagerDialog;
+import modbuspal.toolkit.XFileChooser;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -515,10 +515,7 @@ implements AutomationStateListener, AutomationValueListener, InstanciatorListene
     private void exportButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exportButtonActionPerformed
 
         // newInstance and setup dialog
-        JFileChooser chooser = new JFileChooser();
-        FileNameExtensionFilter filter = new FileNameExtensionFilter(
-        "Automation export file (*.xmpa)", "xmpa");
-        chooser.setFileFilter(filter);
+        JFileChooser chooser = new XFileChooser(XFileChooser.AUTOMATION_FILE);
 
         chooser.showDialog(this, "Export");
         File target = chooser.getSelectedFile();
@@ -548,10 +545,7 @@ implements AutomationStateListener, AutomationValueListener, InstanciatorListene
     private void importButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_importButtonActionPerformed
 
         // newInstance and setup dialog
-        JFileChooser chooser = new JFileChooser();
-        FileNameExtensionFilter filter = new FileNameExtensionFilter(
-        "Automation export file (*.xmpa)", "xmpa");
-        chooser.setFileFilter(filter);
+        JFileChooser chooser = new XFileChooser(XFileChooser.AUTOMATION_FILE);
 
         chooser.showDialog(this, "Import");
         File target = chooser.getSelectedFile();
