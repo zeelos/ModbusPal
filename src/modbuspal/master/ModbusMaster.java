@@ -74,7 +74,7 @@ implements Runnable
     {
         if(thread==null)
         {
-            thread = new Thread(this);
+            thread = new Thread(this,"master");
             quit = false;
             thread.start();
         }

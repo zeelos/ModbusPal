@@ -50,7 +50,7 @@ implements Runnable
     public void start()
     {
         execute=true;
-        thread = new Thread(this);
+        thread = new Thread(this,"tilt");
         thread.start();
     }
 

@@ -163,7 +163,7 @@ implements ModbusLink, Runnable, SerialPortEventListener
         }
 
         executeThread = true;
-        serverThread = new Thread(this);
+        serverThread = new Thread(this,"serial link");
         serverThread.start();
     }
 

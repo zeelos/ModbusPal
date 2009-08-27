@@ -18,8 +18,6 @@ import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintStream;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
 
@@ -45,7 +43,7 @@ extends javax.swing.JDialog
             // create a piped input stream
             pin = new PipedInputStream();
             pout = new PipedOutputStream(pin);
-            thread = new Thread(this);
+            thread = new Thread(this,"console");
             thread.start();
         }
 

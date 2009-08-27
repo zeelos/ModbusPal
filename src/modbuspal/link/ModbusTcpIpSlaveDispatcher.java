@@ -34,7 +34,7 @@ implements Runnable
 
     public void start()
     {
-        slaveThread = new Thread(this);
+        slaveThread = new Thread(this,"tcp/ip dispatcher");
         slaveThread.start();
     }
 

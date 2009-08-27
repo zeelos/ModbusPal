@@ -33,7 +33,7 @@ implements ModbusLink, Runnable
     public void start()
     {
         executeThread = true;
-        serverThread = new Thread(this);
+        serverThread = new Thread(this,"tcp/ip link");
         serverThread.start();
     }
 

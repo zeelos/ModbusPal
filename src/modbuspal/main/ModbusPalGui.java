@@ -1047,7 +1047,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
                 }
             }
         });
-
+        loader.setName("loader");
         loader.start();
         dialog.setVisible(true);
 }//GEN-LAST:event_loadButtonActionPerformed
