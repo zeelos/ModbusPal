@@ -56,6 +56,7 @@ implements ModbusLink, Runnable
             Logger.getLogger(ModbusTcpIpLink.class.getName()).log(Level.SEVERE, null, ex);
         }
         serverThread = null;
+        ModbusTcpIpSlaveDispatcher.stopAll();
     }
 
     public void run()

@@ -5,6 +5,7 @@
 
 package modbuspal.link;
 
+import java.util.ArrayList;
 import modbuspal.main.*;
 
 

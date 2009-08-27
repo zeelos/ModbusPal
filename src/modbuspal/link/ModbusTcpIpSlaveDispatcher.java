@@ -9,6 +9,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import modbuspal.main.ModbusTools;
 
 /**
@@ -19,6 +24,38 @@ public class ModbusTcpIpSlaveDispatcher
 extends ModbusSlaveDispatcher
 implements Runnable
 {
+
+
+
+    private static ArrayList<ModbusTcpIpSlaveDispatcher> dispatchers = new ArrayList<ModbusTcpIpSlaveDispatcher>();
+
+    private static void register(ModbusTcpIpSlaveDispatcher dispatcher)
+    {
+        if( dispatchers.contains(dispatcher)==false )
+        {
+            dispatchers.add(dispatcher);
+        }
+    }
+
+    private static void unregister(ModbusTcpIpSlaveDispatcher dispatcher)
+    {
+        if( dispatchers.contains(dispatcher)==true )
+        {
+            dispatchers.remove(dispatcher);
+        }
+    }
+
+    static void stopAll()
+    {
+        Iterator<ModbusTcpIpSlaveDispatcher> iter = dispatchers.iterator();
+        while( iter.hasNext() )
+        {
+            ModbusTcpIpSlaveDispatcher dispatcher = iter.next();
+            dispatcher.stop();
+        }
+    }
+
+
     private Thread slaveThread;
     private Socket slaveSocket;
     private InputStream slaveInput;
@@ -38,9 +75,25 @@ implements Runnable
         slaveThread.start();
     }
 
+    public void stop()
+    {
+        try 
+        {
+            slaveInput.close();
+            slaveOutput.close();
+            slaveThread = null;
+        }
+        catch (IOException ex)
+        {
+            Logger.getLogger(ModbusTcpIpSlaveDispatcher.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     public void run()
     {
         System.out.println("Start ModubsTcpIpSlaveDispatcher");
+        register(this);
+        
         int recv = 0;
         byte[] buffer = new byte[2048];
 
@@ -97,7 +150,27 @@ implements Runnable
             System.err.println("ModubsTcpIpSlaveDispatcher exception " +ex.getMessage() );
         }
 
+        // close input stream before exiting
+        try 
+        {
+            slaveInput.close();
+        }
+        catch (IOException ex)
+        {
+            Logger.getLogger(ModbusTcpIpSlaveDispatcher.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        try
+        {
+            // close output stream before exiting
+            slaveOutput.close();
+        } 
+        catch (IOException ex)
+        {
+            Logger.getLogger(ModbusTcpIpSlaveDispatcher.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
         System.out.println("Stop ModubsTcpIpSlaveDispatcher");
+        unregister(this);
     }
 
 
