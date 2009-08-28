@@ -18,6 +18,8 @@ import java.io.OutputStream;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.io.PrintStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
 
@@ -59,32 +61,27 @@ extends javax.swing.JDialog
             BufferedReader br = new BufferedReader(isr);
             while(true)
             {
-                try
+                try 
                 {
+                    if (br.ready() == false)
+                    {
+                        Thread.sleep(100);
+                        continue;
+                    }
                     String line = br.readLine();
-                    consoleDoc.insertString( consoleDoc.getLength(), line+"\r\n", null);
+                    consoleDoc.insertString(consoleDoc.getLength(), line + "\r\n", null);
+                }
+                catch (InterruptedException ex)
+                {
                 }
                 catch (IOException ex)
                 {
-                    //Logger.getLogger(AppConsole.class.getName()).log(Level.SEVERE, null, ex);
-                    //return;
                 }
-                catch (BadLocationException ex)
+                catch(BadLocationException ex)
                 {
-                    //Logger.getLogger(AppConsole.class.getName()).log(Level.SEVERE, null, ex);
                     return;
                 }
             }
-
-//            try
-//            {
-//                pin.close();
-//                pout.close();
-//            }
-//            catch(IOException ex)
-//            {
-//
-//            }
         }
     }
 
