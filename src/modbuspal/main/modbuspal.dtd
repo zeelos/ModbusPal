@@ -13,6 +13,8 @@ and open the template in the editor.
 <!-- TODO define your own vocabulary/syntax. Example follows:  -->
 
 <!ELEMENT modbuspal_project (idgen,links,generators?,bindings?,automation*,slave*,startup?,ondemand?)>
+<!ELEMENT modbuspal_slave (slave*,automation*)>
+<!ELEMENT modbuspal_automation (automation*)>
 
 <!ELEMENT idgen EMPTY>
 <!ATTLIST idgen value CDATA #REQUIRED>
@@ -50,13 +52,14 @@ and open the template in the editor.
 <!ATTLIST slave id CDATA #REQUIRED>
 <!ATTLIST slave enabled (true|false) "true">
 <!ATTLIST slave name CDATA #IMPLIED>
-<!ATTLIST slave implementation (modbus|jbus) "modbus">
+<!ATTLIST slave implementation (modbus|j-bus) "modbus">
 
 <!ELEMENT holding_registers (register*)>
 
 <!ELEMENT register (binding?)>
 <!ATTLIST register address CDATA #REQUIRED>
 <!ATTLIST register value CDATA "0">
+<!ATTLIST register name CDATA #IMPLIED>
 
 <!ELEMENT binding EMPTY>
 <!ATTLIST binding automation CDATA #REQUIRED>

@@ -836,24 +836,8 @@ implements ModbusPalXML, ModbusConst
     public static void loadProject(File source)
     throws ParserConfigurationException, SAXException, IOException, InstantiationException, IllegalAccessException
     {
-        DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-
-        docBuilder.setEntityResolver( new EntityResolver()
-        {
-            public InputSource resolveEntity(String publicId, String systemId)
-            throws SAXException, IOException
-            {
-                if( systemId.endsWith("modbuspal.dtd") )
-                {
-                    return new InputSource( ModbusPal.class.getResourceAsStream("modbuspal.dtd") );
-                }
-                return null;
-            }
-        });
-
         // the parse will fail if xml doc doesn't match the dtd.
-        Document doc = docBuilder.parse(source);
+        Document doc = XMLTools.ParseXML(source);
 
         // normalize text representation
          doc.getDocumentElement().normalize();

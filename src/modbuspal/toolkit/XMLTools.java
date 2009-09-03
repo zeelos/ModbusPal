@@ -5,11 +5,21 @@
 
 package modbuspal.toolkit;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import modbuspal.main.ModbusPal;
+import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 /**
  *
@@ -17,6 +27,30 @@ import org.w3c.dom.NodeList;
  */
 public class XMLTools
 {
+
+    public static Document ParseXML(File source)
+    throws ParserConfigurationException, SAXException, IOException, InstantiationException, IllegalAccessException
+    {
+        DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
+
+        docBuilder.setEntityResolver( new EntityResolver()
+        {
+            public InputSource resolveEntity(String publicId, String systemId)
+            throws SAXException, IOException
+            {
+                if( systemId.endsWith("modbuspal.dtd") )
+                {
+                    return new InputSource( ModbusPal.class.getResourceAsStream("modbuspal.dtd") );
+                }
+                return null;
+            }
+        });
+
+        // the parse will fail if xml doc doesn't match the dtd.
+        return docBuilder.parse(source);
+    }
+
 
     public static String getAttribute(String attr, Node node)
     {

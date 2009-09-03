@@ -41,6 +41,7 @@ import modbuspal.main.ListLayout;
 import modbuspal.main.ModbusPalGui;
 import modbuspal.script.ScriptManagerDialog;
 import modbuspal.toolkit.XFileChooser;
+import modbuspal.toolkit.XMLTools;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -195,6 +196,12 @@ implements AutomationStateListener, AutomationValueListener, InstanciatorListene
     private void exportAutomation(OutputStream out)
     throws IOException
     {
+        String xmlTag = "<?xml version=\"1.0\"?>\r\n";
+        out.write( xmlTag.getBytes() );
+
+        String docTag = "<!DOCTYPE modbuspal_automation SYSTEM \"modbuspal.dtd\">\r\n";
+        out.write( docTag.getBytes() );
+
         String openTag = "<modbuspal_automation>\r\n";
         out.write( openTag.getBytes() );
         
@@ -245,9 +252,7 @@ implements AutomationStateListener, AutomationValueListener, InstanciatorListene
     private void importAutomation(File importFile)
     throws ParserConfigurationException, SAXException, IOException, InstantiationException, IllegalAccessException
     {
-        DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-        Document doc = docBuilder.parse(importFile);
+        Document doc = XMLTools.ParseXML(importFile);
 
         // normalize text representation
          doc.getDocumentElement().normalize();

@@ -326,6 +326,12 @@ implements ModbusPalXML, ModbusConst
     {
         OutputStream out = new FileOutputStream(exportFile);
 
+        String xmlTag = "<?xml version=\"1.0\"?>\r\n";
+        out.write( xmlTag.getBytes() );
+
+        String docTag = "<!DOCTYPE modbuspal_slave SYSTEM \"modbuspal.dtd\">\r\n";
+        out.write( docTag.getBytes() );
+
         String openTag = "<modbuspal_slave>\r\n";
         out.write( openTag.getBytes() );
 

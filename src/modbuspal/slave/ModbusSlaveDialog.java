@@ -80,10 +80,8 @@ implements ModbusConst, ModbusSlaveListener
     private void importSlave(File importFile)
     throws ParserConfigurationException, SAXException, IOException, InstantiationException, IllegalAccessException
     {
-        DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-        Document doc = docBuilder.parse(importFile);
-
+        Document doc = XMLTools.ParseXML(importFile);
+        
         // normalize text representation
         doc.getDocumentElement().normalize();
 
