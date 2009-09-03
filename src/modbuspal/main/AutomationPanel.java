@@ -45,12 +45,12 @@ implements WindowListener, AutomationStateListener
     }
 
 
-    void dispose()
+    void disconnect()
     {
         automationEditor.removeWindowListener(this);
         automationEditor.setVisible(false);
-        automationEditor.dispose();
-        automation.removeAutomationStateListener(this);
+        automationEditor.disconnect();
+        assert(automation.removeAutomationStateListener(this)==false);
     }
 
 

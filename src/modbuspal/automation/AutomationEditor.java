@@ -33,8 +33,6 @@ import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JTextField;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import modbuspal.instanciator.InstanciatorManager;
 import modbuspal.main.ListLayout;
@@ -77,12 +75,10 @@ implements AutomationStateListener, AutomationValueListener, InstanciatorListene
         GeneratorFactory.getFactory().addInstanciatorListener(this);
     }
 
-    @Override
-    public void dispose()
+    public void disconnect()
     {
-        super.dispose();
-        automation.removeAutomationStateListener(this);
-        automation.removeAutomationValueListener(this);
+        assert(automation.removeAutomationStateListener(this)==false);
+        assert(automation.removeAutomationValueListener(this)==false);
         GeneratorFactory.getFactory().removeInstanciatorListener(this);
     }
 

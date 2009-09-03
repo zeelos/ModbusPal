@@ -528,9 +528,9 @@ implements Runnable
         automationStateListeners.add(l);
     }
 
-    public void removeAutomationStateListener(AutomationStateListener l)
+    public boolean removeAutomationStateListener(AutomationStateListener l)
     {
-        automationStateListeners.remove(l);
+        return automationStateListeners.remove(l);
     }
 
     public void addAutomationValueListener(AutomationValueListener l)
@@ -539,9 +539,9 @@ implements Runnable
         automationValueListeners.add(l);
     }
 
-    public void removeAutomationValueListener(AutomationValueListener l)
+    public boolean removeAutomationValueListener(AutomationValueListener l)
     {
-        automationValueListeners.remove(l);
+        return automationValueListeners.remove(l);
     }
 
 

@@ -1384,7 +1384,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
         if( panel != null )
         {
             // the dialog will be disconnect, so remove it too:
-            panel.dispose();
+            panel.disconnect();
 
             // remove panel from the list
             automationsListPanel.remove( panel );
