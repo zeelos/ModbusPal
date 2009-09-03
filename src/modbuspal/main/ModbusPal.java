@@ -768,7 +768,7 @@ implements ModbusPalXML, ModbusConst
     private static void saveSlaves(OutputStream out)
     throws IOException
     {
-        for( int i=0; i<256; i++ )
+        for( int i=0; i<MAX_MODBUS_SLAVE; i++ )
         {
             ModbusSlave slave = knownSlaves[i];
             if( slave != null )
