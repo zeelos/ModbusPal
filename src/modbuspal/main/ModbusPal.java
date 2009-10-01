@@ -15,8 +15,6 @@ import java.util.ArrayList;
 import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import modbuspal.automation.Automation;
 import modbuspal.generator.GeneratorFactory;
@@ -29,8 +27,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 /**
@@ -331,6 +327,25 @@ implements ModbusPalXML, ModbusConst
 
 
 
+    public static void setSlaveEnabled(int slaveID, boolean b)
+    {
+        if( knownSlaves[slaveID] == null )
+        {
+            if( learnModeEnabled == true )
+            {
+                // create a new modbus slave
+                ModbusSlave slave = new ModbusSlave(slaveID);
+                addModbusSlave( slave );
+                slave.setEnabled(b);
+            }
+        }
+
+        else
+        {
+            knownSlaves[slaveID].setEnabled(b);
+        }
+    }
+
     /**
      * determine if the slave is enabled or not. If "learn mode" is enabled, this
      * method will always return true. Otherwise, it will return true only if the
@@ -342,6 +357,11 @@ implements ModbusPalXML, ModbusConst
      */
     public static boolean isSlaveEnabled(int slaveID)
     {
+        if( (slaveID<0) || (slaveID>=MAX_MODBUS_SLAVE) )
+        {
+            return false;
+        }
+
         if( knownSlaves[slaveID] == null )
         {
             if( learnModeEnabled == true )

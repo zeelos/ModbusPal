@@ -77,6 +77,20 @@ implements TableModel, ModbusPalXML, ModbusConst
 
     /**
      * Returns the value of the register, whose address is provided
+     * in argument. Note that depending on the implementation (modbus/jbus),
+     * an offset is applied to address.
+     * After the offset has been applied, returns the same result as getRegister()
+     * @param address the address of the register
+     * @return see getRegister() for info.
+     */
+    public int getRegisterImpl(int address)
+    {
+        address -= getOffset();
+        return getRegister(address);
+    }
+
+    /**
+     * Returns the value of the register, whose address is provided
      * in argument. Note that address is indexed starting from 0, with no
      * consideration for the implementation offset (modbus/jbus). If the
      * register is bound to an automation, returns the current value of the
@@ -128,6 +142,22 @@ implements TableModel, ModbusPalXML, ModbusConst
         values.put(address,val);
         return XC_SUCCESSFUL;
     }
+
+
+    /**
+     * * Sets the value of the register identified by the specified address.
+     * Note that depending on the implementation (modbus/jbus),
+     * an offset is applied to address.
+     * After the offset has been applied, returns the same result as setRegister()
+     * @param address the address of the register
+     * @return see setRegister() for info.
+     */
+    public byte setRegisterImpl(int address, int val)
+    {
+        address -= getOffset();
+        return setRegister(address,val);
+    }
+
 
     /**
      * Sets the value of the register identified by the specified address. Note that
@@ -237,7 +267,7 @@ implements TableModel, ModbusPalXML, ModbusConst
         if( binding != null )
         {
             binding.detach();
-            bindings.remove(binding);
+            bindings.remove(address);
         }
 
         // delete register
