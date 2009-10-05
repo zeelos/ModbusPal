@@ -98,7 +98,6 @@ implements ModbusConst
         fromTextField = new NumericTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Add registers");
         setResizable(false);
         getContentPane().setLayout(new java.awt.GridBagLayout());
 

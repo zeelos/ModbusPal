@@ -11,12 +11,14 @@ package modbuspal.main;
  */
 public interface ModbusConst
 {
+    public static final byte FC_READ_COILS = (byte)0x01;
     public static final byte FC_READ_HOLDING_REGISTERS = (byte)0x03;
+    public static final byte FC_WRITE_MULTIPLE_COILS = (byte)0x0F;
     public static final byte FC_WRITE_MULTIPLE_REGISTERS = (byte)0x10;
 
     public static final String MODBUS_FUNCTIONS[] = {
         "(0x00)",
-        "(0x01)",
+        "(0x01) Read coils",
         "(0x02)",
         "(0x03) Read holding registers",
     };

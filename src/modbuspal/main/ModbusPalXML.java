@@ -17,4 +17,7 @@ public interface ModbusPalXML
     /* REGISTER */
     public static final String XML_REGISTER_ADDRESS_ATTRIBUTE = "address";
 
+    /* COILS */
+    public static final String XML_COILS_TAG = "coils";
+
 }

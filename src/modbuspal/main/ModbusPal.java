@@ -1209,7 +1209,40 @@ implements ModbusPalXML, ModbusConst
         }
     }
 
+    public static byte getCoils(int slaveID, int startingAddress, int quantity, byte[] buffer, int offset)
+    {
+        assert( knownSlaves[slaveID] != null );
+        assert( startingAddress >= 0 );
+        assert( quantity >= 0 );
+        return knownSlaves[slaveID].getCoils(startingAddress, quantity, buffer, offset);
+    }
 
+    public static byte setCoils(int slaveID, int startingAddress, int quantity, byte[] buffer, int offset)
+    {
+        assert( knownSlaves[slaveID] != null );
+        assert( startingAddress >= 0 );
+        assert( quantity >= 0 );
+        return knownSlaves[slaveID].setCoils(startingAddress, quantity, buffer, offset);
+    }
+
+    public static boolean coilsExist(int slaveID, int startingAddress, int quantity)
+    {
+        assert( knownSlaves[slaveID] != null );
+
+        if( knownSlaves[slaveID].getCoils().exist(startingAddress,quantity) == true )
+        {
+            return true;
+        }
+        else if( learnModeEnabled )
+        {
+            knownSlaves[slaveID].getCoils().create(startingAddress,quantity);
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 
     public static void clearProject()
     {

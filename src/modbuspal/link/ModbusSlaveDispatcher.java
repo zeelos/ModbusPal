@@ -5,7 +5,6 @@
 
 package modbuspal.link;
 
-import java.util.ArrayList;
 import modbuspal.main.*;
 
 
@@ -42,6 +41,12 @@ implements ModbusConst
 
             case FC_WRITE_MULTIPLE_REGISTERS:
                 return writeMultipleRegisters(slaveID, buffer, offset);
+
+            case FC_READ_COILS:
+                return readCoils(slaveID, buffer, offset);
+
+            case FC_WRITE_MULTIPLE_COILS:
+                return writeMultipleCoils(slaveID, buffer, offset);
 
             default:
                 System.err.println("Illegal function code "+functionCode);
@@ -108,6 +113,60 @@ implements ModbusConst
         }
 
         byte rc = ModbusPal.setHoldingRegisters(slaveID,startingAddress,quantity,buffer,offset+6);
+        if( rc != (byte)0x00 )
+        {
+            return makeExceptionResponse(FC_WRITE_MULTIPLE_REGISTERS, rc, buffer, offset);
+        }
+
+        return 5;
+    }
+
+    private int readCoils(int slaveID, byte[] buffer, int offset)
+    {
+        int startingAddress = ModbusTools.getUint16(buffer, offset+1);
+        int quantity = ModbusTools.getUint16(buffer, offset+3);
+
+        if( (quantity<1) || (quantity>2000) )
+        {
+            System.err.println("Read coils: bad quantity "+ quantity);
+            return makeExceptionResponse(FC_READ_COILS, XC_ILLEGAL_DATA_VALUE, buffer, offset);
+        }
+
+        if( ModbusPal.coilsExist(slaveID, startingAddress,quantity) == false )
+        {
+            System.err.println("Read coils: bad address range "+startingAddress+" to "+ startingAddress+quantity);
+            return makeExceptionResponse(FC_READ_COILS, XC_ILLEGAL_DATA_ADDRESS, buffer, offset);
+        }
+
+        byte byteCount = (byte) (  (quantity+7)/8 );
+        buffer[offset+1] = byteCount;
+        byte rc = ModbusPal.getCoils(slaveID,startingAddress,quantity,buffer,offset+2);
+        if( rc != (byte)0x00 )
+        {
+            return makeExceptionResponse(FC_READ_COILS, rc, buffer, offset);
+        }
+        return 2 + byteCount;
+    }
+
+    private int writeMultipleCoils(int slaveID, byte[] buffer, int offset)
+    {
+        int startingAddress = ModbusTools.getUint16(buffer, offset+1);
+        int quantity = ModbusTools.getUint16(buffer, offset+3);
+        int byteCount = ModbusTools.getUint8(buffer, offset+5);
+
+        if( (quantity<1) || (quantity>1968) || ( byteCount!=(quantity+7)/8) )
+        {
+            System.err.println("Write multiple coils: bad quantity "+ quantity);
+            return makeExceptionResponse(FC_WRITE_MULTIPLE_COILS, XC_ILLEGAL_DATA_VALUE, buffer, offset);
+        }
+
+        if( ModbusPal.coilsExist(slaveID, startingAddress,quantity) == false )
+        {
+            System.err.println("Write multiple coils: bad address range "+startingAddress+" to "+ startingAddress+quantity);
+            return makeExceptionResponse(FC_WRITE_MULTIPLE_COILS, XC_ILLEGAL_DATA_ADDRESS, buffer, offset);
+        }
+
+        byte rc = ModbusPal.setCoils(slaveID,startingAddress,quantity,buffer,offset+6);
         if( rc != (byte)0x00 )
         {
             return makeExceptionResponse(FC_WRITE_MULTIPLE_REGISTERS, rc, buffer, offset);

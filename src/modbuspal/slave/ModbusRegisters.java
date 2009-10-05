@@ -439,6 +439,22 @@ implements TableModel, ModbusPalXML, ModbusConst
         return null;
     }
 
+
+    protected Integer checkValueBoundaries(Integer value)
+    {
+        if( value<0 )
+        {
+            return 0;
+        }
+        if( value>65535 )
+        {
+            return 65535;
+        }
+        return value;
+    }
+
+
+
     public void setValueAt(Object aValue, int rowIndex, int columnIndex)
     {
         int reg = registers.get(rowIndex);
@@ -449,7 +465,7 @@ implements TableModel, ModbusPalXML, ModbusConst
                 if( aValue instanceof String )
                 {
                     Integer val = Integer.parseInt((String)aValue);
-                    values.put(reg, val);
+                    values.put(reg, checkValueBoundaries(val));
                     notifyTableChanged(rowIndex,columnIndex);
                 }
                 break;

@@ -42,6 +42,17 @@ implements ModbusConst
         registersTable.setTransferHandler( new ModbusRegistersTransferHandler() );
     }
 
+
+    protected String getCaption_register()
+    {
+        return "register";
+    }
+
+    protected String getCaption_registers()
+    {
+        return "registers";
+    }
+
     /*
     private int getTranslatedAddressAt(int selectedRow)
     {
@@ -123,7 +134,8 @@ implements ModbusConst
 
         // create and display dialog
         AddRegistersDialog dialog = new AddRegistersDialog( GUITools.findFrame(this), slaveDialog);
-        slaveDialog.setStatus("Adding registers...");
+        dialog.setTitle("Add "+getCaption_registers());
+        slaveDialog.setStatus("Adding "+getCaption_register()+"...");
         dialog.setVisible(true);
 
         if( dialog.isAdded() == true )
@@ -131,11 +143,11 @@ implements ModbusConst
             int start = dialog.getStartingAddress();
             int q = dialog.getQuantity();
             registers.create(start, q);
-            slaveDialog.setStatus("Adding registers completed.");
+            slaveDialog.setStatus("Adding "+getCaption_registers()+" completed.");
         } 
         else
         {
-            slaveDialog.setStatus("Adding registers cancelled by user.");
+            slaveDialog.setStatus("Adding "+getCaption_registers()+" cancelled by user.");
         }
 }//GEN-LAST:event_addRegistersButtonActionPerformed
 

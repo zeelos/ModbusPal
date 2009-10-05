@@ -37,6 +37,7 @@ implements ModbusPalXML, ModbusConst
     private int slaveId;
     private boolean enabled;
     private ModbusRegisters holdingRegisters = new ModbusRegisters();
+    private ModbusCoils coils = new ModbusCoils();
     private String customName;
     private ArrayList<ModbusSlaveListener> listeners = new ArrayList<ModbusSlaveListener>();
     private int modbusImplementation = IMPLEMENTATION_MODBUS;
@@ -73,6 +74,7 @@ implements ModbusPalXML, ModbusConst
         
         // propage clear
         holdingRegisters.clear();
+        coils.clear();
     }
 
 
@@ -81,20 +83,6 @@ implements ModbusPalXML, ModbusConst
         return customName;
     }
 
-    //=========================================================================
-
-    /*public boolean holdingRegistersExist(int startingAddress, int quantity)
-    {
-        assert( holdingRegisters != null );
-        return holdingRegisters.exist(startingAddress, quantity);
-    }*/
-
-
-    /*public void createHoldingRegisters(int startingAddress, int quantity)
-    {
-        assert( holdingRegisters != null );
-        holdingRegisters.create(startingAddress, quantity);
-    }*/
 
     public byte getHoldingRegisters(int startingAddress, int quantity, byte[] buffer, int offset)
     {
@@ -126,6 +114,35 @@ implements ModbusPalXML, ModbusConst
         return holdingRegisters;
     }
 
+    public byte getCoils(int startingAddress, int quantity, byte[] buffer, int offset)
+    {
+        for(int i=0; i<quantity; i++)
+        {
+            //Integer reg = holdingRegisters.getRegister(startingAddress+i);
+            //ModbusTools.setUint16(buffer, offset + 2* i, reg);
+        }
+        return (byte)0x00;
+    }
+
+    public byte setCoils(int startingAddress, int quantity, byte[] buffer, int offset)
+    {
+        for(int i=0; i<quantity; i++)
+        {
+            //Integer reg = ModbusTools.getUint16(buffer, offset + 2* i);
+            //byte rc = holdingRegisters.setRegisterSilent(startingAddress+i,reg);
+            //if( rc != (byte)0x00 )
+            //{
+            //    return rc;
+            //}
+        }
+        return (byte)0x00;
+    }
+
+    public ModbusCoils getCoils()
+    {
+        return coils;
+    }
+
     public int getImplementation()
     {
         return modbusImplementation;
@@ -144,6 +161,14 @@ implements ModbusPalXML, ModbusConst
         // add the rest to the final list:
         automationNames.addAll(tmpNames);
 
+        // get the names of the automations that are required for
+        // the binding in coils:
+        tmpNames = coils.getRequiredAutomations();
+        // remove the names of the bindings that are already in the final list:
+        tmpNames.removeAll(automationNames);
+        // add the rest to the final list:
+        automationNames.addAll(tmpNames);
+
         String retval[] = new String[0];
         return automationNames.toArray(retval);
     }
@@ -152,14 +177,9 @@ implements ModbusPalXML, ModbusConst
     {
         boolean retval = false;
         retval |= holdingRegisters.hasBindings();
+        retval |= coils.hasBindings();
         return retval;
     }
-
-/*    public void bindHoldingRegister(int row, Binding binding)
-    {
-        int address = holdingRegisters.getAddressAt(row);
-        holdingRegisters.bind(address,binding);
-    } */
 
     private void loadHoldingRegisters(NodeList nodes)
     {
@@ -174,6 +194,19 @@ implements ModbusPalXML, ModbusConst
         }
     }
 
+
+    private void loadCoils(NodeList nodes)
+    {
+        Node node = XMLTools.getNode(nodes,XML_COILS_TAG);
+        if( node == null )
+        {
+            return;
+        }
+        else
+        {
+            coils.load(node);
+        }
+    }
 
 
     private void notifyModbusSlaveEnabled(boolean enabled)
@@ -212,6 +245,20 @@ implements ModbusPalXML, ModbusConst
         out.write( closeTag.getBytes() );
     }
 
+
+    private void saveCoils(OutputStream out, boolean withBindings)
+    throws IOException
+    {
+        String openTag = "<"+XML_COILS_TAG+">\r\n";
+        out.write( openTag.getBytes() );
+
+        coils.save(out, withBindings);
+
+        String closeTag = "</"+XML_COILS_TAG+">\r\n";
+        out.write( closeTag.getBytes() );
+    }
+
+
     //=========================================================================
 
     public boolean isEnabled()
@@ -242,6 +289,7 @@ implements ModbusPalXML, ModbusConst
         loadAttributes( node.getAttributes() );
         NodeList nodes = node.getChildNodes();
         loadHoldingRegisters(nodes);
+        loadCoils(nodes);
         notifyModbusImplChanged();
     }
 
@@ -304,6 +352,7 @@ implements ModbusPalXML, ModbusConst
         out.write( openTag.getBytes() );
 
         saveHoldingRegisters(out, withBindings);
+        saveCoils(out,withBindings);
 
         String closeTag = "</slave>\r\n";
         out.write( closeTag.getBytes() );
@@ -410,9 +459,11 @@ implements ModbusPalXML, ModbusConst
             default:
             case IMPLEMENTATION_MODBUS:
                 holdingRegisters.setOffset(1);
+                coils.setOffset(1);
                 break;
             case IMPLEMENTATION_JBUS:
                 holdingRegisters.setOffset(0);
+                coils.setOffset(0);
                 break;
         }
     }
