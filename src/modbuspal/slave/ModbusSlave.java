@@ -16,6 +16,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import modbuspal.automation.Automation;
+import modbuspal.automation.NullAutomation;
 import modbuspal.main.ModbusConst;
 import modbuspal.main.ModbusPal;
 import modbuspal.main.ModbusPalXML;
@@ -88,7 +89,7 @@ implements ModbusPalXML, ModbusConst
     {
         for(int i=0; i<quantity; i++)
         {
-            Integer reg = holdingRegisters.getRegister(startingAddress+i);
+            Integer reg = holdingRegisters.getValue(startingAddress+i);
             ModbusTools.setUint16(buffer, offset + 2* i, reg);
         }
         return (byte)0x00;
@@ -99,7 +100,7 @@ implements ModbusPalXML, ModbusConst
         for(int i=0; i<quantity; i++)
         {
             Integer reg = ModbusTools.getUint16(buffer, offset + 2* i);
-            byte rc = holdingRegisters.setRegisterSilent(startingAddress+i,reg);
+            byte rc = holdingRegisters.setValueSilent(startingAddress+i,reg);
             if( rc != (byte)0x00 )
             {
                 return rc;
@@ -118,7 +119,7 @@ implements ModbusPalXML, ModbusConst
     {
         for(int i=0; i<quantity; i++)
         {
-            //Integer reg = holdingRegisters.getRegister(startingAddress+i);
+            //Integer reg = holdingRegisters.getValue(startingAddress+i);
             //ModbusTools.setUint16(buffer, offset + 2* i, reg);
         }
         return (byte)0x00;
@@ -129,7 +130,7 @@ implements ModbusPalXML, ModbusConst
         for(int i=0; i<quantity; i++)
         {
             //Integer reg = ModbusTools.getUint16(buffer, offset + 2* i);
-            //byte rc = holdingRegisters.setRegisterSilent(startingAddress+i,reg);
+            //byte rc = holdingRegisters.setValueSilent(startingAddress+i,reg);
             //if( rc != (byte)0x00 )
             //{
             //    return rc;
@@ -168,6 +169,9 @@ implements ModbusPalXML, ModbusConst
         tmpNames.removeAll(automationNames);
         // add the rest to the final list:
         automationNames.addAll(tmpNames);
+
+        // remove name of Null automation:
+        automationNames.remove(NullAutomation.NAME);
 
         String retval[] = new String[0];
         return automationNames.toArray(retval);
@@ -405,9 +409,7 @@ implements ModbusPalXML, ModbusConst
     public void importSlave(File importFile, int index, boolean withBindings, boolean withAutomations)
     throws ParserConfigurationException, SAXException, IOException, InstantiationException, IllegalAccessException
     {
-        DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
-        Document doc = docBuilder.parse(importFile);
+        Document doc = XMLTools.ParseXML(importFile);
 
         // normalize text representation
         doc.getDocumentElement().normalize();

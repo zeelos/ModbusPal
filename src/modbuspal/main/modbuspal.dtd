@@ -48,7 +48,7 @@ and open the template in the editor.
 <!ATTLIST generator class CDATA #REQUIRED>
 <!ATTLIST generator duration CDATA #REQUIRED>
 
-<!ELEMENT slave (holding_registers?)>
+<!ELEMENT slave (holding_registers?,coils?)>
 <!ATTLIST slave id CDATA #REQUIRED>
 <!ATTLIST slave enabled (true|false) "true">
 <!ATTLIST slave name CDATA #IMPLIED>
@@ -60,6 +60,13 @@ and open the template in the editor.
 <!ATTLIST register address CDATA #REQUIRED>
 <!ATTLIST register value CDATA "0">
 <!ATTLIST register name CDATA #IMPLIED>
+
+<!ELEMENT coils (coil*)>
+
+<!ELEMENT coil (binding?)>
+<!ATTLIST coil address CDATA #REQUIRED>
+<!ATTLIST coil value CDATA "0">
+<!ATTLIST coil name CDATA #IMPLIED>
 
 <!ELEMENT binding EMPTY>
 <!ATTLIST binding automation CDATA #REQUIRED>

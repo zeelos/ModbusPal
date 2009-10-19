@@ -17,6 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.parsers.ParserConfigurationException;
 import modbuspal.automation.Automation;
+import modbuspal.automation.NullAutomation;
 import modbuspal.generator.GeneratorFactory;
 import modbuspal.binding.Binding;
 import modbuspal.binding.BindingFactory;
@@ -412,6 +413,11 @@ implements ModbusPalXML, ModbusConst
      */
     public static Automation getAutomation(String name)
     {
+        if( NullAutomation.NAME.compareTo(name)==0 )
+        {
+            return NullAutomation.getInstance();
+        }
+
         for(int i=0; i<automations.size(); i++)
         {
             Automation automation = automations.get(i);
@@ -943,9 +949,10 @@ implements ModbusPalXML, ModbusConst
             {
                 // display a dialog and ask the user what to do:
                 ErrorMessage dialog = new ErrorMessage(2);
-                dialog.append("An automation with the same name already exists. Do you want to overwrite the existing automation or to keep it ?");
+                dialog.append("An automation called \""+name+"\" already exists. Do you want to overwrite the existing automation or to keep it ?");
                 dialog.setButton(0,"Overwrite");
                 dialog.setButton(1,"Keep existing");
+                dialog.setTitle("Importing automation \""+name+"\"");
                 dialog.setVisible(true);
 
                 // if the user does not want to overwrite the existing
@@ -1018,7 +1025,7 @@ implements ModbusPalXML, ModbusConst
 
         // retrieve the register that is the parent of this node
         Node parentRegister = XMLTools.findParent(node,"register");
-        String parentAddress = XMLTools.getAttribute(XML_REGISTER_ADDRESS_ATTRIBUTE, parentRegister);
+        String parentAddress = XMLTools.getAttribute(XML_ADDRESS_ATTRIBUTE, parentRegister);
         int registerAddress = Integer.parseInt( parentAddress );
 
         // retrieve the slave that is the parent of this register

@@ -37,7 +37,7 @@ implements Transferable
             {
 //                System.out.printf("Copying address=%d, value=%d; name=%s\r\n",
 //                    addresses[i],
-//                    source.getRegister(addresses[i]),
+//                    source.getValue(addresses[i]),
 //                    source.getName(addresses[i]) );
                 registers.add( source, addresses[i] );
             }

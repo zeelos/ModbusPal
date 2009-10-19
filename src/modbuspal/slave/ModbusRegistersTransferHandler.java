@@ -141,7 +141,7 @@ extends TransferHandler
         for( int i=0; i<addresses.length; i++ )
         {
             int j = i % source.getRowCount();
-            target.replace(source, source.getAddressAt(j), addresses[i]);
+            target.replace(source, source.getAddressOf(j), addresses[i]);
         }
         return false;
     }

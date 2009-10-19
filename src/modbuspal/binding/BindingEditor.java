@@ -32,7 +32,7 @@ import modbuspal.script.ScriptManagerDialog;
  */
 public class BindingEditor
 extends javax.swing.JDialog
-{
+{   
     class AutomationList
     implements ListModel
     {
@@ -42,16 +42,32 @@ extends javax.swing.JDialog
             automations = list;
         }
 
-        public Automation getAutomation(int index) {
-            return automations[index];
+        public Automation getAutomation(int index) 
+        {
+            if( index==0 )
+            {
+                return NullAutomation.getInstance();
+            }
+            else
+            {
+                return automations[index-1];
+            }
         }
 
         public int getSize() {
-            return automations.length;
+            return 1+automations.length;
         }
 
-        public Object getElementAt(int index) {
-            return automations[index].getName();
+        public Object getElementAt(int index) 
+        {
+            if( index==0 )
+            {
+                return NullAutomation.NAME;
+            }
+            else
+            {
+                return automations[index-1].getName();
+            }
         }
 
         public void addListDataListener(ListDataListener l) {

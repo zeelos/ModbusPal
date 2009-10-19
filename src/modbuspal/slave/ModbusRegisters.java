@@ -17,6 +17,7 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 import modbuspal.binding.Binding;
 import modbuspal.main.ModbusConst;
+import modbuspal.main.ModbusValuesMap;
 import modbuspal.main.ModbusPalXML;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -36,8 +37,12 @@ implements TableModel, ModbusPalXML, ModbusConst
     public static final int NAME_COLUMN_INDEX = 2;
     public static final int BINDING_COLUMN_INDEX = 3;
 
-    private Vector<Integer> registers = new Vector<Integer>(65536);
-    private Hashtable<Integer,Integer> values = new Hashtable<Integer,Integer>(65536);
+    protected String TXT_REGISTER = "register";
+    protected String TXT_REGISTERS = "registers";
+
+    //private Vector<Integer> registers = new Vector<Integer>(65536);
+    //private Hashtable<Integer,Integer> values = new Hashtable<Integer,Integer>(65536);
+    private ModbusValuesMap values = new ModbusValuesMap();
     private Hashtable<Integer,String> names = new Hashtable<Integer,String>(65536);
     private ArrayList<TableModelListener> tableModelListeners = new ArrayList<TableModelListener>();
     private Hashtable<Integer,Binding> bindings = new Hashtable<Integer,Binding>(65536);
@@ -58,7 +63,7 @@ implements TableModel, ModbusPalXML, ModbusConst
      */
     public void create(int startingAddress, int quantity)
     {
-        assert( startingAddress >= 0 );
+        /*assert( startingAddress >= 0 );
         assert( quantity >= 0 );
 
         // TODO: optimize! because creating all registers from 0 to 65536
@@ -71,22 +76,35 @@ implements TableModel, ModbusPalXML, ModbusConst
                 registers.add(address);
                 values.put( address, new Integer(0) );
             }
-        }
+        }*/
+        values.addIndexes(startingAddress, quantity);
         notifyTableChanged();
+    }
+
+    @Deprecated
+    public int getRegisterImpl(int address)
+    {
+        return getValueImpl(address);
+    }
+
+    @Deprecated
+    public int getRegister(int address)
+    {
+        return getValueImpl(address);
     }
 
     /**
      * Returns the value of the register, whose address is provided
      * in argument. Note that depending on the implementation (modbus/jbus),
      * an offset is applied to address.
-     * After the offset has been applied, returns the same result as getRegister()
+     * After the offset has been applied, returns the same result as getValue()
      * @param address the address of the register
-     * @return see getRegister() for info.
+     * @return see getValue() for info.
      */
-    public int getRegisterImpl(int address)
+    public int getValueImpl(int address)
     {
         address -= getOffset();
-        return getRegister(address);
+        return getValue(address);
     }
 
     /**
@@ -99,22 +117,27 @@ implements TableModel, ModbusPalXML, ModbusConst
      * @return value of the register. If the register doesn't exist, returns 0
      * by default.
      */
-    public int getRegister(int address)
+    public int getValue(int address)
     {
         Binding binding = bindings.get(address);
         if( binding != null )
         {
-            return binding.getRegister();
+            return getValue(binding);
         }
         else
         {
-            return values.get(address);
+            return values.getByIndex(address);
         }
     }
 
+    protected int getValue(Binding binding)
+    {
+        return binding.getRegister();
+    }
+
+
     void clear()
     {
-        registers.clear();
         values.clear();
         names.clear();
         bindings.clear();
@@ -133,31 +156,42 @@ implements TableModel, ModbusPalXML, ModbusConst
      * @param val
      * @return
      */
-    byte setRegisterSilent(int address, int val)
+    byte setValueSilent(int address, int val)
     {
-        if( registers.contains(address) == false )
+        if( values.indexExists(address) == false )
         {
             return XC_ILLEGAL_DATA_ADDRESS;
         }
-        values.put(address,val);
+        values.putByIndex(address,val);
         return XC_SUCCESSFUL;
     }
 
+
+    @Deprecated
+    public byte setRegisterImpl(int address, int val)
+    {
+        return setValueImpl(address,val);
+    }
 
     /**
      * * Sets the value of the register identified by the specified address.
      * Note that depending on the implementation (modbus/jbus),
      * an offset is applied to address.
-     * After the offset has been applied, returns the same result as setRegister()
+     * After the offset has been applied, returns the same result as setValue()
      * @param address the address of the register
-     * @return see setRegister() for info.
+     * @return see setValue() for info.
      */
-    public byte setRegisterImpl(int address, int val)
+    public byte setValueImpl(int address, int val)
     {
         address -= getOffset();
-        return setRegister(address,val);
+        return setValue(address,val);
     }
 
+    @Deprecated
+    public byte setRegister(int address, int val)
+    {
+        return setValue(address,val);
+    }
 
     /**
      * Sets the value of the register identified by the specified address. Note that
@@ -171,17 +205,17 @@ implements TableModel, ModbusPalXML, ModbusConst
      * @return the modbus error code indicating the success of the failure of the
      * action. In case of success, the returned value is XC_SUCCESSFUL (0x00).
      */
-    public byte setRegister(int address, int val)
+    public byte setValue(int address, int val)
     {
-        byte retval = setRegisterSilent(address,val);
-        notifyTableChanged(indexOf(address), VALUE_COLUMN_INDEX);
+        byte retval = setValueSilent(address,val);
+        notifyTableChanged(rowIndexOf(address), VALUE_COLUMN_INDEX);
         return retval;
     }
 
 
-    public int indexOf(int address)
+    public int rowIndexOf(int address)
     {
-        return registers.indexOf(address);
+        return values.getOrderOf(address);
     }
 
     private void set(int address, Integer value, String name, Binding binding)
@@ -191,7 +225,7 @@ implements TableModel, ModbusPalXML, ModbusConst
         {
             value = 0;
         }
-        values.put(address, value);
+        values.putByIndex(address, value);
 
         // set the name of the register
         if( name != null )
@@ -211,7 +245,7 @@ implements TableModel, ModbusPalXML, ModbusConst
             bindings.put(address, binding );
         }
 
-        notifyTableChanged( registers.indexOf(address) );
+        notifyTableChanged( values.getOrderOf(address) );
     }
 
 
@@ -231,8 +265,8 @@ implements TableModel, ModbusPalXML, ModbusConst
 
         for( int i=0; i<quantity; i++ )
         {
-            int index = startingAddress + i;
-            if( values.get(index) == null )
+            int address = startingAddress + i;
+            if( exist(address) == false )
             {
                 return false;
             }
@@ -252,7 +286,7 @@ implements TableModel, ModbusPalXML, ModbusConst
     {
         assert( address >= 0 );
 
-        if( values.get(address) == null )
+        if( values.indexExists(address) == false )
         {
             return false;
         }
@@ -271,8 +305,7 @@ implements TableModel, ModbusPalXML, ModbusConst
         }
 
         // delete register
-        registers.remove( (Integer)address );
-        values.remove( address );
+        values.delete( address );
         names.remove( address );
         notifyTableChanged();
     }
@@ -282,7 +315,7 @@ implements TableModel, ModbusPalXML, ModbusConst
 
     void replace(ModbusRegisters source, int srcAddress, int dstAddress)
     {
-        Integer value = source.values.get(srcAddress);
+        Integer value = source.values.getByIndex(srcAddress);
         String name = source.names.get(srcAddress);
         Binding binding = source.bindings.get(srcAddress);
         set(dstAddress, value, name, binding);
@@ -292,13 +325,13 @@ implements TableModel, ModbusPalXML, ModbusConst
 
     void add(ModbusRegisters source, int sourceAddress)
     {
-        // create the register if necessary
-        if( registers.contains(sourceAddress) == false )
+        // AddIndexes the register if necessary
+        if( values.indexExists(sourceAddress) == false )
         {
-            registers.add(sourceAddress);
+            values.addIndex(sourceAddress);
         }
 
-        Integer value = source.values.get(sourceAddress);
+        Integer value = source.values.getByIndex(sourceAddress);
         String name = source.names.get(sourceAddress);
         Binding binding = source.bindings.get(sourceAddress);
 
@@ -323,8 +356,8 @@ implements TableModel, ModbusPalXML, ModbusConst
     public void bind(int address, Binding binding)
     {
         bindings.put(address, binding);
-        int index = registers.indexOf(address);
-        notifyTableChanged(index);
+        int row = values.getOrderOf(address);
+        notifyTableChanged(row);
         binding.attach(this,address);
     }
 
@@ -332,7 +365,7 @@ implements TableModel, ModbusPalXML, ModbusConst
     {
         Binding removed = bindings.remove(address);
         removed.detach();
-        notifyTableChanged( registers.indexOf(address) );
+        notifyTableChanged( values.getOrderOf(address) );
     }
 
 
@@ -360,7 +393,7 @@ implements TableModel, ModbusPalXML, ModbusConst
 
     public int getRowCount()
     {
-        return values.size();
+        return values.getCount();
     }
 
     public int getColumnCount()
@@ -397,7 +430,7 @@ implements TableModel, ModbusPalXML, ModbusConst
         switch(columnIndex)
         {
             case ADDRESS_COLUMN_INDEX: return false;
-            case VALUE_COLUMN_INDEX: return !isBound( getAddressAt(rowIndex) );
+            case VALUE_COLUMN_INDEX: return !isBound( getAddressOf(rowIndex) );
             case NAME_COLUMN_INDEX: return true;
             case BINDING_COLUMN_INDEX: return false;
             default: return false;
@@ -406,26 +439,26 @@ implements TableModel, ModbusPalXML, ModbusConst
 
     public Object getValueAt(int rowIndex, int columnIndex)
     {
-        int addr = registers.get(rowIndex);
+        int index = values.getIndexOf(rowIndex);
         switch(columnIndex)
         {
             case ADDRESS_COLUMN_INDEX:
             {
-                return addressOffset+addr;
+                return addressOffset+index;
             }
 
             case VALUE_COLUMN_INDEX:
             {
-                int reg = getRegister(addr);
+                int reg = getValue(index);
                 return String.valueOf( reg );
             }
             case NAME_COLUMN_INDEX:
             {
-                return names.get(addr);
+                return names.get(index);
             }
             case BINDING_COLUMN_INDEX:
             {
-                Binding binding = bindings.get(addr);
+                Binding binding = bindings.get(index);
                 if( binding!=null )
                 {
                     return binding.toString();
@@ -457,7 +490,7 @@ implements TableModel, ModbusPalXML, ModbusConst
 
     public void setValueAt(Object aValue, int rowIndex, int columnIndex)
     {
-        int reg = registers.get(rowIndex);
+        int index = values.getIndexOf(rowIndex);
         switch( columnIndex )
         {
             case VALUE_COLUMN_INDEX:
@@ -465,7 +498,7 @@ implements TableModel, ModbusPalXML, ModbusConst
                 if( aValue instanceof String )
                 {
                     Integer val = Integer.parseInt((String)aValue);
-                    values.put(reg, checkValueBoundaries(val));
+                    values.putByIndex(index, checkValueBoundaries(val));
                     notifyTableChanged(rowIndex,columnIndex);
                 }
                 break;
@@ -476,7 +509,7 @@ implements TableModel, ModbusPalXML, ModbusConst
                 if( aValue instanceof String )
                 {
                     String val = (String)aValue;
-                    names.put(reg, val);
+                    names.put(index, val);
                     notifyTableChanged(rowIndex,columnIndex);
                 }
                 break;
@@ -506,10 +539,10 @@ implements TableModel, ModbusPalXML, ModbusConst
         return names.get(address);
     }
 
-    public int getAddressAt(int row)
+    public int getAddressOf(int row)
     {
-        Integer address = registers.get(row);
-        return address;
+        int index = values.getIndexOf(row);
+        return index;
     }
 
     Collection<String> getRequiredAutomations()
@@ -549,19 +582,18 @@ implements TableModel, ModbusPalXML, ModbusConst
     //
     //==========================================================================
 
-
     public void save(OutputStream out, boolean withBindings)
     throws IOException
     {
-        for( int i=0; i<registers.size(); i++ )
+        for( int i=0; i<values.getCount(); i++ )
         {
-            int index = registers.get(i);
+            int index = values.getIndexOf(i);
 
-            StringBuffer tag = new StringBuffer("<register "+ XML_REGISTER_ADDRESS_ATTRIBUTE +"=\"");
+            StringBuffer tag = new StringBuffer("<"+TXT_REGISTER+" "+ XML_ADDRESS_ATTRIBUTE +"=\"");
             tag.append(String.valueOf(index));
             tag.append("\" value=\"");
             
-            int val = values.get(index);
+            int val = values.getByIndex(index);
             tag.append(String.valueOf(val));
             tag.append("\"");
 
@@ -584,7 +616,7 @@ implements TableModel, ModbusPalXML, ModbusConst
                 tag.append(">\r\n");
                 out.write( tag.toString().getBytes() );
                 binding.save(out);
-                String closeTag = "</register>\r\n";
+                String closeTag = "</"+TXT_REGISTER+">\r\n";
                 out.write( closeTag.getBytes() );
             }
         }
@@ -596,7 +628,7 @@ implements TableModel, ModbusPalXML, ModbusConst
         for(int i=0; i<nodes.getLength(); i++ )
         {
             Node child = nodes.item(i);
-            if( child.getNodeName().compareTo("register")==0 )
+            if( child.getNodeName().compareTo(TXT_REGISTER)==0 )
             {
                 loadRegister(child);
             }
@@ -616,7 +648,7 @@ implements TableModel, ModbusPalXML, ModbusConst
             Node attr = attributes.item(i);
             String nodeName = attr.getNodeName();
 
-            if( nodeName.compareTo(XML_REGISTER_ADDRESS_ATTRIBUTE)==0 )
+            if( nodeName.compareTo(XML_ADDRESS_ATTRIBUTE)==0 )
             {
                 address = new Integer( attr.getNodeValue() );
             }
@@ -634,12 +666,12 @@ implements TableModel, ModbusPalXML, ModbusConst
         assert( address != null );
         assert( value != null );
 
-        if( registers.contains(address)==false )
+        if( values.indexExists(address)==false )
         {
-            registers.add(address);
+            values.addIndex(address);
         }
 
-        values.put( address, value );
+        values.putByIndex( address, value );
 
         if( name != null )
         {
@@ -671,7 +703,7 @@ implements TableModel, ModbusPalXML, ModbusConst
 
     public void notifyRegisterChanged(int registerAddress)
     {
-        int index = indexOf(registerAddress);
+        int index = rowIndexOf(registerAddress);
         notifyTableChanged(index);
     }
 

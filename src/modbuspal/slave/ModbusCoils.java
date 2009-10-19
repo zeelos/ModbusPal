@@ -5,6 +5,8 @@
 
 package modbuspal.slave;
 
+import modbuspal.binding.Binding;
+
 /**
  *
  * @author avincon
@@ -12,6 +14,26 @@ package modbuspal.slave;
 public class ModbusCoils
 extends ModbusRegisters
 {
+    public ModbusCoils()
+    {
+        super();
+        TXT_REGISTER = "coil";
+        TXT_REGISTERS = "coils";
+    }
+
+
+
+    @Override
+    protected int getValue(Binding binding)
+    {
+        if( binding.getCoil()==true )
+        {
+            return 1;
+        }
+        return 0;
+    }
+
+
     @Override
     protected Integer checkValueBoundaries(Integer value)
     {
