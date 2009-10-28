@@ -18,6 +18,38 @@ package modbuspal.main;
 public class WorkInProgressDialog
 extends javax.swing.JDialog
 {
+    /*
+    class MyLayoutManager
+    implements LayoutManager        
+    {
+        public void addLayoutComponent(String name, Component comp) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        public void removeLayoutComponent(Component comp) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        public Dimension preferredLayoutSize(Container parent) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        public Dimension minimumLayoutSize(Container parent) {
+            throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        public void layoutContainer(Container parent)
+        {
+            int width = parent.getWidth();
+            int height = parent.getHeight();
+
+            logoLabel.setLocation(0, 0);
+            logoLabel.setSize(width, height);
+            messageLabel.setLocation(5, 5);
+            messageLabel.setSize(width-10, height-10);
+        }
+    }
+*/
 
     /** Creates new form WorkInProgressDialog */
     public WorkInProgressDialog(java.awt.Frame parent, String title, String message)
@@ -38,13 +70,23 @@ extends javax.swing.JDialog
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        logoLabel = new javax.swing.JLabel();
         messageLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(350, 100));
 
+        logoLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        logoLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/modbuspal/main/img/modbuspal.png"))); // NOI18N
+        logoLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        getContentPane().add(logoLabel, java.awt.BorderLayout.WEST);
+
+        messageLabel.setBackground(new java.awt.Color(255, 255, 255));
+        messageLabel.setFont(new java.awt.Font("Tahoma", 1, 14)); // NOI18N
         messageLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         messageLabel.setText("MESSAGE.");
+        messageLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        messageLabel.setOpaque(true);
         getContentPane().add(messageLabel, java.awt.BorderLayout.CENTER);
 
         pack();
@@ -53,6 +95,7 @@ extends javax.swing.JDialog
  
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel logoLabel;
     private javax.swing.JLabel messageLabel;
     // End of variables declaration//GEN-END:variables
 
