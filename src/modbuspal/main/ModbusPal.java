@@ -1232,6 +1232,14 @@ implements ModbusPalXML, ModbusConst
         return knownSlaves[slaveID].setCoils(startingAddress, quantity, buffer, offset);
     }
 
+    public static byte setCoil(int slaveID, int address, int value)
+    {
+        assert( knownSlaves[slaveID] != null );
+        assert( address >= 0 );
+        assert( (value==0x0000) || (value==0xFF00) );
+        return knownSlaves[slaveID].setCoil(address, value);
+    }
+
     public static boolean coilsExist(int slaveID, int startingAddress, int quantity)
     {
         assert( knownSlaves[slaveID] != null );

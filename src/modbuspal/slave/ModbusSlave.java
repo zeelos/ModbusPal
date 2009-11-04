@@ -88,23 +88,25 @@ implements ModbusPalXML, ModbusConst
         for(int i=0; i<quantity; i++)
         {
             Integer reg = holdingRegisters.getValue(startingAddress+i);
-            ModbusTools.setUint16(buffer, offset + 2* i, reg);
+            ModbusTools.setUint16(buffer, offset+(2*i), reg);
         }
         return (byte)0x00;
     }
 
     public byte setHoldingRegisters(int startingAddress, int quantity, byte[] buffer, int offset)
     {
+        byte rc = (byte)0x00;
         for(int i=0; i<quantity; i++)
         {
             Integer reg = ModbusTools.getUint16(buffer, offset + 2* i);
-            byte rc = holdingRegisters.setValueSilent(startingAddress+i,reg);
+            rc = holdingRegisters.setValueSilent(startingAddress+i,reg);
             if( rc != (byte)0x00 )
             {
-                return rc;
+                break;
             }
         }
-        return (byte)0x00;
+        holdingRegisters.notifyTableChanged();
+        return rc;
     }
 
 
@@ -117,24 +119,32 @@ implements ModbusPalXML, ModbusConst
     {
         for(int i=0; i<quantity; i++)
         {
-            //Integer reg = holdingRegisters.getValue(startingAddress+i);
-            //ModbusTools.setUint16(buffer, offset + 2* i, reg);
+            int coil = coils.getValue(startingAddress+i);
+            ModbusTools.setBit(buffer, (offset*8)+i, coil);
         }
         return (byte)0x00;
     }
 
     public byte setCoils(int startingAddress, int quantity, byte[] buffer, int offset)
     {
+        byte rc = (byte)0x00;
         for(int i=0; i<quantity; i++)
         {
-            //Integer reg = ModbusTools.getUint16(buffer, offset + 2* i);
-            //byte rc = holdingRegisters.setValueSilent(startingAddress+i,reg);
-            //if( rc != (byte)0x00 )
-            //{
-            //    return rc;
-            //}
+            int coil = ModbusTools.getBit(buffer, (offset*8)+i);
+            rc = coils.setValueSilent(startingAddress+i,coil);
+            if( rc != (byte)0x00 )
+            {
+                break;
+            }
         }
-        return (byte)0x00;
+        coils.notifyTableChanged();
+        return rc;
+    }
+
+    public byte setCoil(int address, int value)
+    {
+        byte rc = coils.setValue(address,value);
+        return rc;
     }
 
     public ModbusCoils getCoils()

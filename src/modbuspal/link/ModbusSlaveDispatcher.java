@@ -45,6 +45,9 @@ implements ModbusConst
             case FC_READ_COILS:
                 return readCoils(slaveID, buffer, offset);
 
+            case FC_WRITE_SINGLE_COIL:
+                return writeSingleCoil(slaveID,buffer,offset);
+
             case FC_WRITE_MULTIPLE_COILS:
                 return writeMultipleCoils(slaveID, buffer, offset);
 
@@ -170,6 +173,33 @@ implements ModbusConst
         if( rc != (byte)0x00 )
         {
             return makeExceptionResponse(FC_WRITE_MULTIPLE_REGISTERS, rc, buffer, offset);
+        }
+
+        return 5;
+    }
+
+
+    private int writeSingleCoil(int slaveID, byte[] buffer, int offset)
+    {
+        int outputAddress = ModbusTools.getUint16(buffer, offset+1);
+        int outputValue = ModbusTools.getUint16(buffer, offset+3);
+
+        if( (outputValue!=0x0000) && (outputValue!=0xFF00) )
+        {
+            System.err.println("Write single coil: bad value "+ outputValue);
+            return makeExceptionResponse(FC_WRITE_SINGLE_COIL, XC_ILLEGAL_DATA_VALUE, buffer, offset);
+        }
+
+        if( ModbusPal.coilsExist(slaveID, outputAddress, 1) == false )
+        {
+            System.err.println("Write single coil: bad address "+outputAddress);
+            return makeExceptionResponse(FC_WRITE_SINGLE_COIL, XC_ILLEGAL_DATA_ADDRESS, buffer, offset);
+        }
+
+        byte rc = ModbusPal.setCoil(slaveID,outputAddress,outputValue);
+        if( rc != (byte)0x00 )
+        {
+            return makeExceptionResponse(FC_WRITE_SINGLE_COIL, rc, buffer, offset);
         }
 
         return 5;

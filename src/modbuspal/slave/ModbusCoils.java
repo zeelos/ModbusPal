@@ -33,6 +33,16 @@ extends ModbusRegisters
         return 0;
     }
 
+    @Override
+    byte setValueSilent(int address, int val)
+    {
+        if( val==0 )
+        {
+            return super.setValueSilent(address,0);
+        }
+        return super.setValueSilent(address,1);
+    }
+
 
     @Override
     protected Integer checkValueBoundaries(Integer value)

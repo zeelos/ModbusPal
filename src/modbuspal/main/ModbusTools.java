@@ -37,6 +37,42 @@ public class ModbusTools
             return rc;
     }
 
+    public static void setBit(byte[] buffer, int offset, int value)
+    {
+        // get byte
+        int bitOffset = offset%8;
+        int byteOffset = offset / 8;
+        int val = (int)buffer[byteOffset];
 
+        // clear bit
+        if( value==0 )
+        {
+            int mask = ~(1<<bitOffset);
+            val &= mask;
+        }
+
+        // set bit
+        else
+        {
+            int mask = (1<<bitOffset);
+            val |= mask;
+        }
+        // put changed value
+        buffer[byteOffset] = (byte)(0xFF&val);
+    }
+
+    public static int getBit(byte[] buffer, int offset)
+    {
+        // get byte
+        int bitOffset = offset%8;
+        int byteOffset = offset / 8;
+        int val = (int)buffer[byteOffset];
+
+        int mask = (1<<bitOffset);
+        val &= mask;
+
+        val = (val>>bitOffset);
+        return val;
+    }
 
 }
