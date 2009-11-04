@@ -5,7 +5,6 @@
 
 package modbuspal.script;
 
-import modbuspal.script.PythonRunner;
 import modbuspal.instanciator.Instanciator;
 import java.io.IOException;
 import java.io.File;
@@ -13,7 +12,6 @@ import java.io.OutputStream;
 import modbuspal.main.FileTools;
 
 /**
- 
  * @author nnovic
  */
 public abstract class ScriptRunner
@@ -127,5 +125,12 @@ implements Instanciator
             }
         }
         return filename;
+    }
+
+
+    @Override
+    public String getPath()
+    {
+        return scriptFile.getPath();
     }
 }

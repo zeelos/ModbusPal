@@ -23,6 +23,8 @@
 
   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignFlowLayout">
     <Property name="alignment" type="int" value="0"/>
+    <Property name="horizontalGap" type="int" value="3"/>
+    <Property name="verticalGap" type="int" value="3"/>
   </Layout>
   <SubComponents>
     <Component class="javax.swing.JTextField" name="nameTextField">
@@ -40,7 +42,13 @@
     </Component>
     <Component class="javax.swing.JToggleButton" name="playToggleButton">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Start"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/modbuspal/automation/img/play.png"/>
+        </Property>
+        <Property name="toolTipText" type="java.lang.String" value="Start or stop this automation"/>
+        <Property name="selectedIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/modbuspal/automation/img/stop.png"/>
+        </Property>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="playToggleButtonActionPerformed"/>
@@ -48,7 +56,13 @@
     </Component>
     <Component class="javax.swing.JToggleButton" name="showToggleButton">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Show"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/modbuspal/automation/img/show.png"/>
+        </Property>
+        <Property name="toolTipText" type="java.lang.String" value="Show or hide the editor of this automation"/>
+        <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
+          <Insets value="[2, 2, 2, 2]"/>
+        </Property>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="showToggleButtonActionPerformed"/>
@@ -56,7 +70,13 @@
     </Component>
     <Component class="javax.swing.JButton" name="deleteButton">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Delete"/>
+        <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
+          <Image iconType="3" name="/modbuspal/automation/img/delete.png"/>
+        </Property>
+        <Property name="toolTipText" type="java.lang.String" value="Delete this automation"/>
+        <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
+          <Insets value="[2, 2, 2, 2]"/>
+        </Property>
       </Properties>
       <Events>
         <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="deleteButtonActionPerformed"/>

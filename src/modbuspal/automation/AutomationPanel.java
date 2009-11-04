@@ -10,20 +10,18 @@
  * Created on 16 déc. 2008, 15:17:40
  */
 
-package modbuspal.main;
+package modbuspal.automation;
 
+import modbuspal.main.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import modbuspal.automation.Automation;
-import modbuspal.automation.AutomationEditor;
-import modbuspal.automation.AutomationStateListener;
 import modbuspal.generator.Generator;
 
 /**
  *
  * @author nnovic
  */
-class AutomationPanel
+public class AutomationPanel
 extends javax.swing.JPanel
 implements WindowListener, AutomationStateListener
 {
@@ -45,7 +43,7 @@ implements WindowListener, AutomationStateListener
     }
 
 
-    void disconnect()
+    public void disconnect()
     {
         automationEditor.removeWindowListener(this);
         automationEditor.setVisible(false);
@@ -54,7 +52,7 @@ implements WindowListener, AutomationStateListener
     }
 
 
-    Automation getAutomation()
+    public Automation getAutomation()
     {
         return automation;
     }
@@ -92,7 +90,7 @@ implements WindowListener, AutomationStateListener
         deleteButton = new javax.swing.JButton();
 
         setBorder(javax.swing.BorderFactory.createEtchedBorder());
-        setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+        setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 3, 3));
 
         nameTextField.setText(automation.getName());
         nameTextField.setPreferredSize(new java.awt.Dimension(120, 20));
@@ -103,7 +101,9 @@ implements WindowListener, AutomationStateListener
         });
         add(nameTextField);
 
-        playToggleButton.setText("Start");
+        playToggleButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/modbuspal/automation/img/play.png"))); // NOI18N
+        playToggleButton.setToolTipText("Start or stop this automation");
+        playToggleButton.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/modbuspal/automation/img/stop.png"))); // NOI18N
         playToggleButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 playToggleButtonActionPerformed(evt);
@@ -111,7 +111,9 @@ implements WindowListener, AutomationStateListener
         });
         add(playToggleButton);
 
-        showToggleButton.setText("Show");
+        showToggleButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/modbuspal/automation/img/show.png"))); // NOI18N
+        showToggleButton.setToolTipText("Show or hide the editor of this automation");
+        showToggleButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
         showToggleButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 showToggleButtonActionPerformed(evt);
@@ -119,7 +121,9 @@ implements WindowListener, AutomationStateListener
         });
         add(showToggleButton);
 
-        deleteButton.setText("Delete");
+        deleteButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/modbuspal/automation/img/delete.png"))); // NOI18N
+        deleteButton.setToolTipText("Delete this automation");
+        deleteButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
         deleteButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 deleteButtonActionPerformed(evt);
@@ -215,7 +219,7 @@ implements WindowListener, AutomationStateListener
     @Override
     public void automationHasEnded(Automation source)
     {
-        playToggleButton.setText("Start");
+        //playToggleButton.setText("Start");
         playToggleButton.setSelected(false);
         setBackground(false);
     }
@@ -223,7 +227,7 @@ implements WindowListener, AutomationStateListener
     @Override
     public void automationHasStarted(Automation aThis)
     {
-        playToggleButton.setText("Stop");
+        //playToggleButton.setText("Stop");
         playToggleButton.setSelected(true);
         setBackground(true);
     }

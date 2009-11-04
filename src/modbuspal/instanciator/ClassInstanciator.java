@@ -73,4 +73,10 @@ implements Instanciator
     {
         throw new UnsupportedOperationException("Not supported yet.");
     }
+
+    @Override
+    public String getPath()
+    {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

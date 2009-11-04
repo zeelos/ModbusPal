@@ -11,6 +11,7 @@
 
 package modbuspal.main;
 
+import modbuspal.automation.AutomationPanel;
 import modbuspal.toolkit.XMLTools;
 import modbuspal.toolkit.NumericTextField;
 import java.net.URISyntaxException;

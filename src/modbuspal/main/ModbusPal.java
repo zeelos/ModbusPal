@@ -443,7 +443,7 @@ implements ModbusPalXML, ModbusConst
      * @param name
      * @return
      */
-    static String checkAutomationNewName(Automation auto, String name)
+    public static String checkAutomationNewName(Automation auto, String name)
     {
         // TODO: is synchronization required??
         //synchronized(this)
@@ -565,7 +565,7 @@ implements ModbusPalXML, ModbusConst
     }
 
 
-    static void removeAutomation(Automation automation)
+    public static void removeAutomation(Automation automation)
     {
         // disconnect the automation from the rest of the project
         automation.disconnect();

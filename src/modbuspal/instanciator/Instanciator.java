@@ -46,4 +46,10 @@ public interface Instanciator
      * @return an instance of the object as defined by this instanciator.
      */
     public Binding newBinding();
+
+    /**
+     * Returns the complete path of the script file.
+     * @return complete path of the script file.
+     */
+    public String getPath();
 }

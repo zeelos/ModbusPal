@@ -161,10 +161,10 @@ implements ModbusConst
             return;
         }
 
-        else if( rowCount == 1)
+        else
         {
             // display the bind dialog
-            BindingEditor dialog = new BindingEditor(GUITools.findFrame(this), true);
+            BindingEditor dialog = new BindingEditor(GUITools.findFrame(this));
             slaveDialog.setStatus("Binding...");
             dialog.setVisible(true);
 
@@ -176,45 +176,13 @@ implements ModbusConst
                 return;
             }
 
-            // retrieve the parameters of the binding :
-            int selectedAddress = ((ModbusRegistersTable)registersTable).getSelectedAddress();
+            // get the selected binding order
             int selectedOrder = dialog.getSelectedOrder();
-            String selectedClass = dialog.getSelectedClass();
-
-            try
-            {
-                // instanciate the binding:
-                Binding binding = BindingFactory.newBinding(selectedClass);
-                binding.setup(source, selectedOrder);
-
-                // do the binding:
-                registers.bind(selectedAddress,binding);
-                slaveDialog.setStatus("Binding completed.");
-            } 
-            catch (Exception ex)
-            {
-                Logger.getLogger(ModbusSlaveDialog.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-
-        else
-        {
-            // display the bind dialog
-            BindingEditor dialog = new BindingEditor(GUITools.findFrame(this), false);
-            slaveDialog.setStatus("Binding...");
-            dialog.setVisible(true);
-
-            // retrieve the selected automation
-            Automation source = dialog.getSelectedAutomation();
-            if( source == null ) {
-                slaveDialog.setStatus("Binding cancelled by user.");
-                return;
-            }
-
+            
             // get the selected binding class
             String selectedClass = dialog.getSelectedClass();
 
-            // get the selected registers rows
+            // get the selected rows
             int selectedAddresses[] = ((ModbusRegistersTable)registersTable).getSelectedAddresses();
 
             // bind all selected registers
@@ -224,7 +192,7 @@ implements ModbusConst
                 {
                     // instanciate the binding:
                     Binding binding = BindingFactory.newBinding(selectedClass);
-                    binding.setup(source, i);
+                    binding.setup(source, selectedOrder);
                     // do the binding:
                     registers.bind(selectedAddresses[i],binding);
                 } 

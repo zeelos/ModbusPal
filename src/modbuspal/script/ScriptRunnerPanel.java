@@ -57,6 +57,7 @@ extends javax.swing.JPanel
         setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
         classnameLabel.setText(runner.getClassName());
+        classnameLabel.setToolTipText(runner.getPath());
         add(classnameLabel);
 
         executeButton.setText("Execute");

@@ -153,14 +153,12 @@ extends javax.swing.JDialog
     private OrderList orderList = new OrderList();
 
     /** Creates new form BindingEditor */
-    public BindingEditor(Frame frame, boolean allowOrderSelection)
+    public BindingEditor(Frame frame)
     {
         super(frame, true);
         automations = new AutomationList( ModbusPal.getAutomations() );
         bindings = new BindingList( BindingFactory.getFactory().getList() );
         initComponents();
-        orderComboBox.setEnabled(allowOrderSelection);
-        //bindingsComboBox.setSelectedIndex(0);
     }
 
     public String getSelectedClass()
