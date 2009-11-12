@@ -34,6 +34,7 @@ import modbuspal.generator.GeneratorFactory;
 import modbuspal.link.*;
 import modbuspal.master.ModbusMaster;
 import modbuspal.master.ModbusMasterDialog;
+import modbuspal.recorder.ModbusPalRecorder;
 import modbuspal.script.ScriptManagerDialog;
 import modbuspal.slave.ModbusSlave;
 import modbuspal.toolkit.XFileChooser;
@@ -461,10 +462,12 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
         runToggleButton = new javax.swing.JToggleButton();
         learnToggleButton = new javax.swing.JToggleButton();
         tiltLabel = new TiltLabel();
+        recordToggleButton = new javax.swing.JToggleButton();
         projectPanel = new javax.swing.JPanel();
         loadButton = new javax.swing.JButton();
         saveProjectButton = new javax.swing.JButton();
         clearProjectButton = new javax.swing.JButton();
+        saveProjectAsButton = new javax.swing.JButton();
         toolsPanel = new javax.swing.JPanel();
         masterToggleButton = new javax.swing.JToggleButton();
         scriptsToggleButton = new javax.swing.JToggleButton();
@@ -563,7 +566,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
         runPanel.add(runToggleButton, gridBagConstraints);
@@ -575,7 +578,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -584,10 +587,22 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
 
         tiltLabel.setText("X");
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
         runPanel.add(tiltLabel, gridBagConstraints);
+
+        recordToggleButton.setText("Record");
+        recordToggleButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                recordToggleButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridwidth = 2;
+        runPanel.add(recordToggleButton, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -634,6 +649,17 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
             }
         });
         projectPanel.add(clearProjectButton, new java.awt.GridBagConstraints());
+
+        saveProjectAsButton.setText("Save as");
+        saveProjectAsButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                saveProjectButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        projectPanel.add(saveProjectAsButton, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -976,7 +1002,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
         // a FileChooser so that the user can choose where to save
         // the current project.
         //
-        if( projectFile == null )
+        if( (projectFile==null) || (evt.getSource()==saveProjectAsButton) )
         {
             JFileChooser saveDialog = new XFileChooser(XFileChooser.PROJECT_FILE);
             saveDialog.showSaveDialog(this);
@@ -1208,6 +1234,27 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
         }
     }//GEN-LAST:event_consoleToggleButtonActionPerformed
 
+    private void recordToggleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_recordToggleButtonActionPerformed
+
+        if( recordToggleButton.isSelected() )
+        {
+            try {
+                ModbusPalRecorder.start();
+            } catch (IOException ex) {
+                Logger.getLogger(ModbusPalGui.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+        else
+        {
+            try {
+                ModbusPalRecorder.stop();
+            } catch (IOException ex) {
+                Logger.getLogger(ModbusPalGui.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+    }//GEN-LAST:event_recordToggleButtonActionPerformed
+
 
 
 
@@ -1237,9 +1284,11 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
     private javax.swing.JComboBox parityComboBox;
     private javax.swing.JTextField portTextField;
     private javax.swing.JPanel projectPanel;
+    private javax.swing.JToggleButton recordToggleButton;
     private javax.swing.JCheckBox rtsctsCheckBox;
     private javax.swing.JPanel runPanel;
     private javax.swing.JToggleButton runToggleButton;
+    private javax.swing.JButton saveProjectAsButton;
     private javax.swing.JButton saveProjectButton;
     private javax.swing.JToggleButton scriptsToggleButton;
     private javax.swing.JPanel serialSettingsPanel;

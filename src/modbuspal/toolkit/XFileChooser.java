@@ -24,10 +24,11 @@ implements ActionListener
     public static final int PROJECT_FILE = 0;
     public static final int SLAVE_FILE = 1;
     public static final int AUTOMATION_FILE = 2;
+    public static final int RECORDER_FILE = 3;
 
-    private static final String REG_KEYS[] =   {"project_file", "slave_file",        "automation_file"};
-    private static final String PROF_TYPES[] = {"Project file", "Slave export file", "Automation export file"};
-    private static final String PROF_EXT[] =   {"xmpp",         "xmps",              "xmpa"};
+    private static final String REG_KEYS[] =   {"project_file", "slave_file",        "automation_file",        "recorder_file"};
+    private static final String PROF_TYPES[] = {"Project file", "Slave export file", "Automation export file", "Recorder file"};
+    private static final String PROF_EXT[] =   {"xmpp",         "xmps",              "xmpa",                   "xmpr"};
 
     private Preferences preferences;
     private int selectedProfile;

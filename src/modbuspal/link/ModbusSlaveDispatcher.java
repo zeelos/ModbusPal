@@ -6,6 +6,7 @@
 package modbuspal.link;
 
 import modbuspal.main.*;
+import modbuspal.recorder.ModbusPalRecorder;
 
 
 /**
@@ -20,6 +21,9 @@ implements ModbusConst
     {
         ModbusPal.tilt();
 
+        // record the request
+        ModbusPalRecorder.recordIncoming(slaveID,buffer,offset,pduLength);
+
         // check if the slave is enabled
         if( ModbusPal.isSlaveEnabled(slaveID) == false )
         {
@@ -31,30 +35,43 @@ implements ModbusConst
         byte functionCode = buffer[offset+0];
         if( ModbusPal.isFunctionEnabled(slaveID, functionCode) == false )
         {
-            return makeExceptionResponse(functionCode,XC_ILLEGAL_FUNCTION, buffer, offset);
+            int length = makeExceptionResponse(functionCode,XC_ILLEGAL_FUNCTION, buffer, offset);
+            ModbusPalRecorder.recordOutgoing(slaveID,buffer,offset,length);
+            return length;
         }
+
+        int length;
 
         switch( functionCode )
         {
             case FC_READ_HOLDING_REGISTERS:
-                return readHoldingRegisters(slaveID, buffer, offset);
+                length = readHoldingRegisters(slaveID, buffer, offset);
+                break;
 
             case FC_WRITE_MULTIPLE_REGISTERS:
-                return writeMultipleRegisters(slaveID, buffer, offset);
+                length = writeMultipleRegisters(slaveID, buffer, offset);
+                break;
 
             case FC_READ_COILS:
-                return readCoils(slaveID, buffer, offset);
+                length = readCoils(slaveID, buffer, offset);
+                break;
 
             case FC_WRITE_SINGLE_COIL:
-                return writeSingleCoil(slaveID,buffer,offset);
+                length = writeSingleCoil(slaveID,buffer,offset);
+                break;
 
             case FC_WRITE_MULTIPLE_COILS:
-                return writeMultipleCoils(slaveID, buffer, offset);
+                length = writeMultipleCoils(slaveID, buffer, offset);
+                break;
 
             default:
                 System.err.println("Illegal function code "+functionCode);
-                return makeExceptionResponse(functionCode,XC_ILLEGAL_FUNCTION, buffer, offset);
+                length = makeExceptionResponse(functionCode,XC_ILLEGAL_FUNCTION, buffer, offset);
+                break;
         }
+
+        ModbusPalRecorder.recordOutgoing(slaveID,buffer,offset,length);
+        return length;
     }
 
     private int makeExceptionResponse(byte functionCode, byte exceptionCode, byte[] buffer, int offset)
