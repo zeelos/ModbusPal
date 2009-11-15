@@ -14,7 +14,7 @@ import modbuspal.main.ModbusRequest;
  */
 public interface ModbusLink
 {
-    public void start() throws IOException;
+    public void start(ModbusLinkListener l) throws IOException;
 
     public void stop();
 

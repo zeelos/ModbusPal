@@ -11,6 +11,8 @@
 
 package modbuspal.main;
 
+import modbuspal.toolkit.GUITools;
+
 /**
  *
  * @author nnovic

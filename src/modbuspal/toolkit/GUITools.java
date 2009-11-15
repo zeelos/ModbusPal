@@ -3,9 +3,10 @@
  * and open the template in the editor.
  */
 
-package modbuspal.main;
+package modbuspal.toolkit;
 
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Frame;
 
 /**
@@ -14,6 +15,22 @@ import java.awt.Frame;
  */
 public class GUITools
 {
+    public static void setAllEnabled(Component comp, boolean b)
+    {
+        comp.setEnabled(b);
+
+        if( comp instanceof Container )
+        {
+            Container ct = (Container)comp;
+            Component[] comps = ct.getComponents();
+            for( int i=0; i<comps.length; i++ )
+            {
+                setAllEnabled(comps[i],b);
+            }
+        }
+
+    }
+
     /**
      * Moves a component so that it is located in the middle of the
      * boundaries of another component. In most cases, this method is used

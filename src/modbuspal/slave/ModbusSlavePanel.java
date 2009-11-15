@@ -11,6 +11,7 @@
 
 package modbuspal.slave;
 
+import modbuspal.toolkit.GUITools;
 import java.awt.Frame;
 import modbuspal.main.*;
 import java.awt.event.WindowEvent;

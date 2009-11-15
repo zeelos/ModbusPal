@@ -9,7 +9,7 @@ import modbuspal.instanciator.Instanciator;
 import java.io.IOException;
 import java.io.File;
 import java.io.OutputStream;
-import modbuspal.main.FileTools;
+import modbuspal.toolkit.FileTools;
 
 /**
  * @author nnovic

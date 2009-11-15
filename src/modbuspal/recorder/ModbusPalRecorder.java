@@ -5,13 +5,9 @@
 
 package modbuspal.recorder;
 
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -23,10 +19,10 @@ import modbuspal.toolkit.XFileChooser;
  * @author avincon
  */
 public class ModbusPalRecorder
-implements Runnable
+//implements Runnable
 {
     private static ModbusPalRecorder uniqInst = new ModbusPalRecorder();
-    private static Date start = new Date();
+    private Date start = null;
 
     public static void recordIncoming(int slaveID, byte[] buffer, int offset, int pduLength)
     {
@@ -38,22 +34,26 @@ implements Runnable
         uniqInst.record("out", slaveID, buffer, offset, pduLength);
     }
 
+    public static void touch()
+    {
+        return;
+    }
 
-    private PipedInputStream input;
-    private PipedOutputStream output;
-    private boolean running;
+    //private PipedInputStream input;
+    //private PipedOutputStream output;
+    //private boolean running;
     private FileWriter fileWriter=null;
     
     ModbusPalRecorder()
     {
-        output = new PipedOutputStream();
-        Thread thread = new Thread(this);
-        running=true;
-        thread.start();
+        //output = new PipedOutputStream();
+        //Thread thread = new Thread(this);
+        //running=true;
+        //thread.start();
     }
 
 
-    synchronized void setOutput(FileWriter writer)
+    private synchronized void setOutput(FileWriter writer)
     throws IOException
     {
         if( fileWriter!=null )
@@ -61,8 +61,10 @@ implements Runnable
             fileWriter.close();
         }
         fileWriter = writer;
+        start = null;
     }
 
+    /*
     @Override
     public void run()
     {
@@ -92,6 +94,7 @@ implements Runnable
                 } 
                 catch (IOException ex)
                 {
+                    ex.printStackTrace();
                     System.out.println("pipe broken, recreate pipe");
                     input = new PipedInputStream(output, 1024 * 1024);
                     reader = new InputStreamReader(input);
@@ -119,6 +122,7 @@ implements Runnable
             Logger.getLogger(ModbusPalRecorder.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    */
 
     public static void start()
     throws IOException
@@ -126,8 +130,11 @@ implements Runnable
         XFileChooser fc = new XFileChooser(XFileChooser.RECORDER_FILE);
         fc.showSaveDialog(null);
         File destFile = fc.getSelectedFile();
-        System.out.println("recording into "+destFile.getPath());
-        uniqInst.setOutput( new FileWriter(destFile) );
+        if( destFile!= null )
+        {
+            System.out.println("recording into "+destFile.getPath());
+            uniqInst.setOutput( new FileWriter(destFile) );
+        }
     }
 
 
@@ -140,12 +147,27 @@ implements Runnable
     private synchronized void record(String tag, int slaveID, byte[] buffer, int offset, int pduLength)
     {
         Date now = new Date();
+        if( start==null )
+        {
+            start = now;
+        }
         long timestamp = now.getTime() - start.getTime();
 
         String open = String.format("<%s timestamp=%d slave=%d>", tag, timestamp, slaveID);
         String hexa = HexaTools.toHexa(buffer, offset, pduLength);
         String close = String.format("</%s>\r\n",tag);
 
+        // if recording is enabled...
+        if (fileWriter != null)
+        {
+            try {
+                fileWriter.write(open + hexa + close);
+            } catch (IOException ex) {
+                Logger.getLogger(ModbusPalRecorder.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        /*System.out.println(open+hexa+close);
         try
         {
             output.write(open.getBytes());
@@ -156,7 +178,7 @@ implements Runnable
         {
             Logger.getLogger(ModbusPalRecorder.class.getName()).log(Level.SEVERE, null, ex);
         }
-
+        */
     }
 
 }

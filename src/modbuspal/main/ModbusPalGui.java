@@ -37,6 +37,7 @@ import modbuspal.master.ModbusMasterDialog;
 import modbuspal.recorder.ModbusPalRecorder;
 import modbuspal.script.ScriptManagerDialog;
 import modbuspal.slave.ModbusSlave;
+import modbuspal.toolkit.GUITools;
 import modbuspal.toolkit.XFileChooser;
 import org.w3c.dom.*;
 
@@ -46,7 +47,7 @@ import org.w3c.dom.*;
  */
 public class ModbusPalGui
 extends JFrame
-implements ModbusPalXML, WindowListener, ModbusPalListener
+implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
 {
     private static final String APP_STRING = "ModbusPal 1.4";
     private static ModbusPalGui uniqueInstance;
@@ -322,6 +323,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
     {
         initComponents();
         setTitle(APP_STRING);
+        installRecorder();
         installCommPorts();
         installScriptEngine();
     }
@@ -379,7 +381,10 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
         }
     }
 
-
+    private void installRecorder()
+    {
+        ModbusPalRecorder.touch();
+    }
 
     private void installCommPorts()
     {
@@ -458,6 +463,10 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
         parityComboBox = new javax.swing.JComboBox();
         xonxoffCheckBox = new javax.swing.JCheckBox();
         rtsctsCheckBox = new javax.swing.JCheckBox();
+        replaySettingsPanel = new javax.swing.JPanel();
+        jLabel2 = new javax.swing.JLabel();
+        recordFileChooseButton = new javax.swing.JButton();
+        chosenRecordFileTextField = new javax.swing.JTextField();
         runPanel = new javax.swing.JPanel();
         runToggleButton = new javax.swing.JToggleButton();
         learnToggleButton = new javax.swing.JToggleButton();
@@ -552,6 +561,36 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
 
         linksTabbedPane.addTab("Serial", serialSettingsPanel);
 
+        replaySettingsPanel.setLayout(new java.awt.GridBagLayout());
+
+        jLabel2.setText("Record file:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 2, 2);
+        replaySettingsPanel.add(jLabel2, gridBagConstraints);
+
+        recordFileChooseButton.setText("Choose...");
+        recordFileChooseButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                recordFileChooseButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(5, 2, 2, 5);
+        replaySettingsPanel.add(recordFileChooseButton, gridBagConstraints);
+
+        chosenRecordFileTextField.setEditable(false);
+        chosenRecordFileTextField.setText("No file selected.");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(2, 5, 5, 5);
+        replaySettingsPanel.add(chosenRecordFileTextField, gridBagConstraints);
+
+        linksTabbedPane.addTab("Replay", replaySettingsPanel);
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
@@ -602,6 +641,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         runPanel.add(recordToggleButton, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -629,6 +669,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         projectPanel.add(loadButton, gridBagConstraints);
 
         saveProjectButton.setText("Save");
@@ -640,6 +681,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         projectPanel.add(saveProjectButton, gridBagConstraints);
 
         clearProjectButton.setText("Clear");
@@ -648,7 +690,9 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
                 clearProjectButtonActionPerformed(evt);
             }
         });
-        projectPanel.add(clearProjectButton, new java.awt.GridBagConstraints());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        projectPanel.add(clearProjectButton, gridBagConstraints);
 
         saveProjectAsButton.setText("Save as");
         saveProjectAsButton.addActionListener(new java.awt.event.ActionListener() {
@@ -659,6 +703,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         projectPanel.add(saveProjectAsButton, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -858,7 +903,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
         {
             int commPortIndex = comPortComboBox.getSelectedIndex();
             currentLink = new ModbusSerialLink(commPortIndex, baudrate, parity, xonxoff, rtscts);
-            currentLink.start();
+            currentLink.start(this);
             modbusMaster.setLink(currentLink);
 
             ((TiltLabel)tiltLabel).start();
@@ -901,7 +946,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
         try
         {
             currentLink = new ModbusTcpIpLink(port);
-            currentLink.start();
+            currentLink.start(this);
             modbusMaster.setLink(currentLink);
 
             ((TiltLabel)tiltLabel).start();
@@ -920,7 +965,36 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
         }
     }
     
-    
+    private void startReplayLink()
+    {
+        File recordFile = null;
+
+        recordFile = (File)chosenRecordFileTextField.getClientProperty("record file");
+        if( recordFile==null )
+        {
+            recordFile = chooseRecordFile();
+        }
+
+        try
+        {
+            currentLink = new ModbusReplayLink(recordFile);
+            currentLink.start(this);
+            modbusMaster.setLink(currentLink);
+
+            ((TiltLabel)tiltLabel).start();
+        }
+        catch (Exception ex)
+        {
+            ex.printStackTrace();
+            runToggleButton.doClick();
+            ErrorMessage dialog = new ErrorMessage(this,"Close");
+            dialog.setTitle("Replay error");
+            dialog.append("The following exception occured:" + ex.getClass().getSimpleName() + "\r\n");
+            dialog.append("Message:"+ex.getLocalizedMessage());
+            dialog.setVisible(true);
+            return;
+        }
+    }
     
     /**
      * this event is triggered when the user toggle the "run" button.
@@ -931,13 +1005,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
         // if run button is toggled, start the link
         if( runToggleButton.isSelected() == true )
         {
-            linksTabbedPane.setEnabled(false);
-            portTextField.setEnabled(false);
-            comPortComboBox.setEnabled(false);
-            baudRateComboBox.setEnabled(false);
-            parityComboBox.setEnabled(false);
-            xonxoffCheckBox.setEnabled(false);
-            rtsctsCheckBox.setEnabled(false);
+            GUITools.setAllEnabled(linksTabbedPane,false);
 
             // if link is tcp/ip 
             if( linksTabbedPane.getSelectedComponent()==tcpIpSettingsPanel )
@@ -949,6 +1017,17 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
             else if( linksTabbedPane.getSelectedComponent()==serialSettingsPanel )
             {
                 startSerialLink();
+            }
+
+            // if link is replay:
+            else if( linksTabbedPane.getSelectedComponent()==replaySettingsPanel )
+            {
+                startReplayLink();
+            }
+
+            else
+            {
+                throw new UnsupportedOperationException("not yet implemented");
             }
         }
 
@@ -963,13 +1042,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
                 modbusMaster.setLink(null);
             }
 
-            xonxoffCheckBox.setEnabled(true);
-            rtsctsCheckBox.setEnabled(true);
-            portTextField.setEnabled(true);
-            comPortComboBox.setEnabled(true);
-            baudRateComboBox.setEnabled(true);
-            parityComboBox.setEnabled(true);
-            linksTabbedPane.setEnabled(true);
+            GUITools.setAllEnabled(linksTabbedPane,true);
         }
 }//GEN-LAST:event_runToggleButtonActionPerformed
 
@@ -1255,6 +1328,23 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
 
     }//GEN-LAST:event_recordToggleButtonActionPerformed
 
+    private File chooseRecordFile()
+    {
+        XFileChooser fc = new XFileChooser( XFileChooser.RECORDER_FILE );
+        fc.showOpenDialog(this);
+        File src = fc.getSelectedFile();
+        chosenRecordFileTextField.setText( src.getPath() );
+        chosenRecordFileTextField.putClientProperty("record file", src);
+        return src;
+    }
+
+
+    private void recordFileChooseButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_recordFileChooseButtonActionPerformed
+
+        chooseRecordFile();
+
+    }//GEN-LAST:event_recordFileChooseButtonActionPerformed
+
 
 
 
@@ -1264,6 +1354,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
     private javax.swing.JScrollPane automationListScrollPane;
     private javax.swing.JPanel automationsListPanel;
     private javax.swing.JComboBox baudRateComboBox;
+    private javax.swing.JTextField chosenRecordFileTextField;
     private javax.swing.JButton clearProjectButton;
     private javax.swing.JComboBox comPortComboBox;
     private javax.swing.JToggleButton consoleToggleButton;
@@ -1271,6 +1362,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
     private javax.swing.JButton enableAllSlavesButton;
     private javax.swing.JButton helpButton;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
@@ -1284,7 +1376,9 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
     private javax.swing.JComboBox parityComboBox;
     private javax.swing.JTextField portTextField;
     private javax.swing.JPanel projectPanel;
+    private javax.swing.JButton recordFileChooseButton;
     private javax.swing.JToggleButton recordToggleButton;
+    private javax.swing.JPanel replaySettingsPanel;
     private javax.swing.JCheckBox rtsctsCheckBox;
     private javax.swing.JPanel runPanel;
     private javax.swing.JToggleButton runToggleButton;
@@ -1445,6 +1539,13 @@ implements ModbusPalXML, WindowListener, ModbusPalListener
             // force the list to be repainted
             automationsListPanel.repaint();
         }
+    }
+
+    @Override
+    public void linkBroken()
+    {
+        GUITools.setAllEnabled(linksTabbedPane,true);
+        runToggleButton.setSelected(false);
     }
 
 

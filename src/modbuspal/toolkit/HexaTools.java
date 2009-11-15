@@ -20,4 +20,25 @@ public class HexaTools
         }
         return output;
     }
+
+
+    public static byte[] toByte(String data)
+    {
+        int nbBytes = ( data.length()+1 ) / 2;
+        byte output[] = new byte[nbBytes];
+        return toByte(data,output);
+    }
+
+
+
+    public static byte[] toByte(String data, byte[] output)
+    {
+        int nbBytes = ( data.length()+1 ) / 2;
+        for( int i=0; i<nbBytes; i++ )
+        {
+            byte b = Byte.parseByte( data.substring(i*2, i*2+2), 16 );
+            output[i] = b;
+        }
+        return output;
+    }
 }

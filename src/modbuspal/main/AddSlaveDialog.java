@@ -11,6 +11,7 @@
 
 package modbuspal.main;
 
+import modbuspal.toolkit.GUITools;
 import java.awt.Frame;
 import modbuspal.slave.*;
 import javax.swing.DefaultListModel;

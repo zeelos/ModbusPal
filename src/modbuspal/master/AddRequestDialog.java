@@ -17,7 +17,7 @@ import java.util.Vector;
 import javax.swing.ComboBoxModel;
 import javax.swing.JDialog;
 import javax.swing.event.ListDataListener;
-import modbuspal.main.GUITools;
+import modbuspal.toolkit.GUITools;
 import modbuspal.main.ModbusConst;
 import modbuspal.main.ModbusPal;
 import modbuspal.slave.ModbusSlave;

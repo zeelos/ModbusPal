@@ -12,7 +12,7 @@
 package modbuspal.slave;
 
 import java.awt.Frame;
-import modbuspal.main.GUITools;
+import modbuspal.toolkit.GUITools;
 import modbuspal.main.ModbusConst;
 import modbuspal.toolkit.NumericTextField;
 

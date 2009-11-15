@@ -3,7 +3,7 @@
  * and open the template in the editor.
  */
 
-package modbuspal.main;
+package modbuspal.toolkit;
 
 import java.io.File;
 import java.net.URI;

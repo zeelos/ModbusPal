@@ -17,7 +17,7 @@ import modbuspal.automation.Automation;
 import modbuspal.binding.Binding;
 import modbuspal.binding.BindingEditor;
 import modbuspal.binding.BindingFactory;
-import modbuspal.main.GUITools;
+import modbuspal.toolkit.GUITools;
 import modbuspal.main.ModbusConst;
 
 /**

@@ -22,6 +22,7 @@ implements ModbusLink, Runnable
     private ServerSocket serverSocket;
     private Thread serverThread;
     private boolean executeThread;
+    private ModbusLinkListener listener = null;
 
     public ModbusTcpIpLink(int port)
     throws IOException
@@ -30,10 +31,12 @@ implements ModbusLink, Runnable
         serverSocket = new ServerSocket(port);
     }
 
-    public void start()
+    @Override
+    public void start(ModbusLinkListener l)
     {
         executeThread = true;
         serverThread = new Thread(this,"tcp/ip link");
+        listener = l;
         serverThread.start();
     }
 
@@ -95,6 +98,8 @@ implements ModbusLink, Runnable
         serverSocket = null;
         
         System.out.println("Stop ModbusTcpIpLink");
+        listener.linkBroken();
+        listener = null;
     }
 
     @Override

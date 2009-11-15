@@ -107,6 +107,7 @@ implements ModbusLink, Runnable, SerialPortEventListener
     private Thread serverThread;
     private int serialParity;
     private int flowControl;
+    private ModbusLinkListener listener = null;
 
     public ModbusSerialLink(int index, int speed, int parity, boolean xonxoff, boolean rtscts)
     throws PortInUseException, ClassCastException
@@ -141,9 +142,12 @@ implements ModbusLink, Runnable, SerialPortEventListener
         }
     }
 
-    public void start()
+    @Override
+    public void start(ModbusLinkListener l)
     throws IOException
     {
+        listener = l;
+
         try
         {
             serialPort.setSerialPortParams(baudrate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, serialParity);
@@ -323,6 +327,8 @@ implements ModbusLink, Runnable, SerialPortEventListener
         }
 
         System.out.println("Stop ModbusSerialLink");
+        listener.linkBroken();
+        listener = null;
     }
 
 
