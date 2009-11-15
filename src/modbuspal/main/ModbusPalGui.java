@@ -37,6 +37,7 @@ import modbuspal.master.ModbusMasterDialog;
 import modbuspal.recorder.ModbusPalRecorder;
 import modbuspal.script.ScriptManagerDialog;
 import modbuspal.slave.ModbusSlave;
+import modbuspal.toolkit.FileTools;
 import modbuspal.toolkit.GUITools;
 import modbuspal.toolkit.XFileChooser;
 import org.w3c.dom.*;
@@ -150,6 +151,14 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         {
             linksTabbedPane.setSelectedComponent(serialSettingsPanel);
         }
+        else if(selected.compareTo("replay")==0 )
+        {
+            linksTabbedPane.setSelectedComponent(replaySettingsPanel);
+        }
+        else
+        {
+            throw new UnsupportedOperationException("not yet implemented");
+        }
 
         // find child "tcpip" node and load parameters from it
         Node tcpipNode = XMLTools.findChild(linkRoot, "tcpip");
@@ -158,7 +167,46 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         // find child "serial" node and load parameters from it
         Node serialNode = XMLTools.findChild(linkRoot, "serial");
         loadSerialLinkParameters(serialNode);
+
+        // find child "replay" node and load parameters from it
+        Node replayNode = XMLTools.findChild(linkRoot, "replay");
+        loadReplayLinkParameters(replayNode);
     }
+
+
+
+    private void loadReplayLinkParameters(Node node)
+    {
+        // find "rel"
+        Node rel = XMLTools.findChild(node, "rel");
+        if( rel != null )
+        {
+            // try to load file from relative path
+            String relativePath = rel.getTextContent();
+            String absolutePath = FileTools.makeAbsolute(projectFile, relativePath);
+            File file = new File(absolutePath);
+            if( file.exists()==true )
+            {
+                setRecordFile(file);
+                return;
+            }
+        }
+
+        // find "abs"
+        Node abs = XMLTools.findChild(node, "abs");
+        if( abs != null )
+        {
+            String path = abs.getTextContent();
+            File file = new File(path);
+            if( file.exists()==true )
+            {
+                setRecordFile(file);
+                return;
+            }
+        }
+    }
+
+
 
 
     private void loadTcpIpLinkParameters(Node root)
@@ -219,6 +267,9 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         }
     }
 
+
+
+
     private void loadFlowControlParameters(Node root)
     {
         // load xonxoff attribute
@@ -261,6 +312,14 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         {
             openTag.append("selected=\"serial\" ");
         }
+        else if( selectedTab==replaySettingsPanel )
+        {
+            openTag.append("selected=\"replay\" ");
+        }
+        else
+        {
+            throw new UnsupportedOperationException("not yet implemented");
+        }
 
         // terminate open openTag and write it
         openTag.append(">\r\n");
@@ -271,6 +330,9 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
 
         // write serial settings
         saveSerialLinkParameters(out);
+
+        // write replay settings
+        saveReplayLinkParameters(out);
 
         // close openTag
         String closeTag = "</links>\r\n";
@@ -315,6 +377,30 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
     }
 
 
+    private void saveReplayLinkParameters(OutputStream out) throws IOException
+    {
+        File file = (File)chosenRecordFileTextField.getClientProperty("record file");
+        if( file!=null )
+        {
+            String openTag = "<replay>\r\n";
+            out.write(openTag.getBytes());
+
+            // create abs tag
+            String absTag = "<abs>" + file.getPath() + "</abs>\r\n";
+            out.write(absTag.getBytes());
+
+            String rel = FileTools.makeRelative(projectFile, file);
+            if( rel != null )
+            {
+                // create rel tag
+                String relTag = "<rel>"+ rel +"</rel>\r\n";
+                out.write(relTag.getBytes());
+            }
+
+            String closeTag = "</replay>\r\n";
+            out.write(closeTag.getBytes());
+        }
+    }
 
 
 
@@ -1328,13 +1414,18 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
 
     }//GEN-LAST:event_recordToggleButtonActionPerformed
 
+    private void setRecordFile(File file)
+    {
+        chosenRecordFileTextField.setText( file.getPath() );
+        chosenRecordFileTextField.putClientProperty("record file", file);
+    }
+
     private File chooseRecordFile()
     {
         XFileChooser fc = new XFileChooser( XFileChooser.RECORDER_FILE );
         fc.showOpenDialog(this);
         File src = fc.getSelectedFile();
-        chosenRecordFileTextField.setText( src.getPath() );
-        chosenRecordFileTextField.putClientProperty("record file", src);
+        setRecordFile(src);
         return src;
     }
 

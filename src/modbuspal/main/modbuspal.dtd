@@ -19,8 +19,10 @@ and open the template in the editor.
 <!ELEMENT idgen EMPTY>
 <!ATTLIST idgen value CDATA #REQUIRED>
 
-<!ELEMENT links (tcpip,serial)>
-<!ATTLIST links selected (tcpip|serial) #REQUIRED>
+<!ELEMENT links (tcpip,serial,replay)>
+<!ATTLIST links selected (tcpip|serial|replay) #REQUIRED>
+
+<!ELEMENT replay (abs,rel?)>
 
 <!ELEMENT serial (flowcontrol)>
 <!ATTLIST serial com CDATA #IMPLIED>
