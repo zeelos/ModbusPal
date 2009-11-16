@@ -37,6 +37,7 @@ implements Runnable
     private ArrayList<GeneratorListener> generatorListeners = new ArrayList<GeneratorListener>();
     private double currentValue = 0.0;
     private double initialValue = 0.0;
+    private AutomationHistory history = new AutomationHistory();
 
     /**
      * This is the constructor to use when creating the automation from an
@@ -393,6 +394,17 @@ implements Runnable
         return initialValue;
     }
 
+
+    private double getTotalDuration()
+    {
+        double total= 0;
+        for( Generator gen:generators )
+        {
+            total+=gen.getDuration();
+        }
+        return total;
+    }
+
     /**
      * Returns se current value of the automation. If the automation is running,
      * this value will return the current value of the current generator.
@@ -414,12 +426,17 @@ implements Runnable
         Generator genList[] = new Generator[generators.size()];
         genList = generators.toArray(genList);
 
-        // init:
+        // init automation:
         int currentIndex = 0;
         currentValue = initialValue;
         double previousValue = 0.0;
         double currentTime = 0.0;
         double startTime = 0.0;
+
+        // init historic:
+        double totalDuration = getTotalDuration();
+        int histoNbPoints = (int)Math.ceil( totalDuration / stepDelay );
+        history.init(histoNbPoints);
 
         fireAutomationHasStarted();
 
@@ -435,12 +452,15 @@ implements Runnable
 
             while( (currentTime < startTime + duration) && (quit==false) )
             {
-                
+                // set current automation value:
                 currentValue = currentGen.getValue( currentTime-startTime );
                 if( previousValue != currentValue )
                 {
                     fireCurrentValueChanged(currentValue);
                 }
+
+                // historize the current automatino value:
+                history.push(currentValue);
 
                 try
                 {

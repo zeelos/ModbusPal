@@ -11,7 +11,10 @@
 
 package modbuspal.script;
 
-import modbuspal.instanciator.Instanciator;
+import java.awt.Desktop;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import modbuspal.generator.GeneratorFactory;
 import modbuspal.main.ModbusPal;
 
@@ -52,6 +55,7 @@ extends javax.swing.JPanel
         classnameLabel = new javax.swing.JLabel();
         executeButton = new javax.swing.JButton();
         deleteButton = new javax.swing.JButton();
+        openButton = new javax.swing.JButton();
 
         setBorder(javax.swing.BorderFactory.createEtchedBorder());
         setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
@@ -75,23 +79,47 @@ extends javax.swing.JPanel
             }
         });
         add(deleteButton);
+
+        openButton.setText("Open");
+        openButton.setEnabled(Desktop.isDesktopSupported());
+        openButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                openButtonActionPerformed(evt);
+            }
+        });
+        add(openButton);
     }// </editor-fold>//GEN-END:initComponents
 
     private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
-        // add the handler to the factory:
+
         ModbusPal.removeAllGenerators(runner.getClassName());
         GeneratorFactory.getFactory().remove(runner);
+
     }//GEN-LAST:event_deleteButtonActionPerformed
 
     private void executeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_executeButtonActionPerformed
         runner.execute();
     }//GEN-LAST:event_executeButtonActionPerformed
 
+    private void openButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openButtonActionPerformed
+
+        try
+        {
+            Desktop.getDesktop().open( runner.scriptFile );
+        }
+        catch (IOException ex)
+        {
+            Logger.getLogger(ScriptRunnerPanel.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }//GEN-LAST:event_openButtonActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel classnameLabel;
     private javax.swing.JButton deleteButton;
     private javax.swing.JButton executeButton;
+    private javax.swing.JButton openButton;
     // End of variables declaration//GEN-END:variables
 
 }

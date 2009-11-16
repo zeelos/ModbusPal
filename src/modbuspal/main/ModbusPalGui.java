@@ -170,7 +170,10 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
 
         // find child "replay" node and load parameters from it
         Node replayNode = XMLTools.findChild(linkRoot, "replay");
-        loadReplayLinkParameters(replayNode);
+        if( replayNode!=null )
+        {
+            loadReplayLinkParameters(replayNode);
+        }
     }
 
 

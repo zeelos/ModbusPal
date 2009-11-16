@@ -29,7 +29,7 @@ import org.w3c.dom.NodeList;
 public abstract class Generator
 {   
     private ImageIcon icon;
-    private int duration = 10;
+    private double duration = 10;
     private double initialValue = 0.0;
     private JPanel controlPanel;
 
@@ -113,7 +113,7 @@ public abstract class Generator
      * editorby the user of ModbusPal.
      * @return duration of the generator, in seconds.
      */
-    public int getDuration()
+    public double getDuration()
     {
         return duration;
     }
@@ -182,7 +182,7 @@ public abstract class Generator
 
         Node durNode = attributes.getNamedItem("duration");
         String durVal= durNode.getNodeValue();
-        duration = Integer.parseInt(durVal);
+        duration = Double.parseDouble(durVal);
 
         loadSettings( genNode.getChildNodes() );
     }
@@ -205,7 +205,7 @@ public abstract class Generator
      * user when he/she edits the automation.
      * @param val new duration of the generator.
      */
-    void setDuration(int val)
+    void setDuration(double val)
     {
         duration = val;
     }

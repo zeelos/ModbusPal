@@ -188,7 +188,7 @@ implements GeneratorListener
 
     private void durationTextFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_durationTextFieldFocusLost
         String exp = durationTextField.getText();
-        int val = Integer.parseInt(exp);
+        double val = Double.parseDouble(exp);
         generator.setDuration(val);
     }//GEN-LAST:event_durationTextFieldFocusLost
 
