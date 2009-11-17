@@ -15,14 +15,12 @@ import java.awt.Desktop;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import modbuspal.generator.GeneratorFactory;
-import modbuspal.main.ModbusPal;
 
 /**
  *
  * @author nnovic
  */
-public class ScriptRunnerPanel
+public abstract class ScriptRunnerPanel
 extends javax.swing.JPanel
 {
     private ScriptRunner runner;
@@ -37,6 +35,15 @@ extends javax.swing.JPanel
             remove(executeButton);
         }
     }
+
+
+    public ScriptRunner getScriptRunner()
+    {
+        return runner;
+    }
+    
+    protected abstract void deleteScript();
+    
 
     boolean contains(ScriptRunner sr)
     {
@@ -92,8 +99,7 @@ extends javax.swing.JPanel
 
     private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
 
-        ModbusPal.removeAllGenerators(runner.getClassName());
-        GeneratorFactory.getFactory().remove(runner);
+        deleteScript();
 
     }//GEN-LAST:event_deleteButtonActionPerformed
 

@@ -37,7 +37,6 @@ implements Runnable
     private ArrayList<GeneratorListener> generatorListeners = new ArrayList<GeneratorListener>();
     private double currentValue = 0.0;
     private double initialValue = 0.0;
-    private AutomationHistory history = new AutomationHistory();
 
     /**
      * This is the constructor to use when creating the automation from an
@@ -405,6 +404,7 @@ implements Runnable
         return total;
     }
 
+
     /**
      * Returns se current value of the automation. If the automation is running,
      * this value will return the current value of the current generator.
@@ -429,14 +429,13 @@ implements Runnable
         // init automation:
         int currentIndex = 0;
         currentValue = initialValue;
-        double previousValue = 0.0;
+        //double previousValue = 0.0;
         double currentTime = 0.0;
         double startTime = 0.0;
 
         // init historic:
         double totalDuration = getTotalDuration();
         int histoNbPoints = (int)Math.ceil( totalDuration / stepDelay );
-        history.init(histoNbPoints);
 
         fireAutomationHasStarted();
 
@@ -454,13 +453,10 @@ implements Runnable
             {
                 // set current automation value:
                 currentValue = currentGen.getValue( currentTime-startTime );
-                if( previousValue != currentValue )
-                {
-                    fireCurrentValueChanged(currentValue);
-                }
-
-                // historize the current automatino value:
-                history.push(currentValue);
+                //if( previousValue != currentValue )
+                //{
+                    fireCurrentValueChanged(currentTime, currentValue);
+                //}
 
                 try
                 {
@@ -483,11 +479,11 @@ implements Runnable
                     Logger.getLogger(Automation.class.getName()).log(Level.SEVERE, null, ex);
                 }
                 currentTime += stepDelay;
-                previousValue = currentValue;
+                //previousValue = currentValue;
             }
 
             // finish the execution of the generator
-            previousValue = currentValue;
+            //previousValue = currentValue;
             currentValue = currentGen.getValue(duration);
             notifyGeneratorHasEnded(currentGen);
 
@@ -504,7 +500,7 @@ implements Runnable
         System.out.println("end of automation thread");
         
         currentValue = 0.0;
-        fireCurrentValueChanged(currentValue);
+        fireCurrentValueChanged(currentTime, currentValue);
 
         suspended = false;
         if( quit==true )
@@ -556,12 +552,21 @@ implements Runnable
     public void addAutomationValueListener(AutomationValueListener l)
     {
         assert( automationValueListeners.contains(l) == false );
-        automationValueListeners.add(l);
+        if( automationValueListeners.add(l)==true )
+        {
+            System.out.println("AutomationValueListener added: "+l.hashCode());
+        }
     }
 
     public boolean removeAutomationValueListener(AutomationValueListener l)
     {
-        return automationValueListeners.remove(l);
+
+        if( automationValueListeners.remove(l)==true )
+        {
+            System.out.println("AutomationValueListener removed: "+l.hashCode());
+            return true;
+        }
+        return false;
     }
 
 
@@ -674,11 +679,11 @@ implements Runnable
         }
     }
 
-    private void fireCurrentValueChanged(double currentValue)
+    private void fireCurrentValueChanged(double currentTime, double currentValue)
     {
         for(AutomationValueListener l:automationValueListeners)
         {
-            l.automationValueHasChanged(this, currentValue);
+            l.automationValueHasChanged(this, currentTime, currentValue);
         }
     }
 

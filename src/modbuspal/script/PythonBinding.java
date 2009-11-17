@@ -51,7 +51,7 @@ extends Binding
     }
 
     @Override
-    protected String getClassName()
+    public String getClassName()
     {
         return instanciator.getClassName();
     }

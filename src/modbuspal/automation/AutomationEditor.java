@@ -689,7 +689,7 @@ implements AutomationStateListener, AutomationValueListener, InstanciatorListene
     }
 
     @Override
-    public void automationValueHasChanged(Automation source, double value)
+    public void automationValueHasChanged(Automation source, double time, double value)
     {
         valueTextField.setText( String.valueOf(value) );
         valueTextField.validate();

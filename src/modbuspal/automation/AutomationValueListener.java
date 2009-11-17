@@ -18,5 +18,5 @@ public interface AutomationValueListener
      * @param source
      * @param value
      */
-    public void automationValueHasChanged(Automation source, double value);
+    public void automationValueHasChanged(Automation source, double time, double value);
 }

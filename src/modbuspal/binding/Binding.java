@@ -42,7 +42,7 @@ implements AutomationValueListener
     }
 
     @Override
-    public void automationValueHasChanged(Automation source, double value)
+    public void automationValueHasChanged(Automation source, double time, double value)
     {
         registers.notifyRegisterChanged(registerAddress);
     }
@@ -111,7 +111,7 @@ implements AutomationValueListener
         return automation.getName();
     }
 
-    protected String getClassName()
+    public String getClassName()
     {
         return getClass().getSimpleName();
     }

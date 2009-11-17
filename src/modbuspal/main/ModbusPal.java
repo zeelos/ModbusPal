@@ -61,6 +61,13 @@ implements ModbusPalXML, ModbusConst
         notifyScriptAdded(runner);
     }
 
+    public static void removeScript(ScriptRunner runner)
+    {
+        if( ondemandScripts.remove(runner)==true )
+        {
+            notifyScriptRemoved(runner);
+        }
+    }
 
     public static void addStartupScript(File scriptFile)
     {
@@ -69,10 +76,6 @@ implements ModbusPalXML, ModbusConst
         startupScripts.add(runner);
         notifyStartupScriptAdded(runner);
     }
-
-
-
-
 
     private static void removeAllScripts()
     {
@@ -90,7 +93,7 @@ implements ModbusPalXML, ModbusConst
         }
     }
 
-    private static void removeStartupScript(ScriptRunner script)
+    public static void removeStartupScript(ScriptRunner script)
     {
         if( startupScripts.contains(script) )
         {
@@ -555,7 +558,27 @@ implements ModbusPalXML, ModbusConst
     }
 
 
-    public static void removeAllGenerators(String classname)
+    public static void removeGeneratorScript(ScriptRunner runner)
+    {
+        removeAllGenerators(runner.getClassName());
+        GeneratorFactory.getFactory().remove( runner );
+    }
+
+
+    public static void removeBindingScript(ScriptRunner runner)
+    {
+        removeAllBindings(runner.getClassName());
+        BindingFactory.getFactory().remove( runner );
+    }
+
+    /**
+     * remove all instances of the generator whose name is passed
+     * in argument. the method will scan all automations of the current
+     * project and remove each instance of the generator identified
+     * by the provided name.
+     * @param classname
+     */
+    private static void removeAllGenerators(String classname)
     {
         int max = automations.size();
         for(int i=0; i<max; i++)
@@ -565,6 +588,25 @@ implements ModbusPalXML, ModbusConst
         }
     }
 
+
+    /**
+     * remove all instances of the generator whose name is passed
+     * in argument. the method will scan all automations of the current
+     * project and remove each instance of the generator identified
+     * by the provided name.
+     * @param classname
+     */
+    private static void removeAllBindings(String classname)
+    {
+        for( int i=0; i<MAX_MODBUS_SLAVE; i++ )
+        {
+            ModbusSlave slave = knownSlaves[i];
+            if( slave != null )
+            {
+                slave.removeAllBindings(classname);
+            }
+        }
+    }
 
     public static void removeAutomation(Automation automation)
     {

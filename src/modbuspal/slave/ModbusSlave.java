@@ -193,6 +193,13 @@ implements ModbusPalXML, ModbusConst
         return retval;
     }
 
+
+    public void removeAllBindings(String classname)
+    {
+        holdingRegisters.removeAllBindings(classname);
+        coils.removeAllBindings(classname);
+    }
+
     private void loadHoldingRegisters(NodeList nodes)
     {
         Node node = XMLTools.getNode(nodes,"holding_registers");

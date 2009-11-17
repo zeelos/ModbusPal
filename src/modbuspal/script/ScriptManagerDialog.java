@@ -28,6 +28,7 @@ import modbuspal.instanciator.InstanciatorManager;
 import modbuspal.main.ErrorMessage;
 import modbuspal.main.ListLayout;
 import modbuspal.main.ModbusPal;
+import modbuspal.script.panels.*;
 
 
 /**
@@ -364,18 +365,18 @@ implements InstanciatorListener, ScriptListener
         {
             ScriptRunner si = (ScriptRunner)def;
             // create a new panel and add it
-            ScriptRunnerPanel panel = new ScriptRunnerPanel(si,false);
+            ScriptRunnerPanel panel = new GeneratorScriptRunnerPanel(si,false);
             generatorInstanciatorsList.add(panel);
-            generatorInstanciatorsScrollPane.validate();
+            generatorInstanciatorsTab.repaint();
         }
 
         else if( factory instanceof BindingFactory )
         {
             ScriptRunner si = (ScriptRunner)def;
             // create a new panel and add it
-            ScriptRunnerPanel panel = new ScriptRunnerPanel(si,false);
+            ScriptRunnerPanel panel = new BindingScriptRunnerPanel(si,false);
             bindingInstanciatorsList.add(panel);
-            bindingInstanciatorsScrollPane.validate();
+            bindingInstanciatorsTab.repaint();
         }
     }
 
@@ -410,8 +411,7 @@ implements InstanciatorListener, ScriptListener
                 }
             }
         }
-        generatorInstanciatorsScrollPane.validate();
-        repaint();
+        generatorInstanciatorsTab.repaint();
     }
 
 
@@ -430,8 +430,7 @@ implements InstanciatorListener, ScriptListener
                 }
             }
         }
-        bindingInstanciatorsScrollPane.validate();
-        repaint();
+        bindingInstanciatorsTab.repaint();
     }
 
 
@@ -445,18 +444,18 @@ implements InstanciatorListener, ScriptListener
     public void startupScriptAdded(ScriptRunner runner)
     {
         // create a new panel and add it
-        ScriptRunnerPanel panel = new ScriptRunnerPanel(runner,true);
+        ScriptRunnerPanel panel = new StartupScriptRunnerPanel(runner,true);
         startupScriptsList.add(panel);
-        startupScriptsScrollPane.validate();
+        startupScriptsTab.repaint();
     }
 
     @Override
     public void scriptAdded(ScriptRunner runner)
     {
         // create a new panel and add it
-        ScriptRunnerPanel panel = new ScriptRunnerPanel(runner,true);
+        ScriptRunnerPanel panel = new OnDemandScriptRunnerPanel(runner,true);
         ondemandScriptsList.add(panel);
-        ondemandScriptsScrollPane.validate();
+        ondemandScriptsTab.repaint();
     }
 
 
@@ -482,14 +481,14 @@ implements InstanciatorListener, ScriptListener
     {
         ScriptRunnerPanel panel = findPanel(ondemandScriptsList,runner);
         ondemandScriptsList.remove(panel);
-        ondemandScriptsScrollPane.validate();
+        ondemandScriptsTab.repaint();
     }
 
     public void startupScriptRemoved(ScriptRunner runner)
     {
         ScriptRunnerPanel panel = findPanel(startupScriptsList,runner);
         startupScriptsList.remove(panel);
-        startupScriptsScrollPane.validate();
+        startupScriptsTab.repaint();
     }
 
 }

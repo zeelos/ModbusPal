@@ -62,20 +62,6 @@ implements TableModel, ModbusPalXML, ModbusConst
      */
     public void create(int startingAddress, int quantity)
     {
-        /*assert( startingAddress >= 0 );
-        assert( quantity >= 0 );
-
-        // TODO: optimize! because creating all registers from 0 to 65536
-        // takes a long time.
-        for( int i=0; i<quantity; i++ )
-        {
-            int address = startingAddress + i;
-            if( registers.contains(address) == false)
-            {
-                registers.add(address);
-                values.put( address, new Integer(0) );
-            }
-        }*/
         values.addIndexes(startingAddress, quantity);
         notifyTableChanged();
     }
@@ -382,6 +368,21 @@ implements TableModel, ModbusPalXML, ModbusConst
     {
         Binding binding = bindings.get(address);
         return (binding!=null);
+    }
+
+    public void removeAllBindings(String classname)
+    {
+        Enumeration<Integer> addresses = bindings.keys();
+        while( addresses.hasMoreElements() )
+        {
+            Integer address = addresses.nextElement();
+            Binding b = bindings.get(address);
+            if( b.getClassName().compareTo(classname)==0 )
+            {
+                bindings.remove(address);
+            }
+        }
+        notifyTableChanged();
     }
 
     //==========================================================================
