@@ -8,6 +8,9 @@ package modbuspal.toolkit;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Frame;
+import java.io.File;
+import javax.swing.JFileChooser;
+import modbuspal.main.ErrorMessage;
 
 /**
  *
@@ -58,4 +61,25 @@ public class GUITools
         return null;
     }
 
+
+    public static File promptUserFileNotFound(Component parent, File f)
+    {
+        ErrorMessage msg = new ErrorMessage(2);
+        msg.setTitle("Script not found");
+        msg.append("The following file was not found:\r\n");
+        msg.append(f.getPath()+"\r\n");
+        msg.append("Use 'Browse' to select its new location or 'Abort' to skip loading this script.\r\n");
+        msg.setButton(0, "Browse");
+        msg.setButton(1, "Abort");
+        msg.setVisible(true);
+
+        if( msg.getButton()==0 )
+        {
+            JFileChooser fc = new JFileChooser( f.getParent() );
+            fc.showDialog(parent, "Locate "+f.getName() );
+            return fc.getSelectedFile();
+        }
+
+        return null;
+    }
 }

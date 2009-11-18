@@ -12,7 +12,9 @@
 package modbuspal.script;
 
 import java.awt.Component;
+import java.awt.dnd.DropTarget;
 import java.io.File;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.prefs.BackingStoreException;
@@ -25,10 +27,10 @@ import modbuspal.instanciator.Instanciator;
 import modbuspal.generator.GeneratorFactory;
 import modbuspal.instanciator.InstanciatorListener;
 import modbuspal.instanciator.InstanciatorManager;
-import modbuspal.main.ErrorMessage;
 import modbuspal.main.ListLayout;
 import modbuspal.main.ModbusPal;
 import modbuspal.script.panels.*;
+import modbuspal.toolkit.FileTransferHandler;
 
 
 /**
@@ -37,7 +39,7 @@ import modbuspal.script.panels.*;
  */
 public class ScriptManagerDialog
 extends javax.swing.JDialog
-implements InstanciatorListener, ScriptListener
+implements InstanciatorListener, ScriptListener, FileTransferHandler.FileTransferTarget
 {
     private static final String REGISTRY_KEY = ModbusPal.BASE_REGISTRY_KEY + "/instanciators";
     public static final int TAB_GENERATORS = 2;
@@ -48,6 +50,10 @@ implements InstanciatorListener, ScriptListener
     {
         super(parent, false);
         initComponents();
+        startupScriptsList.setDropTarget( new DropTarget(this, new FileTransferHandler(this) ) );
+        ondemandScriptsList.setDropTarget( new DropTarget(this, new FileTransferHandler(this) ) );
+        generatorInstanciatorsList.setDropTarget( new DropTarget(this, new FileTransferHandler(this) ) );
+        bindingInstanciatorsList.setDropTarget( new DropTarget(this, new FileTransferHandler(this) ) );
     }
 
     public void setSelectedTab(int tabIndex)
@@ -206,11 +212,8 @@ implements InstanciatorListener, ScriptListener
             return;
         }
 
-
-        // add the handler to the factory:
+        // add startup script:
         ModbusPal.addStartupScript(scriptFile);
-
-
     }//GEN-LAST:event_addStartupScriptButtonActionPerformed
 
 
@@ -268,23 +271,7 @@ implements InstanciatorListener, ScriptListener
             return;
         }
 
-        // newInstance a scripted generator handler
-        ScriptRunner sr = ScriptRunner.create(scriptFile);
-
-        // test if newInstance would work:
-        if( sr.newGenerator() != null )
-        {
-            // add the handler to the factory:
-            GeneratorFactory.getFactory().add(sr);
-        }
-        else
-        {
-            ErrorMessage dialog = new ErrorMessage(this,"Close");
-            dialog.setTitle("Script error");
-            dialog.append("The script probably contains errors and cannot be executed properly.");
-            dialog.setVisible(true);
-        }
-
+        ModbusPal.addGeneratorInstanciator(scriptFile);
     }//GEN-LAST:event_addGeneratorInstanciatorButtonActionPerformed
 
     private void addOndemandScriptButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addOndemandScriptButtonActionPerformed
@@ -296,8 +283,7 @@ implements InstanciatorListener, ScriptListener
             setStatus("Cancelled by user.");
             return;
         }
-
-
+        
         // add script to project
         ModbusPal.addScript(scriptFile);
 
@@ -313,22 +299,7 @@ implements InstanciatorListener, ScriptListener
             return;
         }
 
-        // newInstance a scripted generator handler
-        ScriptRunner sr = ScriptRunner.create(scriptFile);
-
-        // test if newInstance would work:
-        if( sr.newBinding() != null )
-        {
-            // add the handler to the factory:
-            BindingFactory.getFactory().add(sr);
-        }
-        else
-        {
-            ErrorMessage dialog = new ErrorMessage(this,"Close");
-            dialog.setTitle("Script error");
-            dialog.append("The script probably contains errors and cannot be executed properly.");
-            dialog.setVisible(true);
-        }
+        ModbusPal.addBindingInstanciator(scriptFile);
 
 }//GEN-LAST:event_addBindingInstanciatorButtonActionPerformed
 
@@ -367,7 +338,7 @@ implements InstanciatorListener, ScriptListener
             // create a new panel and add it
             ScriptRunnerPanel panel = new GeneratorScriptRunnerPanel(si,false);
             generatorInstanciatorsList.add(panel);
-            generatorInstanciatorsTab.repaint();
+            validate();
         }
 
         else if( factory instanceof BindingFactory )
@@ -376,7 +347,7 @@ implements InstanciatorListener, ScriptListener
             // create a new panel and add it
             ScriptRunnerPanel panel = new BindingScriptRunnerPanel(si,false);
             bindingInstanciatorsList.add(panel);
-            bindingInstanciatorsTab.repaint();
+            validate();
         }
     }
 
@@ -411,7 +382,7 @@ implements InstanciatorListener, ScriptListener
                 }
             }
         }
-        generatorInstanciatorsTab.repaint();
+        validate();
     }
 
 
@@ -430,7 +401,7 @@ implements InstanciatorListener, ScriptListener
                 }
             }
         }
-        bindingInstanciatorsTab.repaint();
+        validate();
     }
 
 
@@ -446,7 +417,7 @@ implements InstanciatorListener, ScriptListener
         // create a new panel and add it
         ScriptRunnerPanel panel = new StartupScriptRunnerPanel(runner,true);
         startupScriptsList.add(panel);
-        startupScriptsTab.repaint();
+        validate();
     }
 
     @Override
@@ -455,7 +426,7 @@ implements InstanciatorListener, ScriptListener
         // create a new panel and add it
         ScriptRunnerPanel panel = new OnDemandScriptRunnerPanel(runner,true);
         ondemandScriptsList.add(panel);
-        ondemandScriptsTab.repaint();
+        validate();
     }
 
 
@@ -481,14 +452,46 @@ implements InstanciatorListener, ScriptListener
     {
         ScriptRunnerPanel panel = findPanel(ondemandScriptsList,runner);
         ondemandScriptsList.remove(panel);
-        ondemandScriptsTab.repaint();
+        validate();
     }
 
     public void startupScriptRemoved(ScriptRunner runner)
     {
         ScriptRunnerPanel panel = findPanel(startupScriptsList,runner);
         startupScriptsList.remove(panel);
-        startupScriptsTab.repaint();
+        validate();
+    }
+
+    @Override
+    public boolean importFiles(Component target, List<File> files)
+    {
+        for( int i=0; i<files.size(); i++ )
+        {
+            File scriptFile = files.get(i);
+
+            if( target==startupScriptsList)
+            {
+                ModbusPal.addStartupScript(scriptFile);
+            }
+            else if( target==ondemandScriptsList )
+            {
+                ModbusPal.addScript(scriptFile);
+            }
+            else if( target==generatorInstanciatorsList)
+            {
+                ModbusPal.addGeneratorInstanciator(scriptFile);
+            }
+            else if( target==bindingInstanciatorsList )
+            {
+                ModbusPal.addBindingInstanciator(scriptFile);
+            }
+            else
+            {
+                throw new UnsupportedOperationException("Not supported yet.");
+            }
+        }
+
+        return true;
     }
 
 }

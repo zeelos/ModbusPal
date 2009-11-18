@@ -5,7 +5,6 @@
 
 package modbuspal.script;
 
-import modbuspal.script.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -18,7 +17,24 @@ import org.python.core.PyObject;
 import org.python.util.PythonInterpreter;
 
 /**
+ * \page jython How to use Jython in ModbusPal
  *
+ * \section API
+ *
+ * \subsection Pre-defined variables
+ *
+ * When ModbusPal starts executing a Jython scripts, a set of pre-defined
+ * variables are pushed into the Python interpreter. The goal of those variables
+ * is to provide access to some information that would be otherwise difficult
+ * to obtain.
+ *
+ * The following variables are pre-defined when the Jython scripts is
+ * executed:
+ * - "mbp_script_path" is a String containing the full path of the current script file.
+ * - "mbp_script_directory" is a String containing only the directory which contains
+ *   the current script file.
+ * - "mbp_script_file" is a File object pointing the current script's file.
+ * 
  * @author nnovic
  */
 public class PythonRunner
@@ -52,6 +68,14 @@ extends ScriptRunner
     }
 
 
+    private void initEnvironment(PythonInterpreter pi)
+    {
+        pi.set("mbp_script_path", scriptFile.getPath() );
+        pi.set("mbp_script_directory", scriptFile.getParent() );
+        pi.set("mbp_script_file", scriptFile );
+    }
+
+
     @Override
     public void execute()
     {
@@ -61,6 +85,7 @@ extends ScriptRunner
         {
             in = new FileInputStream(scriptFile);
             PythonInterpreter interp = new PythonInterpreter();
+            initEnvironment(interp);
             interp.execfile(in);
         }
         catch (FileNotFoundException ex)

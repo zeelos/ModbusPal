@@ -5,6 +5,7 @@
 
 package modbuspal.link;
 
+import modbuspal.toolkit.ModbusTools;
 import modbuspal.main.*;
 import modbuspal.recorder.ModbusPalRecorder;
 

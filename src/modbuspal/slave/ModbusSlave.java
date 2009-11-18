@@ -18,7 +18,7 @@ import modbuspal.automation.NullAutomation;
 import modbuspal.main.ModbusConst;
 import modbuspal.main.ModbusPal;
 import modbuspal.main.ModbusPalXML;
-import modbuspal.main.ModbusTools;
+import modbuspal.toolkit.ModbusTools;
 import modbuspal.toolkit.XMLTools;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;

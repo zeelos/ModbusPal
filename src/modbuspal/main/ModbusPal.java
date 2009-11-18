@@ -25,6 +25,7 @@ import modbuspal.binding.BindingFactory;
 import modbuspal.script.ScriptListener;
 import modbuspal.script.ScriptRunner;
 import modbuspal.slave.ModbusSlave;
+import modbuspal.toolkit.GUITools;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -555,6 +556,28 @@ implements ModbusPalXML, ModbusConst
         int index = automations.indexOf(automation);
         notifyAutomationAdded(automation, index);
         return true;
+    }
+
+
+
+    public static void startAllAutomations()
+    {
+        for(int i=0; i<automations.size(); i++ )
+        {
+            Automation auto = automations.get(i);
+            auto.start();
+        }
+    }
+
+
+
+    public static void stopAllAutomations()
+    {
+        for(int i=0; i<automations.size(); i++ )
+        {
+            Automation auto = automations.get(i);
+            auto.stop();
+        }
     }
 
 
@@ -1118,6 +1141,12 @@ implements ModbusPalXML, ModbusConst
         }
     }
 
+    /**
+     * This method will only load "STARTUP" and "ON DEMAND" scripts.
+     * Generator and binding scripts are loaded in a separate procedure.
+     * @param doc
+     * @param projectFile
+     */
     private static void loadScripts(Document doc, File projectFile)
     {
         // look for "startup" scripts section
@@ -1147,7 +1176,7 @@ implements ModbusPalXML, ModbusConst
             Node scriptNode = nodes.item(i);
             if( scriptNode.getNodeName().compareTo("script")==0 )
             {
-                File scriptFile = loadScript(scriptNode, projectFile);
+                File scriptFile = loadScript(scriptNode, projectFile, true);
                 if( scriptFile!=null )
                 {
                     addStartupScript(scriptFile);
@@ -1157,7 +1186,7 @@ implements ModbusPalXML, ModbusConst
     }
 
 
-    private static File loadScript(Node node, File projectFile)
+    private static File loadScript(Node node, File projectFile, boolean promptUser)
     {
         // find "rel"
         Node rel = XMLTools.findChild(node, "rel");
@@ -1175,14 +1204,26 @@ implements ModbusPalXML, ModbusConst
         
         // find "abs"
         Node abs = XMLTools.findChild(node, "abs");
-        if( abs != null )
+        if( abs == null )
         {
-            String path = abs.getTextContent();
-            File file = new File(path);
-            if( file.exists()==true )
-            {
-                return file;
-            }
+            throw new RuntimeException("malformed input");
+        }
+        
+        String path = abs.getTextContent();
+        File file = new File(path);
+        if( file.exists()==true )
+        {
+            return file;
+        }
+
+        // Print error
+        System.out.println("No file found for script "+file.getPath());
+
+        // IF NO FILE FOUND, PROMPT USER:
+        if(promptUser==true)
+        {
+            // create error message box with 2 buttons:
+            return GUITools.promptUserFileNotFound(null, file);
         }
 
         return null;
@@ -1198,7 +1239,7 @@ implements ModbusPalXML, ModbusConst
             Node scriptNode = nodes.item(i);
             if( scriptNode.getNodeName().compareTo("script")==0 )
             {
-                File scriptFile = loadScript(scriptNode, projectFile);
+                File scriptFile = loadScript(scriptNode, projectFile, true);
                 if( scriptFile!=null )
                 {
                     addScript(scriptFile);
@@ -1323,6 +1364,46 @@ implements ModbusPalXML, ModbusConst
     {
         // save id creator:
         idGenerator.reset();
+    }
+
+    public static void addGeneratorInstanciator(File scriptFile)
+    {
+        // newInstance a scripted generator handler
+        ScriptRunner sr = ScriptRunner.create(scriptFile);
+
+        // test if newInstance would work:
+        if( sr.newGenerator() != null )
+        {
+            // add the handler to the factory:
+            GeneratorFactory.getFactory().add(sr);
+        }
+        else
+        {
+            ErrorMessage dialog = new ErrorMessage(null,"Close");
+            dialog.setTitle("Script error");
+            dialog.append("The script probably contains errors and cannot be executed properly.");
+            dialog.setVisible(true);
+        }
+    }
+
+    public static void addBindingInstanciator(File scriptFile)
+    {
+        // newInstance a scripted generator handler
+        ScriptRunner sr = ScriptRunner.create(scriptFile);
+
+        // test if newInstance would work:
+        if( sr.newBinding() != null )
+        {
+            // add the handler to the factory:
+            BindingFactory.getFactory().add(sr);
+        }
+        else
+        {
+            ErrorMessage dialog = new ErrorMessage(null,"Close");
+            dialog.setTitle("Script error");
+            dialog.append("The script probably contains errors and cannot be executed properly.");
+            dialog.setVisible(true);
+        }
     }
 
 

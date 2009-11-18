@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 import modbuspal.toolkit.FileTools;
 import modbuspal.toolkit.XMLTools;
 import modbuspal.script.ScriptRunner;
+import modbuspal.toolkit.GUITools;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -49,12 +50,12 @@ public abstract class InstanciatorManager
             for( int i=0; i<list.getLength(); i++ )
             {
                 Node instNode = list.item(i);
-                loadScripts(instNode, projectFile);
+                loadScripts(instNode, projectFile, true);
             }
         }
     }
 
-    private void loadScripts(Node node, File projectFile)
+    private void loadScripts(Node node, File projectFile, boolean promptUser)
     {
         NodeList list = node.getChildNodes();
         if( list!=null )
@@ -64,11 +65,16 @@ public abstract class InstanciatorManager
                 Node scriptNode = list.item(i);
                 if( scriptNode.getNodeName().compareTo("script")==0 )
                 {
-                    try {
-                        loadScript(scriptNode, projectFile);
-                    } catch (FileNotFoundException ex) {
+                    try
+                    {
+                        loadScript(scriptNode, projectFile, promptUser);
+                    } 
+                    catch (FileNotFoundException ex)
+                    {
                         Logger.getLogger(InstanciatorManager.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (IOException ex) {
+                    } 
+                    catch (IOException ex)
+                    {
                         Logger.getLogger(InstanciatorManager.class.getName()).log(Level.SEVERE, null, ex);
                     }
                 }
@@ -77,30 +83,52 @@ public abstract class InstanciatorManager
     }
 
 
-    private void loadScript(Node node, File projectFile)
+    private boolean loadScript(Node node, File projectFile, boolean promptUser)
     throws FileNotFoundException, IOException
     {
-        boolean ok = false;
-
         // get "rel" node and try to get the file by using a relative
         // path (relative to projectFile)
         Node rel = XMLTools.findChild(node, "rel");
         if( rel != null )
         {
-            ok = loadRel(rel, projectFile);
-        }
-
-        if( ok == true )
-        {
-            return;
+            if( loadRel(rel, projectFile)==true )
+            {
+                return true;
+            }
         }
 
         // get "abs" node and try to get the file using the absolute path
         Node abs = XMLTools.findChild(node, "abs");
-        if( abs != null )
+        if( abs == null )
         {
-            loadAbs(abs);
+            throw new RuntimeException("malformed input");
         }
+
+        // extract filename from xml file
+        String filename = node.getTextContent();
+
+        // create file object
+        File scriptFile = new File(filename);
+
+        // IF NO FILE FOUND, PROMPT USER:
+        if( (scriptFile.exists()==false) && (promptUser==true) )
+        {
+            System.out.println("No file found for script "+scriptFile.getPath());
+            scriptFile = GUITools.promptUserFileNotFound(null, scriptFile);
+        }
+
+        if( (scriptFile==null) || (scriptFile.exists()==false) )
+        {
+            return false;
+        }
+
+        // newInstance a scripted generator handler
+        ScriptRunner sr = ScriptRunner.create(scriptFile);
+
+        // add the handler to the factory:
+        add(sr);
+
+        return true;
     }
     
     private boolean loadRel(Node node, File projectFile)
@@ -134,7 +162,7 @@ public abstract class InstanciatorManager
         return true;
     }
 
-
+/*
     private void loadAbs(Node node)
     throws FileNotFoundException, IOException
     {
@@ -150,7 +178,7 @@ public abstract class InstanciatorManager
         // add the handler to the factory:
         add(sr);
     }
-
+*/
 
 
  

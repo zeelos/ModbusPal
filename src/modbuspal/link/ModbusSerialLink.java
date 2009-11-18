@@ -17,7 +17,7 @@ import java.util.logging.Logger;
 import javax.swing.ComboBoxModel;
 import javax.swing.event.ListDataListener;
 import modbuspal.main.ModbusRequest;
-import modbuspal.main.ModbusTools;
+import modbuspal.toolkit.ModbusTools;
 
 /**
  *
