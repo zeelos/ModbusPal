@@ -32,7 +32,7 @@ extends javax.swing.JDialog
 {
     private Redirector outRedirect;
     private Redirector errRedirect;
-    private StyledDocument consoleDoc;
+    private final StyledDocument consoleDoc;
 
     class Redirector implements Runnable
     {
@@ -69,7 +69,10 @@ extends javax.swing.JDialog
                         continue;
                     }
                     String line = br.readLine();
-                    consoleDoc.insertString(consoleDoc.getLength(), line + "\r\n", null);
+                    synchronized(consoleDoc)
+                    {
+                        consoleDoc.insertString(consoleDoc.getLength(), line + "\r\n", null);
+                    }
                 }
                 catch (InterruptedException ex)
                 {
@@ -117,6 +120,8 @@ extends javax.swing.JDialog
 
         jScrollPane1 = new javax.swing.JScrollPane();
         consoleTextPane = new javax.swing.JTextPane();
+        jPanel1 = new javax.swing.JPanel();
+        clearButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Console");
@@ -127,11 +132,40 @@ extends javax.swing.JDialog
 
         getContentPane().add(jScrollPane1, java.awt.BorderLayout.CENTER);
 
+        jPanel1.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+
+        clearButton.setText("Clear");
+        clearButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                clearButtonActionPerformed(evt);
+            }
+        });
+        jPanel1.add(clearButton);
+
+        getContentPane().add(jPanel1, java.awt.BorderLayout.NORTH);
+
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void clearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearButtonActionPerformed
+        try 
+        {
+            synchronized(consoleDoc)
+            {
+                consoleDoc.remove(0,consoleDoc.getLength());
+            }
+        }
+        catch (BadLocationException ex)
+        {
+            Logger.getLogger(AppConsole.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }//GEN-LAST:event_clearButtonActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton clearButton;
     private javax.swing.JTextPane consoleTextPane;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane1;
     // End of variables declaration//GEN-END:variables
 

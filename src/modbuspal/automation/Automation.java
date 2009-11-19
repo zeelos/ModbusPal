@@ -549,13 +549,15 @@ implements Runnable
         return automationStateListeners.remove(l);
     }
 
-    public void addAutomationValueListener(AutomationValueListener l)
+    public boolean addAutomationValueListener(AutomationValueListener l)
     {
         assert( automationValueListeners.contains(l) == false );
         if( automationValueListeners.add(l)==true )
         {
             System.out.println("AutomationValueListener added: "+l.hashCode());
+            return true;
         }
+        return false;
     }
 
     public boolean removeAutomationValueListener(AutomationValueListener l)
