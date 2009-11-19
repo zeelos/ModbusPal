@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<!DOCTYPE modbuspal_project SYSTEM "modbuspal.dtd">
+<modbuspal_project>
+<idgen  value="2"/>
+<links selected="tcpip" >
+<tcpip port="502" />
+<serial com="COM1" baudrate="19200" parity="even" >
+<flowcontrol xonxoff="false" rtscts="false" />
+</serial>
+</links>
+<automation name="triangle" step="0.5" loop="true" init="0.0">
+<generator class="LinearGenerator" duration="10.0">
+<start value="0.0" relative="false"/>
+<end value="10.0" relative="false"/>
+</generator>
+<generator class="LinearGenerator" duration="10.0">
+<start value="10.0" relative="false"/>
+<end value="0.0" relative="false"/>
+</generator>
+</automation>
+<automation name="random" step="1.0" loop="true" init="0.0">
+<generator class="RandomGenerator" duration="10.0">
+<min value="0.0" relative="false"/>
+<max value="10.0" relative="false"/>
+</generator>
+</automation>
+<startup>
+<script><abs>D:\programmation\ModbusPal\Samples\JFreeChart\LoadJFreeChartLibraries.py</abs>
+<rel>LoadJFreeChartLibraries.py</rel>
+</script>
+</startup>
+<ondemand>
+<script><abs>D:\programmation\ModbusPal\Samples\JFreeChart\DisplayAutomationInJFreeChart.py</abs>
+<rel>DisplayAutomationInJFreeChart.py</rel>
+</script>
+</ondemand>
+</modbuspal_project>
