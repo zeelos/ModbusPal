@@ -36,8 +36,21 @@ public class ClassPathHacker
     public static void addURL(URL u)
     throws IOException
     {
-        System.out.println("Add "+u+" to classpath");
+        // get the class loader:
 	URLClassLoader sysloader = (URLClassLoader)ClassLoader.getSystemClassLoader();
+
+        // check if specified url is already in defined in the class loader:
+        URL urls[] = sysloader.getURLs();
+        for( int i=0; i<urls.length; i++ )
+        {
+            if( urls[i].sameFile(u) == true )
+            {
+                return;
+            }
+        }
+
+        System.out.println("Add "+u+" to classpath");
+
 	Class sysclass = URLClassLoader.class;
 
 	try {

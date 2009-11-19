@@ -338,7 +338,7 @@ implements InstanciatorListener, ScriptListener, FileTransferHandler.FileTransfe
             // create a new panel and add it
             ScriptRunnerPanel panel = new GeneratorScriptRunnerPanel(si,false);
             generatorInstanciatorsList.add(panel);
-            validate();
+            validate(); repaint();
         }
 
         else if( factory instanceof BindingFactory )
@@ -347,7 +347,7 @@ implements InstanciatorListener, ScriptListener, FileTransferHandler.FileTransfe
             // create a new panel and add it
             ScriptRunnerPanel panel = new BindingScriptRunnerPanel(si,false);
             bindingInstanciatorsList.add(panel);
-            validate();
+            validate(); repaint();
         }
     }
 
@@ -382,7 +382,7 @@ implements InstanciatorListener, ScriptListener, FileTransferHandler.FileTransfe
                 }
             }
         }
-        validate();
+        validate(); repaint();
     }
 
 
@@ -401,7 +401,7 @@ implements InstanciatorListener, ScriptListener, FileTransferHandler.FileTransfe
                 }
             }
         }
-        validate();
+        validate(); repaint();
     }
 
 
@@ -417,7 +417,7 @@ implements InstanciatorListener, ScriptListener, FileTransferHandler.FileTransfe
         // create a new panel and add it
         ScriptRunnerPanel panel = new StartupScriptRunnerPanel(runner,true);
         startupScriptsList.add(panel);
-        validate();
+        validate(); repaint();
     }
 
     @Override
@@ -426,7 +426,7 @@ implements InstanciatorListener, ScriptListener, FileTransferHandler.FileTransfe
         // create a new panel and add it
         ScriptRunnerPanel panel = new OnDemandScriptRunnerPanel(runner,true);
         ondemandScriptsList.add(panel);
-        validate();
+        validate(); repaint();
     }
 
 
@@ -452,14 +452,14 @@ implements InstanciatorListener, ScriptListener, FileTransferHandler.FileTransfe
     {
         ScriptRunnerPanel panel = findPanel(ondemandScriptsList,runner);
         ondemandScriptsList.remove(panel);
-        validate();
+        validate(); repaint();
     }
 
     public void startupScriptRemoved(ScriptRunner runner)
     {
         ScriptRunnerPanel panel = findPanel(startupScriptsList,runner);
         startupScriptsList.remove(panel);
-        validate();
+        validate(); repaint();
     }
 
     @Override
