@@ -49,8 +49,16 @@ implements ModbusConst
                 length = readHoldingRegisters(slaveID, buffer, offset);
                 break;
 
+            case FC_WRITE_SINGLE_REGISTER:
+                length = writeSingleRegister(slaveID, buffer, offset);
+                break;
+
             case FC_WRITE_MULTIPLE_REGISTERS:
                 length = writeMultipleRegisters(slaveID, buffer, offset);
+                break;
+
+            case FC_READ_WRITE_MULTIPLE_REGISTERS:
+                length = readWriteMultipleRegisters(slaveID, buffer, offset);
                 break;
 
             case FC_READ_COILS:
@@ -141,6 +149,82 @@ implements ModbusConst
 
         return 5;
     }
+
+    private int writeSingleRegister(int slaveID, byte[] buffer, int offset)
+    {
+        int address = ModbusTools.getUint16(buffer, offset+1);
+
+        if( ModbusPal.holdingRegistersExist(slaveID, address, 1) == false )
+        {
+            System.err.println("Write single register: bad address "+address);
+            return makeExceptionResponse(FC_WRITE_SINGLE_REGISTER, XC_ILLEGAL_DATA_ADDRESS, buffer, offset);
+        }
+
+        byte rc = ModbusPal.setHoldingRegisters(slaveID,address,1,buffer,offset+3);
+        if( rc != (byte)0x00 )
+        {
+            return makeExceptionResponse(FC_WRITE_SINGLE_REGISTER, rc, buffer, offset);
+        }
+
+        return 5;
+    }
+
+
+
+    private int readWriteMultipleRegisters(int slaveID, byte[] buffer, int offset)
+    {
+        int readStartingAddress = ModbusTools.getUint16(buffer, offset+1);
+        int quantityToRead = ModbusTools.getUint16(buffer, offset+3);
+        int writeStartingAddress = ModbusTools.getUint16(buffer, offset+5);
+        int quantityToWrite = ModbusTools.getUint16(buffer, offset+7);
+        int writeByteCount = ModbusTools.getUint8(buffer, offset+9);
+
+        // verify quantity to read
+        if( (quantityToRead<1) || (quantityToRead>118) )
+        {
+            System.err.println("Read/Write multiple registers: bad read quantity "+ quantityToRead);
+            return makeExceptionResponse(FC_READ_WRITE_MULTIPLE_REGISTERS, XC_ILLEGAL_DATA_ADDRESS, buffer, offset);
+        }
+
+        // verify quantity to write
+        if( (quantityToWrite<1) || (quantityToWrite>118) || (writeByteCount!=2*quantityToWrite) )
+        {
+            System.err.println("Read/Write multiple registers: bad write quantity "+ quantityToWrite);
+            return makeExceptionResponse(FC_READ_WRITE_MULTIPLE_REGISTERS, XC_ILLEGAL_DATA_ADDRESS, buffer, offset);
+        }
+
+        // verify that registers to be read exist:
+        if( ModbusPal.holdingRegistersExist(slaveID, readStartingAddress,quantityToRead) == false )
+        {
+            System.err.println("Read/Write multiple registers: bad address range "+readStartingAddress+" to "+ readStartingAddress+quantityToRead);
+            return makeExceptionResponse(FC_READ_WRITE_MULTIPLE_REGISTERS, XC_ILLEGAL_DATA_VALUE, buffer, offset);
+        }
+
+        // verify that registers to be written exist:
+        if( ModbusPal.holdingRegistersExist(slaveID, writeStartingAddress,quantityToWrite) == false )
+        {
+            System.err.println("Read/Write multiple registers: bad address range "+writeStartingAddress+" to "+ writeStartingAddress+quantityToWrite);
+            return makeExceptionResponse(FC_READ_WRITE_MULTIPLE_REGISTERS, XC_ILLEGAL_DATA_VALUE, buffer, offset);
+        }
+
+        // perform write operation first:
+        byte rc = ModbusPal.setHoldingRegisters(slaveID,writeStartingAddress,quantityToWrite,buffer,offset+10);
+        if( rc != (byte)0x00 )
+        {
+            return makeExceptionResponse(FC_WRITE_MULTIPLE_REGISTERS, rc, buffer, offset);
+        }
+
+        // then perform read operation:
+        buffer[offset+1] = (byte) (2*quantityToRead);
+        rc = ModbusPal.getHoldingRegisters(slaveID,readStartingAddress,quantityToRead,buffer,offset+2);
+        if( rc != (byte)0x00 )
+        {
+            return makeExceptionResponse(FC_READ_WRITE_MULTIPLE_REGISTERS, rc, buffer, offset);
+        }
+        return 2 + (2*quantityToRead);
+    }
+
+
 
     private int readCoils(int slaveID, byte[] buffer, int offset)
     {

@@ -14,8 +14,10 @@ public interface ModbusConst
     public static final byte FC_READ_COILS = (byte)0x01;
     public static final byte FC_READ_HOLDING_REGISTERS = (byte)0x03;
     public static final byte FC_WRITE_SINGLE_COIL = (byte)0x05;
+    public static final byte FC_WRITE_SINGLE_REGISTER = (byte)0x06;
     public static final byte FC_WRITE_MULTIPLE_COILS = (byte)0x0F;
     public static final byte FC_WRITE_MULTIPLE_REGISTERS = (byte)0x10;
+    public static final byte FC_READ_WRITE_MULTIPLE_REGISTERS = (byte)0x17;
 
     public static final String MODBUS_FUNCTIONS[] = {
         "(0x00)",
