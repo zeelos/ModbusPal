@@ -29,6 +29,21 @@ import org.w3c.dom.NodeList;
 public class ModbusRegisters
 implements TableModel, ModbusPalXML, ModbusConst
 {
+    class RegisterCopy
+    {
+        int registerAddress;
+        Integer registerValue;
+        String registerName;
+        Binding registerBinding;
+        RegisterCopy(int address, Integer value, String name, Binding b)
+        {
+            registerAddress = address;
+            registerValue = value;
+            registerName = name;
+            registerBinding = b;
+        }
+    }
+
     public static final String ADDRESS_COLUMN_NAME = "Address";
 
     public static final int ADDRESS_COLUMN_INDEX = 0;
@@ -307,20 +322,31 @@ implements TableModel, ModbusPalXML, ModbusConst
     }
 
 
+    void paste(int destAddress, RegisterCopy src)
+    {
+        try
+        {
+            Binding b = (Binding) src.registerBinding.clone();
+            set( destAddress, src.registerValue, src.registerName, b);
+        }
+        catch(CloneNotSupportedException ex)
+        {
+            ex.printStackTrace();
+        }
+    }
 
-    void add(ModbusRegisters source, int sourceAddress)
+    RegisterCopy copy (ModbusRegisters source, int sourceAddress)
     {
         // AddIndexes the register if necessary
         if( values.indexExists(sourceAddress) == false )
         {
-            values.addIndex(sourceAddress);
+            return null;
         }
 
         Integer value = source.values.getByIndex(sourceAddress);
         String name = source.names.get(sourceAddress);
         Binding binding = source.bindings.get(sourceAddress);
-
-        set( sourceAddress, value, name, binding);
+        return new RegisterCopy( sourceAddress, value, name, binding );
     }
 
 

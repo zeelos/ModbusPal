@@ -9,7 +9,9 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
+import java.util.ArrayList;
 import javax.swing.table.TableModel;
+import modbuspal.slave.ModbusRegisters.RegisterCopy;
 
 /**
  *
@@ -21,7 +23,7 @@ implements Transferable
 
     public static final DataFlavor DATA_FLAVOR = new DataFlavor(ModbusRegisters.class,"registers");
     public static final DataFlavor SUPPORTED_DATA_FLAVORS[] = { DATA_FLAVOR };
-    private ModbusRegisters registers = new ModbusRegisters();
+    private ArrayList<RegisterCopy> registers = new ArrayList<RegisterCopy>();
 
 
     public ModbusTransferableRegisters(ModbusRegistersTable table)
@@ -30,16 +32,12 @@ implements Transferable
         if( model instanceof ModbusRegisters )
         {
             ModbusRegisters source = (ModbusRegisters)model;
-            registers.setOffset( source.getOffset() );
 
             int addresses[] = table.getSelectedAddresses();
             for(int i=0; i<addresses.length; i++)
             {
-//                System.out.printf("Copying address=%d, value=%d; name=%s\r\n",
-//                    addresses[i],
-//                    source.getValue(addresses[i]),
-//                    source.getName(addresses[i]) );
-                registers.add( source, addresses[i] );
+                RegisterCopy copy = source.copy( source, addresses[i] );
+                registers.add(copy);
             }
         }
     }

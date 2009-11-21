@@ -97,7 +97,6 @@ implements WindowListener, ModbusSlaveListener
         enableToggleButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/modbuspal/slave/img/disabled.png"))); // NOI18N
         enableToggleButton.setSelected(modbusSlave.isEnabled());
         enableToggleButton.setToolTipText("Enable or disable this slave");
-        enableToggleButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
         enableToggleButton.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/modbuspal/slave/img/enabled.png"))); // NOI18N
         enableToggleButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {

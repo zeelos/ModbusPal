@@ -16,8 +16,13 @@ import modbuspal.slave.ModbusRegisters;
  * @author nnovic
  */
 public abstract class Binding
-implements AutomationValueListener
+implements AutomationValueListener, Cloneable
 {
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
 
     private Automation automation;
     private int order;

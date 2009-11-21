@@ -8,11 +8,13 @@ package modbuspal.slave;
 import java.awt.Component;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.InputEvent;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.Icon;
 import javax.swing.JComponent;
 import javax.swing.TransferHandler;
+import modbuspal.slave.ModbusRegisters.RegisterCopy;
 
 /**
  *
@@ -22,7 +24,7 @@ class ModbusRegistersTransferHandler
 extends TransferHandler
 {
 
-    ModbusRegisters getRegisters(Transferable t)
+    List<RegisterCopy> getRegisters(Transferable t)
     {
         if( t==null )
         {
@@ -45,9 +47,9 @@ extends TransferHandler
             return null;
         }
 
-        if( data instanceof ModbusRegisters )
+        if( data instanceof List )
         {
-            return (ModbusRegisters)data;
+            return (List)data;
         }
         return null;
     }
@@ -131,17 +133,21 @@ extends TransferHandler
         }
 
         // get the registers to copy into the target
-        ModbusRegisters source = getRegisters(support.getTransferable());
-        if( source == null )
+        List<RegisterCopy> copies = getRegisters(support.getTransferable());
+        if( copies == null )
         {
             return false;
         }
 
+        // determine how many "paste" operation to perform
+        int opCount = Math.min( copies.size(), addresses.length );
+
         // paste
-        for( int i=0; i<addresses.length; i++ )
+        for( int i=0; i<opCount; i++ )
         {
-            int j = i % source.getRowCount();
-            target.replace(source, source.getAddressOf(j), addresses[i]);
+            //int j = i % source.getRowCount();
+            target.paste(addresses[i], copies.get(i) );
+            //target.replace(source, source.getAddressOf(j), addresses[i]);
         }
         return false;
     }

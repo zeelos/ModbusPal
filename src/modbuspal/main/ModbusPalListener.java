@@ -6,7 +6,6 @@
 package modbuspal.main;
 
 import modbuspal.automation.Automation;
-import modbuspal.script.ScriptRunner;
 import modbuspal.slave.ModbusSlave;
 
 /**
