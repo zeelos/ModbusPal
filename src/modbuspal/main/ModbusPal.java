@@ -709,11 +709,19 @@ implements ModbusPalXML, ModbusConst
     //
 
 
-    public static void tilt()
+    public static void notifyPDUprocessed()
     {
         for(ModbusPalListener l:listeners)
         {
-            l.tilt();
+            l.pduProcessed();
+        }
+    }
+
+    public static void notifyExceptionResponse()
+    {
+        for(ModbusPalListener l:listeners)
+        {
+            l.pduException();
         }
     }
 

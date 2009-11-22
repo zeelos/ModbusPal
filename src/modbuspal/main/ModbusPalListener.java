@@ -22,5 +22,7 @@ public interface ModbusPalListener
 
     public void automationRemoved(Automation automation);
 
-    public void tilt();
+    public void pduProcessed();
+
+    public void pduException();
 }

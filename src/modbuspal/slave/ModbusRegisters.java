@@ -136,10 +136,20 @@ implements TableModel, ModbusPalXML, ModbusConst
     }
 
 
+    private void detachAllBindings()
+    {
+        Collection<Binding> collection = bindings.values();
+        for( Binding b:collection)
+        {
+            b.detach();
+        }
+    }
+
     void clear()
     {
         values.clear();
         names.clear();
+        detachAllBindings();
         bindings.clear();
         notifyTableChanged();
     }

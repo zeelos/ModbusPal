@@ -20,8 +20,6 @@ implements ModbusConst
 
     protected int processPDU(int slaveID, byte[] buffer, int offset, int pduLength)
     {
-        ModbusPal.tilt();
-
         // record the request
         ModbusPalRecorder.recordIncoming(slaveID,buffer,offset,pduLength);
 
@@ -38,6 +36,7 @@ implements ModbusConst
         {
             int length = makeExceptionResponse(functionCode,XC_ILLEGAL_FUNCTION, buffer, offset);
             ModbusPalRecorder.recordOutgoing(slaveID,buffer,offset,length);
+            ModbusPal.notifyExceptionResponse();
             return length;
         }
 
@@ -77,6 +76,15 @@ implements ModbusConst
                 System.err.println("Illegal function code "+functionCode);
                 length = makeExceptionResponse(functionCode,XC_ILLEGAL_FUNCTION, buffer, offset);
                 break;
+        }
+
+        if( isExceptionResponse(buffer,offset)==true )
+        {
+            ModbusPal.notifyExceptionResponse();
+        }
+        else
+        {
+            ModbusPal.notifyPDUprocessed();
         }
 
         ModbusPalRecorder.recordOutgoing(slaveID,buffer,offset,length);
@@ -305,6 +313,12 @@ implements ModbusConst
         }
 
         return 5;
+    }
+
+    private boolean isExceptionResponse(byte[] buffer, int offset)
+    {
+        byte b = buffer[offset];
+        return( (b&0x80) == 0x80 );
     }
 
 }

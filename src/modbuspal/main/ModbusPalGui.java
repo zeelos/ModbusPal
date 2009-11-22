@@ -19,10 +19,12 @@ import modbuspal.slave.ModbusSlavePanel;
 import java.awt.Component;
 import java.awt.Desktop;
 import java.awt.Dialog.ModalExclusionType;
+import java.awt.Image;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.*;
 import java.net.URI;
+import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
@@ -50,7 +52,7 @@ public class ModbusPalGui
 extends JFrame
 implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
 {
-    private static final String APP_STRING = "ModbusPal 1.4";
+    private static final String APP_STRING = "ModbusPal 1.5";
     private static ModbusPalGui uniqueInstance;
 
 
@@ -412,11 +414,30 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
     {
         initComponents();
         setTitle(APP_STRING);
+        setIconImage();
+        installConsole();
         installRecorder();
         installCommPorts();
         installScriptEngine();
     }
 
+    private void setIconImage()
+    {
+        URL url2 = getClass().getClassLoader().getResource("modbuspal/main/img/icon.png");
+        Image image2 = getToolkit().createImage(url2);
+        setIconImage(image2);
+    }
+
+    private void installConsole()
+    {
+        try {
+            console = new AppConsole(this);
+            console.addWindowListener(this);
+        } catch (IOException ex) {
+            Logger.getLogger(ModbusPalGui.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+    }
 
     private boolean verifyRXTX()
     {
@@ -505,13 +526,17 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
 
 
     @Override
-    public void tilt()
+    public void pduProcessed()
     {
-        ( (TiltLabel)tiltLabel ).tilt();
+        ( (TiltLabel)tiltLabel ).tilt(TiltLabel.GREEN);
     }
 
 
-
+    @Override
+    public void pduException()
+    {
+        ( (TiltLabel)tiltLabel ).tilt(TiltLabel.YELLOW);
+    }
 
 
 
@@ -561,6 +586,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         learnToggleButton = new javax.swing.JToggleButton();
         tiltLabel = new TiltLabel();
         recordToggleButton = new javax.swing.JToggleButton();
+        asciiToggleButton = new javax.swing.JToggleButton();
         projectPanel = new javax.swing.JPanel();
         loadButton = new javax.swing.JButton();
         saveProjectButton = new javax.swing.JButton();
@@ -732,6 +758,15 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         gridBagConstraints.gridwidth = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         runPanel.add(recordToggleButton, gridBagConstraints);
+
+        asciiToggleButton.setText("Ascii");
+        asciiToggleButton.setEnabled(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        runPanel.add(asciiToggleButton, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
@@ -1376,18 +1411,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
 
         if( consoleToggleButton.isSelected()==true )
         {
-            if( console==null )
-            {
-                try
-                {
-                    console = new AppConsole(this);
-                    console.addWindowListener(this);
-                }
-                catch (IOException ex)
-                {
-                    Logger.getLogger(ModbusPalGui.class.getName()).log(Level.SEVERE, null, ex);
-                }
-            }
+            GUITools.align(this, console);
             console.setVisible(true);
         }
         else
@@ -1445,6 +1469,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addAutomationButton;
     private javax.swing.JButton addModbusSlaveButton;
+    private javax.swing.JToggleButton asciiToggleButton;
     private javax.swing.JScrollPane automationListScrollPane;
     private javax.swing.JPanel automationsListPanel;
     private javax.swing.JComboBox baudRateComboBox;

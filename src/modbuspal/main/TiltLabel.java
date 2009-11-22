@@ -19,11 +19,17 @@ class TiltLabel
 extends JLabel
 implements Runnable
 {
-    private int tiltCount=0;
+    //private int tiltCount=0;
+    public static final int RED = 1;
+    public static final int YELLOW = 2;
+    public static final int GREEN = 3;
+    private int tiltColor=0;
     private boolean execute=false;
     private Thread thread=null;
     private ImageIcon grayIcon;
     private ImageIcon greenIcon;
+    private ImageIcon yellowIcon;
+    private ImageIcon redIcon;
 
     public TiltLabel()
     {
@@ -43,8 +49,13 @@ implements Runnable
     {
         URL grayIconUrl = getClass().getResource("img/grayTilt.png");
         URL greenIconUrl = getClass().getResource("img/greenTilt.png");
+        URL yellowIconUrl = getClass().getResource("img/yellowTilt.png");
+        URL redIconUrl = getClass().getResource("img/redTilt.png");
         grayIcon = new ImageIcon(grayIconUrl);
         greenIcon = new ImageIcon(greenIconUrl);
+        yellowIcon = new ImageIcon(yellowIconUrl);
+        redIcon = new ImageIcon(redIconUrl);
+
     }
 
     public void start()
@@ -66,11 +77,11 @@ implements Runnable
         thread=null;
     }
 
-    public void tilt()
+    public void tilt(int c)
     {
         synchronized(this)
         {
-            tiltCount++;
+            tiltColor=c;
         }
     }
 
@@ -91,25 +102,25 @@ implements Runnable
             
             synchronized(this)
             {
-                if( tiltCount > 0 )
+                if( tilted==true )
                 {
-                    if( tilted==false )
-                    {
-                        setIcon(greenIcon);
-                        tilted = true;
-                    }
+                    setIcon(grayIcon);
+                    tilted=false;
                 }
                 else
                 {
-                    if( tilted==true )
+                    tilted = true;
+                    switch(tiltColor)
                     {
-                        setIcon(grayIcon);
-                        tilted=false;
+                        case RED: setIcon(redIcon); break;
+                        case YELLOW: setIcon(yellowIcon); break;
+                        case GREEN: setIcon(greenIcon); break;
+                        default: tilted = false; break;
                     }
                 }
-                tiltCount=0;
+                tiltColor=0;
             }
-        }
+        } // end of while
         setIcon(grayIcon);
     }
 
