@@ -26,13 +26,20 @@ extends javax.swing.JDialog
     private boolean added = false;
     private DefaultListModel model = new DefaultListModel();
 
-    /** Creates new form AddSlaveDialog */
+    /** 
+     * Creates new form AddSlaveDialog. This constructor is usually
+     * called when the user add a new slave in the project.
+     */
     public AddSlaveDialog(Frame parent)
     {
         this(parent,null);
+        setTitle("New slave");
     }
 
-    /** Creates new form AddSlaveDialog */
+    /** 
+     * Creates new form AddSlaveDialog. This constructor is usually
+     * called when the user duplicates a modbus slave.
+     */
     public AddSlaveDialog(Frame parent, String name)
     {
         super(parent, true);
@@ -47,6 +54,7 @@ extends javax.swing.JDialog
         }
 
         initComponents();
+        setTitle("Duplicate "+name);
         GUITools.align(parent,this);
 
         if( name!=null )
