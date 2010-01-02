@@ -8,7 +8,7 @@ package modbuspal.binding;
 import java.io.IOException;
 import java.io.OutputStream;
 import modbuspal.automation.Automation;
-import modbuspal.automation.AutomationValueListener;
+import modbuspal.automation.AutomationExecutionListener;
 import modbuspal.slave.ModbusRegisters;
 
 /**
@@ -16,7 +16,7 @@ import modbuspal.slave.ModbusRegisters;
  * @author nnovic
  */
 public abstract class Binding
-implements AutomationValueListener, Cloneable
+implements AutomationExecutionListener, Cloneable
 {
 
     @Override
@@ -37,19 +37,31 @@ implements AutomationValueListener, Cloneable
     {
         registers = l;
         registerAddress = address;
-        automation.addAutomationValueListener(this);
+        automation.addAutomationExecutionListener(this);
     }
 
     public void detach()
     {
         registers=null;
-        automation.removeAutomationValueListener(this);
+        automation.removeAutomationExecutionListener(this);
     }
 
     @Override
     public void automationValueHasChanged(Automation source, double time, double value)
     {
         registers.notifyRegisterChanged(registerAddress);
+    }
+
+    @Override
+    public void automationHasStarted(Automation source) {
+    }
+
+    @Override
+    public void automationHasEnded(Automation source) {
+    }
+
+    @Override
+    public void automationReloaded(Automation source) {
     }
 
     /**

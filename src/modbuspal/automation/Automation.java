@@ -32,8 +32,8 @@ implements Runnable
     private String uniqueName="";
     private boolean suspended = false;
     private boolean quit = false;
-    private ArrayList<AutomationStateListener> automationStateListeners = new ArrayList<AutomationStateListener>();
-    private ArrayList<AutomationValueListener> automationValueListeners = new ArrayList<AutomationValueListener>();
+    private ArrayList<AutomationEditionListener> automationEditionListeners = new ArrayList<AutomationEditionListener>();
+    private ArrayList<AutomationExecutionListener> automationExecutionListeners = new ArrayList<AutomationExecutionListener>();
     private ArrayList<GeneratorListener> generatorListeners = new ArrayList<GeneratorListener>();
     private double currentValue = 0.0;
     private double initialValue = 0.0;
@@ -429,7 +429,7 @@ implements Runnable
         // init automation:
         int currentIndex = 0;
         currentValue = initialValue;
-        //double previousValue = 0.0;
+        boolean reloaded = false;
         double currentTime = 0.0;
         double startTime = 0.0;
 
@@ -441,7 +441,11 @@ implements Runnable
 
         while( (currentIndex < genList.length) && (quit==false) )
         {
-            
+            if( reloaded )
+            {
+                fireAutomationReloaded();
+            }
+
             // prepare to execute generator:
             Generator currentGen = genList[currentIndex];
             currentGen.setInitialValue(currentValue);
@@ -493,6 +497,7 @@ implements Runnable
                 if( loop == true )
                 {
                     currentIndex = 0;
+                    reloaded=true;
                 }
             }
         }
@@ -532,40 +537,40 @@ implements Runnable
 
     public void disconnect()
     {
-        automationStateListeners.clear();
-        automationValueListeners.clear();
+        automationEditionListeners.clear();
+        automationExecutionListeners.clear();
         generatorListeners.clear();
         generators.clear();
     }
 
-    public void addAutomationStateListener(AutomationStateListener l)
+    public void addAutomationEditionListener(AutomationEditionListener l)
     {
-        assert( automationStateListeners.contains(l) == false );
-        automationStateListeners.add(l);
+        assert( automationEditionListeners.contains(l) == false );
+        automationEditionListeners.add(l);
     }
 
-    public boolean removeAutomationStateListener(AutomationStateListener l)
+    public boolean removeAutomationEditionListener(AutomationEditionListener l)
     {
-        return automationStateListeners.remove(l);
+        return automationEditionListeners.remove(l);
     }
 
-    public boolean addAutomationValueListener(AutomationValueListener l)
+    public boolean addAutomationExecutionListener(AutomationExecutionListener l)
     {
-        assert( automationValueListeners.contains(l) == false );
-        if( automationValueListeners.add(l)==true )
+        assert( automationExecutionListeners.contains(l) == false );
+        if( automationExecutionListeners.add(l)==true )
         {
-            System.out.println("AutomationValueListener added: "+l.hashCode());
+            System.out.println("AutomationExecutionListener added: "+l.hashCode());
             return true;
         }
         return false;
     }
 
-    public boolean removeAutomationValueListener(AutomationValueListener l)
+    public boolean removeAutomationExecutionListener(AutomationExecutionListener l)
     {
 
-        if( automationValueListeners.remove(l)==true )
+        if( automationExecutionListeners.remove(l)==true )
         {
-            System.out.println("AutomationValueListener removed: "+l.hashCode());
+            System.out.println("AutomationExecutionListener removed: "+l.hashCode());
             return true;
         }
         return false;
@@ -619,7 +624,7 @@ implements Runnable
 
     private void fireAutomationHasEnded()
     {
-        for(AutomationStateListener l:automationStateListeners)
+        for(AutomationExecutionListener l:automationExecutionListeners)
         {
             l.automationHasEnded(this);
         }
@@ -627,15 +632,23 @@ implements Runnable
 
     private void fireAutomationHasStarted()
     {
-        for(AutomationStateListener l:automationStateListeners)
+        for(AutomationExecutionListener l:automationExecutionListeners)
         {
             l.automationHasStarted(this);
         }
     }
 
+    private void fireAutomationReloaded()
+    {
+        for(AutomationExecutionListener l:automationExecutionListeners)
+        {
+            l.automationReloaded(this);
+        }
+    }
+
     private void fireGeneratorAdded(Generator gen, int index)
     {
-        for(AutomationStateListener l:automationStateListeners)
+        for(AutomationEditionListener l:automationEditionListeners)
         {
             l.generatorHasBeenAdded(this, gen, index);
         }
@@ -643,7 +656,7 @@ implements Runnable
 
     private void fireGeneratorRemoved(Generator gen)
     {
-        for(AutomationStateListener l:automationStateListeners)
+        for(AutomationEditionListener l:automationEditionListeners)
         {
             l.generatorHasBeenRemoved(this, gen);
         }
@@ -651,7 +664,7 @@ implements Runnable
 
     private void fireGeneratorSwap(Generator g1, Generator g2)
     {
-        for(AutomationStateListener l:automationStateListeners)
+        for(AutomationEditionListener l:automationEditionListeners)
         {
             l.generatorsHaveBeenSwapped(this, g1, g2);
         }
@@ -659,7 +672,7 @@ implements Runnable
 
     private void fireInitialValueChanged(double init)
     {
-        for(AutomationStateListener l:automationStateListeners)
+        for(AutomationEditionListener l:automationEditionListeners)
         {
             l.automationInitialValueChanged(this, init);
         }
@@ -667,7 +680,7 @@ implements Runnable
 
     private void fireLoopEnabled(boolean enabled)
     {
-        for(AutomationStateListener l:automationStateListeners)
+        for(AutomationEditionListener l:automationEditionListeners)
         {
             l.automationLoopEnabled(this, enabled);
         }
@@ -675,7 +688,7 @@ implements Runnable
 
     private void fireNameChanged(String newName)
     {
-        for(AutomationStateListener l:automationStateListeners)
+        for(AutomationEditionListener l:automationEditionListeners)
         {
             l.automationNameHasChanged(this, newName);
         }
@@ -683,7 +696,7 @@ implements Runnable
 
     private void fireCurrentValueChanged(double currentTime, double currentValue)
     {
-        for(AutomationValueListener l:automationValueListeners)
+        for(AutomationExecutionListener l:automationExecutionListeners)
         {
             l.automationValueHasChanged(this, currentTime, currentValue);
         }
@@ -691,7 +704,7 @@ implements Runnable
 
     private void fireStepDelayHasChanged(double step)
     {
-        for(AutomationStateListener l:automationStateListeners)
+        for(AutomationEditionListener l:automationEditionListeners)
         {
             l.automationStepHasChanged(this, step);
         }

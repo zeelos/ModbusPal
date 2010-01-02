@@ -44,7 +44,8 @@ extends InstanciatorManager
     private final ClassInstanciator classInstanciators[] =
     {
         new ClassInstanciator(modbuspal.generator.linear.LinearGenerator.class),
-        new ClassInstanciator(modbuspal.generator.random.RandomGenerator.class)
+        new ClassInstanciator(modbuspal.generator.random.RandomGenerator.class),
+        new ClassInstanciator(modbuspal.generator.sine.SineGenerator.class)
     };
 
 

@@ -52,7 +52,7 @@ import org.xml.sax.SAXException;
  */
 public class AutomationEditor
 extends javax.swing.JDialog
-implements AutomationStateListener, AutomationValueListener, InstanciatorListener
+implements AutomationEditionListener, AutomationExecutionListener, InstanciatorListener
 {
     private Automation automation = null;
     private ListLayout listLayout;
@@ -70,15 +70,15 @@ implements AutomationStateListener, AutomationValueListener, InstanciatorListene
         addAlreadyExistingGeneratorsToList();
         addGeneratorButtons();
         pack();
-        automation.addAutomationStateListener(this);
-        automation.addAutomationValueListener(this);
+        automation.addAutomationEditionListener(this);
+        automation.addAutomationExecutionListener(this);
         GeneratorFactory.getFactory().addInstanciatorListener(this);
     }
 
     public void disconnect()
     {
-        assert(automation.removeAutomationStateListener(this)==false);
-        assert(automation.removeAutomationValueListener(this)==false);
+        assert(automation.removeAutomationEditionListener(this)==false);
+        assert(automation.removeAutomationExecutionListener(this)==false);
         GeneratorFactory.getFactory().removeInstanciatorListener(this);
     }
 
@@ -765,6 +765,11 @@ implements AutomationStateListener, AutomationValueListener, InstanciatorListene
         {
             removeGeneratorButton(def.getClassName());
         }
+    }
+
+    @Override
+    public void automationReloaded(Automation source)
+    {
     }
 
 }

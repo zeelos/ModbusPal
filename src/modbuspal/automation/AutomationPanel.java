@@ -15,7 +15,6 @@ package modbuspal.automation;
 import modbuspal.main.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
-import modbuspal.generator.Generator;
 
 /**
  *
@@ -23,7 +22,7 @@ import modbuspal.generator.Generator;
  */
 public class AutomationPanel
 extends javax.swing.JPanel
-implements WindowListener, AutomationStateListener
+implements WindowListener, AutomationExecutionListener
 {
 
     private Automation automation = null;
@@ -35,7 +34,7 @@ implements WindowListener, AutomationStateListener
     {
         mainGui = gui;
         automation = parent;
-        automation.addAutomationStateListener(this);
+        automation.addAutomationExecutionListener(this);
         automationEditor = new AutomationEditor(mainGui,automation);
         automationEditor.addWindowListener(this);
         initComponents();
@@ -48,7 +47,7 @@ implements WindowListener, AutomationStateListener
         automationEditor.removeWindowListener(this);
         automationEditor.setVisible(false);
         automationEditor.disconnect();
-        assert(automation.removeAutomationStateListener(this)==false);
+        assert(automation.removeAutomationExecutionListener(this)==false);
     }
 
 
@@ -233,37 +232,12 @@ implements WindowListener, AutomationStateListener
     }
 
     @Override
-    public void automationNameHasChanged(Automation aThis, String newName)
+    public void automationReloaded(Automation source)
     {
     }
 
     @Override
-    public void automationLoopEnabled(Automation aThis, boolean enabled)
-    {
-    }
-
-    @Override
-    public void automationStepHasChanged(Automation aThis, double step)
-    {
-    }
-
-    @Override
-    public void generatorHasBeenAdded(Automation source, Generator generator, int index)
-    {
-    }
-
-    @Override
-    public void generatorHasBeenRemoved(Automation source, Generator generator)
-    {
-    }
-
-    @Override
-    public void generatorsHaveBeenSwapped(Automation source, Generator g1, Generator g2)
-    {
-    }
-
-    @Override
-    public void automationInitialValueChanged(Automation aThis, double init)
+    public void automationValueHasChanged(Automation source, double time, double value)
     {
     }
 }

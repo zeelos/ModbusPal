@@ -9,25 +9,39 @@ from org.jfree.chart import ChartFactory;
 from org.jfree.chart import ChartPanel;
 from org.jfree.chart.plot import PlotOrientation;
 from modbuspal.main import ModbusPal;
-from modbuspal.automation import AutomationValueListener;
+from modbuspal.automation import AutomationExecutionListener;
 from modbuspal.toolkit import Jythools;
 
 
-class AutomationSeries(XYSeries, AutomationValueListener,WindowListener):
+class AutomationSeries(XYSeries, AutomationExecutionListener, WindowListener):
 
   def windowClosed(self,event):
-    self.automation.removeAutomationValueListener(self);
+    self.automation.removeAutomationExecutionListener(self);
     
   def automationValueHasChanged(self,source,time,value):
-    while self.getItemCount() > 50:
-      self.remove(0);
+    if self.maxItemCount > 0:
+      while self.getItemCount() > self.maxItemCount:
+        self.remove(0);
     self.add(time,value);
     return;
+  
+  def automationHasEnded(self, source):
+    return;
+
+  def automationHasStarted(self, source):
+    return;
+
+  def automationReloaded(self, source):
+    self.maxItemCount = self.getItemCount();
+    System.out.println("reload");
+    return;
+  
   
   def __init__(self,auto):
     XYSeries.__init__(self,auto.getName() );
     self.automation = auto;
-    self.automation.addAutomationValueListener(self);
+    self.maxItemCount = 0;
+    self.automation.addAutomationExecutionListener(self);
     
 
 class AutomationChart():

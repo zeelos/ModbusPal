@@ -10,8 +10,20 @@ package modbuspal.automation;
  * notifications about the values of automations.
  * @author nnovic
  */
-public interface AutomationValueListener
+public interface AutomationExecutionListener
 {
+    /**
+     * this event is triggered when an automation starts.
+     * @param source
+     */
+    public void automationHasStarted(Automation source);
+
+    /**
+     * this event is triggered when an automation ends.
+     * @param source
+     */
+    public void automationHasEnded(Automation source);
+
     /**
      * this event is triggered when the current value of the automation is
      * modified.
@@ -19,4 +31,6 @@ public interface AutomationValueListener
      * @param value
      */
     public void automationValueHasChanged(Automation source, double time, double value);
+
+    public void automationReloaded(Automation source);
 }

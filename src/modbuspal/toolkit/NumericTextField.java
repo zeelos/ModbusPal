@@ -38,7 +38,17 @@ extends JTextField
         return (int)getDouble();
     }
 
-    
+
+    public void setValue(int i)
+    {
+        setText( String.valueOf(i) );
+    }
+
+    public void setValue(double d)
+    {
+        setText( String.valueOf(d) );
+    }
+
     public double getDouble()
     {
         String txt = getText();

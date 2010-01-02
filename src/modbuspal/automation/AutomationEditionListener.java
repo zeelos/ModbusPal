@@ -12,20 +12,8 @@ import modbuspal.generator.Generator;
  * notifications about the status of automations.
  * @author nnovic
  */
-public interface AutomationStateListener
+public interface AutomationEditionListener
 {
-    /**
-     * this event is triggered when an automation ends.
-     * @param source
-     */
-    public void automationHasEnded(Automation source);
-
-    /**
-     * this event is triggered when an automation starts.
-     * @param source
-     */
-    public void automationHasStarted(Automation source);
-
     /**
      * this event is triggered when the initial value of an automation
      * is modified.

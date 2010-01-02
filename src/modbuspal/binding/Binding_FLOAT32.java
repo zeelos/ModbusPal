@@ -5,6 +5,8 @@
 
 package modbuspal.binding;
 
+import modbuspal.automation.Automation;
+
 /**
  *
  * @author nnovic
