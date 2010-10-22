@@ -90,43 +90,37 @@ implements GeneratorListener
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
-        jPanel1 = new javax.swing.JPanel();
-        titleLabel = new javax.swing.JLabel();
+        iconPanel = new javax.swing.JPanel();
         iconLabel = new javax.swing.JLabel();
-        jPanel2 = new javax.swing.JPanel();
-        jPanel3 = new javax.swing.JPanel();
+        optionPanel = new javax.swing.JPanel();
+        buttonsPanel = new javax.swing.JPanel();
         upButton = new javax.swing.JButton();
         deleteButton = new javax.swing.JButton();
         downButton = new javax.swing.JButton();
-        durationTextField = new javax.swing.JTextField();
+        jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
+        durationTextField = new javax.swing.JTextField();
 
-        setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createEtchedBorder(), javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5)));
         setLayout(new java.awt.BorderLayout());
 
-        jPanel1.setOpaque(false);
-        jPanel1.setLayout(new java.awt.GridBagLayout());
-
-        titleLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        titleLabel.setText(generator.getClassName());
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        jPanel1.add(titleLabel, gridBagConstraints);
+        iconPanel.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED));
+        iconPanel.setLayout(new java.awt.GridBagLayout());
 
         iconLabel.setIcon(generator.getIcon());
-        jPanel1.add(iconLabel, new java.awt.GridBagConstraints());
+        iconLabel.setToolTipText(generator.getClassName());
+        iconPanel.add(iconLabel, new java.awt.GridBagConstraints());
 
-        add(jPanel1, java.awt.BorderLayout.WEST);
+        add(iconPanel, java.awt.BorderLayout.WEST);
 
-        jPanel2.setOpaque(false);
-        jPanel2.setLayout(new java.awt.BorderLayout());
-        add(jPanel2, java.awt.BorderLayout.CENTER);
-        jPanel2.add( customPanel, BorderLayout.CENTER );
+        optionPanel.setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        optionPanel.setOpaque(false);
+        optionPanel.setLayout(new java.awt.BorderLayout());
+        add(optionPanel, java.awt.BorderLayout.CENTER);
+        optionPanel.add( customPanel, BorderLayout.CENTER );
 
-        jPanel3.setOpaque(false);
-        jPanel3.setLayout(new java.awt.GridBagLayout());
+        buttonsPanel.setOpaque(false);
+        buttonsPanel.setLayout(new java.awt.GridBagLayout());
 
         upButton.setText("Up");
         upButton.addActionListener(new java.awt.event.ActionListener() {
@@ -135,9 +129,10 @@ implements GeneratorListener
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        jPanel3.add(upButton, gridBagConstraints);
+        buttonsPanel.add(upButton, gridBagConstraints);
 
         deleteButton.setText("Delete");
         deleteButton.addActionListener(new java.awt.event.ActionListener() {
@@ -146,11 +141,10 @@ implements GeneratorListener
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.gridwidth = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        jPanel3.add(deleteButton, gridBagConstraints);
+        buttonsPanel.add(deleteButton, gridBagConstraints);
 
         downButton.setText("Down");
         downButton.addActionListener(new java.awt.event.ActionListener() {
@@ -159,13 +153,20 @@ implements GeneratorListener
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
-        gridBagConstraints.gridwidth = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        jPanel3.add(downButton, gridBagConstraints);
+        buttonsPanel.add(downButton, gridBagConstraints);
+
+        jPanel1.setBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.LOWERED));
+        jPanel1.setOpaque(false);
+        jPanel1.setLayout(new java.awt.GridBagLayout());
+
+        jLabel1.setText("Duration:");
+        jPanel1.add(jLabel1, new java.awt.GridBagConstraints());
 
         durationTextField.setText(String.valueOf(generator.getDuration()));
+        durationTextField.setMargin(new java.awt.Insets(0, 0, 0, 0));
         durationTextField.setPreferredSize(new java.awt.Dimension(60, 20));
         durationTextField.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
@@ -173,17 +174,18 @@ implements GeneratorListener
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 3;
-        jPanel3.add(durationTextField, gridBagConstraints);
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        jPanel1.add(durationTextField, gridBagConstraints);
 
-        jLabel1.setText("Duration:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
-        jPanel3.add(jLabel1, gridBagConstraints);
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridheight = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
+        buttonsPanel.add(jPanel1, gridBagConstraints);
 
-        add(jPanel3, java.awt.BorderLayout.EAST);
+        add(buttonsPanel, java.awt.BorderLayout.EAST);
     }// </editor-fold>//GEN-END:initComponents
 
     private void durationTextFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_durationTextFieldFocusLost
@@ -205,26 +207,30 @@ implements GeneratorListener
     }//GEN-LAST:event_upButtonActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JPanel buttonsPanel;
     private javax.swing.JButton deleteButton;
     private javax.swing.JButton downButton;
     private javax.swing.JTextField durationTextField;
     private javax.swing.JLabel iconLabel;
+    private javax.swing.JPanel iconPanel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
-    private javax.swing.JLabel titleLabel;
+    private javax.swing.JPanel optionPanel;
     private javax.swing.JButton upButton;
     // End of variables declaration//GEN-END:variables
 
-    public void generatorHasEnded(Generator gen) {
-        if (gen == generator) {
+    public void generatorHasEnded(Generator gen)
+    {
+        if (gen == generator)
+        {
             setBackground(UIManager.getColor("Panel.background"));
         }
     }
 
-    public void generatorHasStarted(Generator gen) {
-        if (gen == generator) {
+    public void generatorHasStarted(Generator gen)
+    {
+        if (gen == generator)
+        {
             setBackground(UIManager.getColor("List.selectionBackground"));
         }
     }

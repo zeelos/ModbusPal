@@ -56,13 +56,13 @@ implements AutomationEditionListener, AutomationExecutionListener, InstanciatorL
 {
     private Automation automation = null;
     private ListLayout listLayout;
-    private ModbusPalGui mainGui;
+    //private ModbusPalGui mainGui;
 
     /** Creates new form AutomationEditor */
     public AutomationEditor(ModbusPalGui gui, Automation parent)
     {
         super(gui, false);
-        mainGui = gui;
+        //mainGui = gui;
         setTitle( "Automation:"+parent.getName() );
         automation = parent;
         listLayout = new ListLayout();
@@ -738,9 +738,7 @@ implements AutomationEditionListener, AutomationExecutionListener, InstanciatorL
         Component comp1 = findComponent(g1);
         Component comp2 = findComponent(g2);
         listLayout.swapComponents(comp1,comp2);
-        //generatorsListPanel.validate();
         generatorsListPanel.doLayout();
-        //generatorsListScrollPane.repaint();
     }
 
     @Override
