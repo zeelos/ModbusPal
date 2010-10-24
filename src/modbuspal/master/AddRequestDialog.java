@@ -86,9 +86,9 @@ implements ModbusConst
     private SlavesList slaves = null;
 
     /** Creates new form AddRequestDialog */
-    public AddRequestDialog(Frame parentFrame, JDialog parentDialog)
+    public AddRequestDialog(JDialog parentDialog)
     {
-        super(parentFrame, true);
+        setModalityType(ModalityType.DOCUMENT_MODAL);
         slaves = new SlavesList( ModbusPal.getModbusSlaves() );
         initComponents();
         slaveComboBox.setSelectedIndex(0);

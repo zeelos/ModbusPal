@@ -36,7 +36,7 @@ import javax.swing.JTextField;
 import javax.xml.parsers.ParserConfigurationException;
 import modbuspal.instanciator.InstanciatorManager;
 import modbuspal.main.ListLayout;
-import modbuspal.main.ModbusPalGui;
+import modbuspal.main.ModbusPal;
 import modbuspal.script.ScriptManagerDialog;
 import modbuspal.toolkit.XFileChooser;
 import modbuspal.toolkit.XMLTools;
@@ -54,32 +54,24 @@ public class AutomationEditor
 extends javax.swing.JDialog
 implements AutomationEditionListener, AutomationExecutionListener, InstanciatorListener
 {
-    private Automation automation = null;
-    private ListLayout listLayout;
-    //private ModbusPalGui mainGui;
+    private final Automation automation;
+    private final ListLayout listLayout;
+    private final GeneratorFactory generatorFactory;
 
     /** Creates new form AutomationEditor */
-    public AutomationEditor(ModbusPalGui gui, Automation parent)
+    public AutomationEditor(Automation a, GeneratorFactory f)
     {
-        super(gui, false);
         //mainGui = gui;
-        setTitle( "Automation:"+parent.getName() );
-        automation = parent;
+        generatorFactory = f;
+        automation = a;
+        
+        setTitle( "Automation:"+automation.getName() );
+        
         listLayout = new ListLayout();
         initComponents();
         addAlreadyExistingGeneratorsToList();
         addGeneratorButtons();
         pack();
-        automation.addAutomationEditionListener(this);
-        automation.addAutomationExecutionListener(this);
-        GeneratorFactory.getFactory().addInstanciatorListener(this);
-    }
-
-    public void disconnect()
-    {
-        assert(automation.removeAutomationEditionListener(this)==false);
-        assert(automation.removeAutomationExecutionListener(this)==false);
-        GeneratorFactory.getFactory().removeInstanciatorListener(this);
     }
 
     
@@ -92,7 +84,7 @@ implements AutomationEditionListener, AutomationExecutionListener, InstanciatorL
             {
                 try 
                 {
-                    Generator gen = GeneratorFactory.newGenerator(className);
+                    Generator gen = generatorFactory.newGenerator(className);
                     automation.addGenerator(gen);
                 }
                 catch (InstantiationException ex)
@@ -134,7 +126,7 @@ implements AutomationEditionListener, AutomationExecutionListener, InstanciatorL
     private void addGeneratorButtons()
     {
         // get the list of generators:
-        String list[] = GeneratorFactory.getFactory().getList();
+        String list[] = generatorFactory.getList();
 
         // for each generator, add a button;
         for( int i=0; i<list.length; i++ )
@@ -262,7 +254,7 @@ implements AutomationEditionListener, AutomationExecutionListener, InstanciatorL
         NamedNodeMap attributes = item.getAttributes();
         NodeList content = item.getChildNodes();
         automation.loadAttributes(attributes);
-        automation.loadGenerators(content);
+        automation.loadGenerators(content, generatorFactory);
     }
 
     /** This method is called from within the constructor to
@@ -591,7 +583,7 @@ implements AutomationEditionListener, AutomationExecutionListener, InstanciatorL
     private void removeInstanciatorButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeInstanciatorButtonActionPerformed
 
         // ask script manager to appear, with the "generators" tab selected
-        ModbusPalGui.showScriptManagerDialog(ScriptManagerDialog.TAB_GENERATORS);
+        ModbusPal.showScriptManagerDialog(ScriptManagerDialog.TAB_GENERATORS);
 
     }//GEN-LAST:event_removeInstanciatorButtonActionPerformed
 

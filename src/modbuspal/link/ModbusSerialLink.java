@@ -10,12 +10,13 @@ import java.util.Enumeration;
 import gnu.io.*;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.TooManyListenersException;
-import java.util.Vector;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ComboBoxModel;
 import javax.swing.event.ListDataListener;
+import modbuspal.main.ModbusPalProject;
 import modbuspal.main.ModbusRequest;
 import modbuspal.toolkit.ModbusTools;
 
@@ -24,13 +25,13 @@ import modbuspal.toolkit.ModbusTools;
  * @author nnovic
  */
 public class ModbusSerialLink
-extends ModbusSlaveDispatcher
+extends ModbusSlaveProcessor
 implements ModbusLink, Runnable, SerialPortEventListener
 {
     public static final int PARITY_NONE = 0;
     public static final int PARITY_ODD = 1;
     public static final int PARITY_EVEN = 2;
-    private static Vector<CommPortIdentifier> commPorts = new Vector<CommPortIdentifier>();
+    private static ArrayList<CommPortIdentifier> commPorts = new ArrayList<CommPortIdentifier>();
 
     public static boolean exists(String comId)
     {
@@ -109,9 +110,11 @@ implements ModbusLink, Runnable, SerialPortEventListener
     private int flowControl;
     private ModbusLinkListener listener = null;
 
-    public ModbusSerialLink(int index, int speed, int parity, boolean xonxoff, boolean rtscts)
+    public ModbusSerialLink(ModbusPalProject mpp, int index, int speed, int parity, boolean xonxoff, boolean rtscts)
     throws PortInUseException, ClassCastException
     {
+        super(mpp);
+
         CommPortIdentifier comm = commPorts.get(index);
         serialPort = (SerialPort)(comm.open("MODBUSPAL",3000));
         baudrate = speed;

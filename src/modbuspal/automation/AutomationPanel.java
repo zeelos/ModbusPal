@@ -15,6 +15,7 @@ package modbuspal.automation;
 import modbuspal.main.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import modbuspal.generator.GeneratorFactory;
 
 /**
  *
@@ -25,17 +26,17 @@ extends javax.swing.JPanel
 implements WindowListener, AutomationExecutionListener
 {
 
-    private Automation automation = null;
-    private AutomationEditor automationEditor = null;
-    private ModbusPalGui mainGui;
+    private final Automation automation;
+    private final AutomationEditor automationEditor;
+    private final GeneratorFactory generatorFactory;
 
     /** Creates new form listOfSlavesCellRenderer */
-    public AutomationPanel(ModbusPalGui gui, Automation parent)
+    public AutomationPanel(Automation a, GeneratorFactory f)
     {
-        mainGui = gui;
-        automation = parent;
+        generatorFactory = f;
+        automation = a;
         automation.addAutomationExecutionListener(this);
-        automationEditor = new AutomationEditor(mainGui,automation);
+        automationEditor = new AutomationEditor(automation, generatorFactory);
         automationEditor.addWindowListener(this);
         initComponents();
         setBackground();
@@ -46,7 +47,7 @@ implements WindowListener, AutomationExecutionListener
     {
         automationEditor.removeWindowListener(this);
         automationEditor.setVisible(false);
-        automationEditor.disconnect();
+        //automationEditor.disconnect();
         assert(automation.removeAutomationExecutionListener(this)==false);
     }
 
@@ -179,6 +180,12 @@ implements WindowListener, AutomationExecutionListener
     @Override
     public void windowOpened(WindowEvent e)
     {
+        if( e.getSource()==automationEditor)
+        {
+            automation.addAutomationEditionListener(automationEditor);
+            automation.addAutomationExecutionListener(automationEditor);
+            generatorFactory.addInstanciatorListener(automationEditor);
+        }
     }
 
     @Override
@@ -192,6 +199,10 @@ implements WindowListener, AutomationExecutionListener
         if( e.getSource() == automationEditor )
         {
             showToggleButton.setSelected(false);
+            automation.removeAutomationEditionListener(automationEditor);
+            automation.removeAutomationExecutionListener(automationEditor);
+            generatorFactory.removeInstanciatorListener(automationEditor);
+
         }
     }
 

@@ -25,4 +25,6 @@ public interface ModbusPalListener
     public void pduProcessed();
 
     public void pduException();
+
+    public void pduNotServiced();
 }

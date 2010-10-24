@@ -243,7 +243,7 @@ implements Runnable
      * @throws java.lang.InstantiationException
      * @throws java.lang.IllegalAccessException
      */
-    public void loadGenerators(NodeList nodes)
+    public void loadGenerators(NodeList nodes, GeneratorFactory gf)
     throws InstantiationException, IllegalAccessException
     {
         for(int i=0; i<nodes.getLength(); i++)
@@ -252,7 +252,7 @@ implements Runnable
             if( node.getNodeName().compareTo("generator")==0 )
             {
                 String className = XMLTools.getAttribute("class", node);
-                Generator gen = GeneratorFactory.newGenerator( className );
+                Generator gen = gf.newGenerator( className );
 
                 if( gen==null )
                 {

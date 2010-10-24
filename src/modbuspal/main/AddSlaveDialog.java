@@ -11,8 +11,6 @@
 
 package modbuspal.main;
 
-import modbuspal.toolkit.GUITools;
-import java.awt.Frame;
 import modbuspal.slave.*;
 import javax.swing.DefaultListModel;
 
@@ -30,9 +28,9 @@ extends javax.swing.JDialog
      * Creates new form AddSlaveDialog. This constructor is usually
      * called when the user add a new slave in the project.
      */
-    public AddSlaveDialog(Frame parent)
+    public AddSlaveDialog()
     {
-        this(parent,null);
+        this(null);
         setTitle("New slave");
     }
 
@@ -40,9 +38,9 @@ extends javax.swing.JDialog
      * Creates new form AddSlaveDialog. This constructor is usually
      * called when the user duplicates a modbus slave.
      */
-    public AddSlaveDialog(Frame parent, String name)
+    public AddSlaveDialog(String name)
     {
-        super(parent, true);
+        setModalityType(ModalityType.DOCUMENT_MODAL);
 
         ModbusSlave slaves[] = ModbusPal.getModbusSlaves();
         for( int i=1; i<slaves.length; i++ )
@@ -55,7 +53,7 @@ extends javax.swing.JDialog
 
         initComponents();
         setTitle("Duplicate "+name);
-        GUITools.align(parent,this);
+        //GUITools.align(parent,this);
 
         if( name!=null )
         {

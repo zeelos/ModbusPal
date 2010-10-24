@@ -26,14 +26,16 @@ extends javax.swing.JPanel
 implements WindowListener, ModbusSlaveListener
 {
 
-    private ModbusSlave modbusSlave = null;
-    private ModbusSlaveDialog modbusSlaveDialog = null;
+    private final ModbusSlave modbusSlave;
+    private final ModbusSlaveDialog modbusSlaveDialog;
+    private final ModbusPalProject modbusPalProject;
 
     /** Creates new form listOfSlavesCellRenderer */
-    public ModbusSlavePanel(ModbusSlave parent)
+    public ModbusSlavePanel(ModbusPalProject p, ModbusSlave s)
     {
-        modbusSlave = parent;
-        modbusSlaveDialog = new ModbusSlaveDialog(GUITools.findFrame(this), modbusSlave);
+        modbusSlave = s;
+        modbusPalProject = p;
+        modbusSlaveDialog = new ModbusSlaveDialog(modbusPalProject, modbusSlave);
         modbusSlaveDialog.addWindowListener(this);
         initComponents();
         setBackground();
@@ -52,7 +54,7 @@ implements WindowListener, ModbusSlaveListener
             modbusSlaveDialog.removeWindowListener(this);
             modbusSlaveDialog.setVisible(false);
             modbusSlaveDialog.dispose();
-            modbusSlaveDialog = null;
+            //modbusSlaveDialog = null;
        }
     }
 
@@ -152,7 +154,7 @@ implements WindowListener, ModbusSlaveListener
     }//GEN-LAST:event_showToggleButtonActionPerformed
 
     private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
-        ModbusPal.removeModbusSlave(modbusSlave);
+        modbusPalProject.removeModbusSlave(modbusSlave);
     }//GEN-LAST:event_deleteButtonActionPerformed
 
     /**
@@ -163,7 +165,7 @@ implements WindowListener, ModbusSlaveListener
      */
     private void nameTextFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_nameTextFieldFocusLost
         String name = nameTextField.getText();
-        modbusSlave.changeName(name);
+        modbusSlave.setName(name);
     }//GEN-LAST:event_nameTextFieldFocusLost
 
     private void nameTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nameTextFieldActionPerformed
@@ -172,8 +174,8 @@ implements WindowListener, ModbusSlaveListener
 
     private void duplicateButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_duplicateButtonActionPerformed
 
-        Frame parent = GUITools.findFrame(this);
-        AddSlaveDialog dialog = new AddSlaveDialog(parent, modbusSlave.getName() );
+        AddSlaveDialog dialog = new AddSlaveDialog(modbusSlave.getName() );
+        GUITools.align(this, dialog);
         dialog.setVisible(true);
 
         if( dialog.isAdded() )
@@ -182,7 +184,7 @@ implements WindowListener, ModbusSlaveListener
             String name = dialog.getSlaveName();
             for( int i=0; i<ids.length; i++ )
             {
-                ModbusPal.duplicateModbusSlave(ids[i], name, modbusSlave);
+                modbusPalProject.duplicateModbusSlave(ids[i], name, modbusSlave);
             }
         }
 

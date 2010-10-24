@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import modbuspal.main.ModbusPalProject;
 import modbuspal.toolkit.ModbusTools;
 
 /**
@@ -20,7 +21,7 @@ import modbuspal.toolkit.ModbusTools;
  * @author nnovic
  */
 public class ModbusTcpIpSlaveDispatcher
-extends ModbusSlaveDispatcher
+extends ModbusSlaveProcessor
 implements Runnable
 {
 
@@ -60,9 +61,10 @@ implements Runnable
     private InputStream slaveInput;
     private OutputStream slaveOutput;
 
-    public ModbusTcpIpSlaveDispatcher(Socket sock)
+    public ModbusTcpIpSlaveDispatcher(ModbusPalProject mpp, Socket sock)
     throws IOException
     {
+        super(mpp);
         slaveSocket = sock;
         slaveInput = sock.getInputStream();
         slaveOutput = sock.getOutputStream();

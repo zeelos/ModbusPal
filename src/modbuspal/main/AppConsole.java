@@ -90,9 +90,9 @@ extends javax.swing.JDialog
 
 
     /** Creates new form AppConsole */
-    public AppConsole(java.awt.Frame parent) throws IOException
+    public AppConsole() throws IOException
     {
-        super(parent, false);
+        super();
         initComponents();
         consoleDoc = consoleTextPane.getStyledDocument();
         redirect();

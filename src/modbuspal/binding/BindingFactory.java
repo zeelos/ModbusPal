@@ -22,21 +22,21 @@ import org.w3c.dom.NodeList;
 public class BindingFactory
 extends InstanciatorManager
 {
-    private static BindingFactory factory = new BindingFactory();
+    //private static BindingFactory factory = new BindingFactory();
 
 
-    public static BindingFactory getFactory()
-    {
-        return factory;
-    }
+//    public static BindingFactory getFactory()
+//    {
+//        return factory;
+//    }
 
     
-    public static Binding newBinding(String classname)
-    throws InstantiationException, IllegalAccessException
-    {
-        Instanciator is = factory.getInstanciator(classname);
-        return is.newBinding();
-    }
+//    public static Binding newBinding(String classname)
+//    throws InstantiationException, IllegalAccessException
+//    {
+//        Instanciator is = factory.getInstanciator(classname);
+//        return is.newBinding();
+//    }
 
     /**
      * List of predefined bindings:
@@ -47,6 +47,13 @@ extends InstanciatorManager
         new ClassInstanciator(modbuspal.binding.Binding_FLOAT32.class)
     };
 
+
+    public Binding newBinding(String classname)
+    throws InstantiationException, IllegalAccessException
+    {
+        Instanciator is = getInstanciator(classname);
+        return is.newBinding();
+    }
 
 
     @Override

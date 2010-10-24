@@ -5,31 +5,24 @@
 
 package modbuspal.main;
 
-import modbuspal.toolkit.FileTools;
-import modbuspal.toolkit.XMLTools;
+import java.awt.BorderLayout;
+import java.awt.Dialog.ModalExclusionType;
+import java.awt.Image;
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.net.URL;
+import javax.swing.ImageIcon;
+import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
+import javax.swing.WindowConstants;
+import javax.swing.event.InternalFrameEvent;
+import javax.swing.event.InternalFrameListener;
 import javax.xml.parsers.ParserConfigurationException;
 import modbuspal.automation.Automation;
-import modbuspal.automation.NullAutomation;
-import modbuspal.generator.GeneratorFactory;
-import modbuspal.binding.Binding;
-import modbuspal.binding.BindingFactory;
 import modbuspal.script.ScriptListener;
 import modbuspal.script.ScriptRunner;
 import modbuspal.slave.ModbusSlave;
-import modbuspal.toolkit.GUITools;
-import org.w3c.dom.Document;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
@@ -39,52 +32,34 @@ import org.xml.sax.SAXException;
 public class ModbusPal
 implements ModbusPalXML, ModbusConst
 {
+    public static final String APP_STRING = "ModbusPal 1.6";
     public static final String BASE_REGISTRY_KEY = "modbuspal";
-    private static ModbusSlave[] knownSlaves = new ModbusSlave[MAX_MODBUS_SLAVE];
-    private static Vector<Automation> automations = new Vector<Automation>();
-    private static IdGenerator idGenerator = new IdGenerator();
-    private static ArrayList<ModbusPalListener> listeners = new ArrayList<ModbusPalListener>();
-    private static boolean learnModeEnabled = false;
-    private static ArrayList<ScriptRunner> startupScripts = new ArrayList<ScriptRunner>();
-    private static ArrayList<ScriptRunner> ondemandScripts = new ArrayList<ScriptRunner>();
-    private static ArrayList<ScriptListener> scriptListeners = new ArrayList<ScriptListener>();
-
-    //
-    //
-    // SCRIPTS
-    //
-    //
-
+    
+    @Deprecated
     public static void addScript(File scriptFile)
     {
-        ScriptRunner runner = ScriptRunner.create(scriptFile);
-        ondemandScripts.add(runner);
-        notifyScriptAdded(runner);
+        uniqueInstance.modbusPalProject.addScript(scriptFile);
     }
 
+    @Deprecated
     public static void removeScript(ScriptRunner runner)
     {
-        if( ondemandScripts.remove(runner)==true )
-        {
-            notifyScriptRemoved(runner);
-        }
+        uniqueInstance.modbusPalProject.removeScript(runner);
     }
 
+    @Deprecated
     public static void addStartupScript(File scriptFile)
     {
-        // create a new script handler
-        ScriptRunner runner = ScriptRunner.create(scriptFile);
-        startupScripts.add(runner);
-        notifyStartupScriptAdded(runner);
+        uniqueInstance.modbusPalProject.addStartupScript(scriptFile);
     }
 
-    private static void removeAllScripts()
+    /*private static void removeAllScripts()
     {
         removeStartupScripts();
         removeOndemandScripts();
-    }
+    }*/
     
-    private static void removeStartupScripts()
+    /*private static void removeStartupScripts()
     {
         ScriptRunner list[] = new ScriptRunner[0];
         list = startupScripts.toArray(list);
@@ -92,18 +67,15 @@ implements ModbusPalXML, ModbusConst
         {
             removeStartupScript( list[i] );
         }
-    }
+    }*/
 
+    @Deprecated
     public static void removeStartupScript(ScriptRunner script)
     {
-        if( startupScripts.contains(script) )
-        {
-            startupScripts.remove(script);
-            notifyStartupScriptRemove(script);
-        }
+        uniqueInstance.modbusPalProject.removeStartupScript(script);
     }
 
-    private static void removeOndemandScripts()
+    /*private static void removeOndemandScripts()
     {
         ScriptRunner list[] = new ScriptRunner[0];
         list = ondemandScripts.toArray(list);
@@ -111,9 +83,9 @@ implements ModbusPalXML, ModbusConst
         {
             removeOndemandScript( list[i] );
         }
-    }
+    }*/
 
-    private static void removeOndemandScript(ScriptRunner script)
+    /*private static void removeOndemandScript(ScriptRunner script)
     {
         if( ondemandScripts.contains(script) )
         {
@@ -121,7 +93,7 @@ implements ModbusPalXML, ModbusConst
             notifyScriptRemoved(script);
         }
 
-    }
+    }*/
 
     //
     //
@@ -137,9 +109,10 @@ implements ModbusPalXML, ModbusConst
      * @return the object which represents the slave, or null if there is no
      * slave with the specified address.
      */
+    @Deprecated
     public static ModbusSlave getModbusSlave(int address)
     {
-        return knownSlaves[address];
+        return uniqueInstance.modbusPalProject.knownSlaves[address];
     }
 
     /**
@@ -150,49 +123,20 @@ implements ModbusPalXML, ModbusConst
      * @return an array of ModbusSlave objects, each slave in the array having the
      * specified name.
      */
+    @Deprecated
     public static ModbusSlave[] findModbusSlaves(String name)
     {
-        ArrayList<ModbusSlave> found = new ArrayList<ModbusSlave>();
-
-        for( int i=0; i<knownSlaves.length; i++ )
-        {
-            ModbusSlave slave = knownSlaves[i];
-            if( slave != null )
-            {
-                if( slave.getName().compareTo(name)==0 )
-                {
-                    found.add(slave);
-                }
-            }
-        }
-
-        if( found.size()==0 )
-        {
-            return null;
-        }
-        else
-        {
-            ModbusSlave retval[] = new ModbusSlave[0];
-            retval = found.toArray(retval);
-            return retval;
-        }
+        return uniqueInstance.modbusPalProject.findModbusSlaves(name);
     }
 
     /**
      * Count how many modbus slaves are defined in the current project.
      * @return the number of modbus slaves defined in the project.
      */
+    @Deprecated
     public static int getModbusSlaveCount()
     {
-        int count = 0;
-        for(int i=0; i<knownSlaves.length; i++)
-        {
-            if( knownSlaves[i]!=null )
-            {
-                count++;
-            }
-        }
-        return count;
+        return uniqueInstance.modbusPalProject.getModbusSlaveCount();
     }
 
 
@@ -201,9 +145,10 @@ implements ModbusPalXML, ModbusConst
      * @return an array containing the modbus slaves currently defined in the
      * application. 
      */
+    @Deprecated
     public static ModbusSlave[] getModbusSlaves()
     {
-        return knownSlaves;
+        return uniqueInstance.modbusPalProject.getModbusSlaves();
     }
 
     /**
@@ -214,41 +159,10 @@ implements ModbusPalXML, ModbusConst
      * @return a reference on the new or existing modbus slave, depending on the
      * user's choice. null if an error occured.
      */
+    @Deprecated
     public static ModbusSlave submitModbusSlave(ModbusSlave slave)
     {
-        int slaveID = slave.getSlaveId();
-
-        // check if slaveID is already assigned:
-        if( knownSlaves[slaveID] != null )
-        {
-            // show a dialog to let the user decide
-            // what to do in order to resolve the conflict:
-            ErrorMessage conflict = new ErrorMessage(2);
-            conflict.setTitle("Address conflict");
-            conflict.append("You are trying to add a new slave with address " + slaveID + ".");
-            conflict.append("An existing slave already uses this address. What do you want to do ?");
-            conflict.setButton(0, "Keep existing");
-            conflict.setButton(1, "Replace with new");
-            conflict.setVisible(true);
-
-            // if "Keep existing" is chosen:
-            if( conflict.getButton()==0 )
-            {
-                return knownSlaves[slaveID];
-            }
-
-            else
-            {
-                // before replacing with new, remove old:
-                removeModbusSlave(knownSlaves[slaveID]);
-            }
-        }
-
-        if( addModbusSlave(slave)==true )
-        {
-            return slave;
-        }
-        return null;
+        return uniqueInstance.modbusPalProject.submitModbusSlave(slave);
     }
 
     /**
@@ -257,70 +171,30 @@ implements ModbusPalXML, ModbusConst
      * @param slave the new modbus slave to add
      * @return true if added successfully, false otherwise.
      */
+    @Deprecated
     public static boolean addModbusSlave(ModbusSlave slave)
     {
-        int slaveID = slave.getSlaveId();
-
-        // check if slaveID is already assigned:
-        if( knownSlaves[slaveID] != null )
-        {
-            return false;
-        }
-
-        knownSlaves[slaveID] = slave;
-        notifySlaveAdded(slave);
-        return true;
+        return uniqueInstance.modbusPalProject.addModbusSlave(slave);
     }
 
 
+    @Deprecated
     public static void removeModbusSlave(ModbusSlave slave)
     {
-        int slaveID = slave.getSlaveId();
-        slave.clear();
-        
-        // disconnect slave from list
-        knownSlaves[slaveID] = null;
-        notifySlaveRemoved(slave);
+        uniqueInstance.modbusPalProject.removeModbusSlave(slave);
     }
 
 
-
+    @Deprecated
     public static void duplicateModbusSlave(int id, String name, ModbusSlave model)
     {
-        ModbusSlave newSlave = new ModbusSlave(id);
-        newSlave.setName(name);
-
-        try
-        {
-            // Create a temporary file in order to exportSlave the model
-            File tempFile = File.createTempFile("modbuspal", null);
-
-            // indicate that the file must be deleted at the end of the
-            // application, just in case...
-            tempFile.deleteOnExit();
-
-            // exportSlave model into xml
-            model.exportSlave(tempFile, true, false );
-
-            // import xml into new slave
-            newSlave.importSlave(tempFile, 0, true, false);
-
-            tempFile.delete();
-        }
-        catch (Exception ex)
-        {
-            Logger.getLogger(ModbusPal.class.getName()).log(Level.SEVERE, null, ex);
-            return;
-        }
-
-        // add it into the list
-        addModbusSlave(newSlave);
+        uniqueInstance.modbusPalProject.duplicateModbusSlave(id, name, model);
     }
 
 
 
 
-    private static void removeAllModbusSlaves()
+    /*private static void removeAllModbusSlaves()
     {
         for(int i=0; i<knownSlaves.length; i++ )
         {
@@ -329,27 +203,13 @@ implements ModbusPalXML, ModbusConst
                 removeModbusSlave( knownSlaves[i] );
             }
         }
-    }
+    }*/
 
 
-
+    @Deprecated
     public static void setSlaveEnabled(int slaveID, boolean b)
     {
-        if( knownSlaves[slaveID] == null )
-        {
-            if( learnModeEnabled == true )
-            {
-                // create a new modbus slave
-                ModbusSlave slave = new ModbusSlave(slaveID);
-                addModbusSlave( slave );
-                slave.setEnabled(b);
-            }
-        }
-
-        else
-        {
-            knownSlaves[slaveID].setEnabled(b);
-        }
+        uniqueInstance.modbusPalProject.setSlaveEnabled(slaveID,b);
     }
 
     /**
@@ -361,32 +221,10 @@ implements ModbusPalXML, ModbusConst
      * @param slaveID
      * @return true if the slave is enabled; false otherwise.
      */
+    @Deprecated
     public static boolean isSlaveEnabled(int slaveID)
     {
-        if( (slaveID<0) || (slaveID>=MAX_MODBUS_SLAVE) )
-        {
-            return false;
-        }
-
-        if( knownSlaves[slaveID] == null )
-        {
-            if( learnModeEnabled == true )
-            {
-                // create a new modbus slave
-                ModbusSlave slave = new ModbusSlave(slaveID);
-                addModbusSlave( slave );
-                return slave.isEnabled();
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        else
-        {
-            return knownSlaves[slaveID].isEnabled();
-        }
+        return uniqueInstance.modbusPalProject.isSlaveEnabled(slaveID);
     }
 
     //
@@ -395,10 +233,10 @@ implements ModbusPalXML, ModbusConst
     //
     //
 
+    @Deprecated
     public static boolean isFunctionEnabled(int slaveID, byte functionCode)
     {
-        //TODO: implement isFunctionEnabled
-        return true;
+        return uniqueInstance.modbusPalProject.isFunctionEnabled(slaveID, functionCode);
     }
 
     
@@ -416,28 +254,16 @@ implements ModbusPalXML, ModbusConst
      * @return the Automation object associated with the specified name, or null
      * is no automation exists with that name.
      */
+    @Deprecated
     public static Automation getAutomation(String name)
     {
-        if( NullAutomation.NAME.compareTo(name)==0 )
-        {
-            return NullAutomation.getInstance();
-        }
-
-        for(int i=0; i<automations.size(); i++)
-        {
-            Automation automation = automations.get(i);
-            if( automation.getName().compareTo(name)==0 )
-            {
-                return automation;
-            }
-        }
-        return null;
+        return uniqueInstance.modbusPalProject.getAutomation(name);
     }
 
-
+    @Deprecated
     public static boolean automationExists(String name)
     {
-        return (getAutomation(name)!=null);
+        return uniqueInstance.modbusPalProject.automationExists(name);
     }
 
 
@@ -448,29 +274,10 @@ implements ModbusPalXML, ModbusConst
      * @param name
      * @return
      */
+    @Deprecated
     public static String checkAutomationNewName(Automation auto, String name)
     {
-        // TODO: is synchronization required??
-        //synchronized(this)
-        {
-            Automation already = getAutomation(name);
-            if( (already != null) && (already != auto) )
-            {
-                // check if the name to alter already end with "#n"
-                if( name.matches(".*#(\\d+)$")==true )
-                {
-                    int pos = name.lastIndexOf('#');
-                    name = name.substring(0, pos);
-                }
-                else
-                {
-                    name = name.trim() + " ";
-                }
-                name = name + "#" + String.valueOf( createID() );
-            }
-            auto.setName(name);
-        }
-        return name;
+        return uniqueInstance.modbusPalProject.checkAutomationNewName(auto, name);
     }
 
 
@@ -481,10 +288,10 @@ implements ModbusPalXML, ModbusConst
      * @return an array containing all the automations that are defined in
      * the project.
      */
+    @Deprecated
     public static Automation[] getAutomations()
     {
-        Automation[] out = new Automation[0];
-        return automations.toArray(out);
+        return uniqueInstance.modbusPalProject.getAutomations();
     }
 
 
@@ -496,42 +303,10 @@ implements ModbusPalXML, ModbusConst
      * @return a reference on the new or existing automation, depending on the
      * user's choice. null if an error occured.
      */
+    @Deprecated
     public static Automation submitAutomation(Automation automation)
     {
-        // check if an automation already exists with the same name
-        String name = automation.getName();
-        Automation existing = getAutomation(name);
-
-        if( existing != null )
-        {
-            // show a dialog to let the user decide
-            // what to do in order to resolve the conflict:
-            ErrorMessage conflict = new ErrorMessage(2);
-            conflict.setTitle("Address conflict");
-            conflict.append("You are trying to add a new automation with name \"" + name + "\".");
-            conflict.append("An existing automation already exists with this name. What do you want to do ?");
-            conflict.setButton(0, "Keep existing");
-            conflict.setButton(1, "Replace with new");
-            conflict.setVisible(true);
-
-            // if "Keep existing" is chosen:
-            if( conflict.getButton()==0 )
-            {
-                return existing;
-            }
-
-            else
-            {
-                // before replacing with new, remove old:
-                removeAutomation(existing);
-            }
-        }
-
-        if( addAutomation(automation)==true )
-        {
-            return automation;
-        }
-        return null;
+        return uniqueInstance.modbusPalProject.submitAutomation(automation);
     }
 
 
@@ -543,73 +318,39 @@ implements ModbusPalXML, ModbusConst
      * @param automation
      * @return true if the automation is added successfully, false otherwise.
      */
+    @Deprecated
     public static boolean addAutomation(Automation automation)
     {
-        // check if an automation already exists with the same name
-        String name = automation.getName();
-        if( getAutomation(name) != null )
-        {
-            return false;
-        }
-
-        automations.add(automation);
-        int index = automations.indexOf(automation);
-        notifyAutomationAdded(automation, index);
-        return true;
+        return uniqueInstance.modbusPalProject.addAutomation(automation);
     }
 
 
-
+    @Deprecated
     public static void startAllAutomations()
     {
-        for(int i=0; i<automations.size(); i++ )
-        {
-            Automation auto = automations.get(i);
-            auto.start();
-        }
+        uniqueInstance.modbusPalProject.startAllAutomations();
     }
 
 
-
+    @Deprecated
     public static void stopAllAutomations()
     {
-        for(int i=0; i<automations.size(); i++ )
-        {
-            Automation auto = automations.get(i);
-            auto.stop();
-        }
+        uniqueInstance.modbusPalProject.stopAllAutomations();
     }
 
 
+    @Deprecated
     public static void removeGeneratorScript(ScriptRunner runner)
     {
-        removeAllGenerators(runner.getClassName());
-        GeneratorFactory.getFactory().remove( runner );
+        uniqueInstance.modbusPalProject.removeGeneratorScript(runner);
     }
 
-
+    @Deprecated
     public static void removeBindingScript(ScriptRunner runner)
     {
-        removeAllBindings(runner.getClassName());
-        BindingFactory.getFactory().remove( runner );
+        uniqueInstance.modbusPalProject.removeBindingScript(runner);
     }
 
-    /**
-     * remove all instances of the generator whose name is passed
-     * in argument. the method will scan all automations of the current
-     * project and remove each instance of the generator identified
-     * by the provided name.
-     * @param classname
-     */
-    private static void removeAllGenerators(String classname)
-    {
-        int max = automations.size();
-        for(int i=0; i<max; i++)
-        {
-            Automation auto = automations.get(i);
-            auto.removeAllGenerators(classname);
-        }
-    }
 
 
     /**
@@ -619,43 +360,30 @@ implements ModbusPalXML, ModbusConst
      * by the provided name.
      * @param classname
      */
+    @Deprecated
     private static void removeAllBindings(String classname)
     {
-        for( int i=0; i<MAX_MODBUS_SLAVE; i++ )
-        {
-            ModbusSlave slave = knownSlaves[i];
-            if( slave != null )
-            {
-                slave.removeAllBindings(classname);
-            }
-        }
+        uniqueInstance.modbusPalProject.removeAllBindings(classname);
     }
 
+    @Deprecated
     public static void removeAutomation(Automation automation)
     {
-        // disconnect the automation from the rest of the project
-        automation.disconnect();
-        // remove automation from list
-        automations.remove(automation);
-        notifyAutomationRemoved(automation);
+        uniqueInstance.modbusPalProject.removeAutomation(automation);
     }
 
+    @Deprecated
     private static void removeAllAutomations()
     {
-        Automation list[] = new Automation[0];
-        list = automations.toArray(list);
-        for( int i=0; i<list.length; i++ )
-        {
-            removeAutomation(list[i]);
-        }
+        uniqueInstance.modbusPalProject.removeAllAutomations();
     }
 
 
     //TODO: is this method really necessary???
-    static long createID()
+    /*static long createID()
     {
         return idGenerator.createID();
-    }
+    }*/
 
 
     //
@@ -664,42 +392,34 @@ implements ModbusPalXML, ModbusConst
     //
     //
 
-    public static void removeAllListeners()
+    /*public static void removeAllListeners()
     {
         listeners.clear();
         scriptListeners.clear();
-    }
+    }*/
 
+    @Deprecated
     public static void addModbusPalListener(ModbusPalListener l)
     {
-        if( listeners.contains(l)==false )
-        {
-            listeners.add(l);
-        }
+        uniqueInstance.modbusPalProject.addModbusPalListener(l);
     }
-    
+
+    @Deprecated
     public static void removeModbusPalListener(ModbusPalListener l)
     {
-        if( listeners.contains(l)==true )
-        {
-            listeners.remove(l);
-        }
+        uniqueInstance.modbusPalProject.removeModbusPalListener(l);
     }
 
+    @Deprecated
     public static void addScriptListener(ScriptListener l)
     {
-        if( scriptListeners.contains(l)==false )
-        {
-            scriptListeners.add(l);
-        }
+        uniqueInstance.modbusPalProject.addScriptListener(l);
     }
 
+    @Deprecated
     public static void removeScriptListener(ScriptListener l)
     {
-        if( scriptListeners.contains(l)==true )
-        {
-            scriptListeners.remove(l);
-        }
+        uniqueInstance.modbusPalProject.removeScriptListener(l);
     }
 
     //
@@ -708,553 +428,95 @@ implements ModbusPalXML, ModbusConst
     //
     //
 
-
+    @Deprecated
     public static void notifyPDUprocessed()
     {
-        for(ModbusPalListener l:listeners)
-        {
-            l.pduProcessed();
-        }
+        uniqueInstance.modbusPalProject.notifyPDUprocessed();
     }
 
+    @Deprecated
     public static void notifyExceptionResponse()
     {
-        for(ModbusPalListener l:listeners)
-        {
-            l.pduException();
-        }
+        uniqueInstance.modbusPalProject.notifyExceptionResponse();
     }
 
-    private static void notifySlaveAdded(ModbusSlave slave)
-    {
-        for(ModbusPalListener l:listeners)
-        {
-            l.modbusSlaveAdded(slave);
-        }
-    }
 
-    private static void notifySlaveRemoved(ModbusSlave slave)
-    {
-        for(ModbusPalListener l:listeners)
-        {
-            l.modbusSlaveRemoved(slave);
-        }
-    }
 
-    private static void notifyAutomationAdded(Automation automation, int index)
-    {
-        for(ModbusPalListener l:listeners)
-        {
-            l.automationAdded(automation, index);
-        }
-    }
 
-    private static void notifyAutomationRemoved(Automation automation)
-    {
-        for(ModbusPalListener l:listeners)
-        {
-            l.automationRemoved(automation);
-        }
-    }
 
-    private static void notifyStartupScriptAdded(ScriptRunner runner)
-    {
-        for(ScriptListener l:scriptListeners)
-        {
-            l.startupScriptAdded(runner);
-        }
-    }
 
-    private static void notifyScriptAdded(ScriptRunner runner)
-    {
-        for(ScriptListener l:scriptListeners)
-        {
-            l.scriptAdded(runner);
-        }
-    }
 
-    private static void notifyStartupScriptRemoved(ScriptRunner runner)
+    /*private static void notifyStartupScriptRemoved(ScriptRunner runner)
     {
         for(ScriptListener l:scriptListeners)
         {
             l.startupScriptRemoved(runner);
         }
-    }
+    }*/
 
-    private static void notifyScriptRemoved(ScriptRunner runner)
-    {
-        for(ScriptListener l:scriptListeners)
-        {
-            l.scriptRemoved(runner);
-        }
-    }
 
-    private static void notifyStartupScriptRemove(ScriptRunner script)
+    /*private static void notifyStartupScriptRemove(ScriptRunner script)
     {
         for(ScriptListener l:scriptListeners)
         {
             l.startupScriptRemoved(script);
         }
-    }
+    }*/
 
     //
     //
     // SAVE PROJECT
     //
     //
-
+    @Deprecated
     public static void saveProject(File target)
     throws FileNotFoundException, IOException
     {
-        // create output stream
-        FileOutputStream out = new FileOutputStream(target);
-        saveProject(out, target);
-    }
-
-    private static void saveProject(OutputStream out, File projectFile)
-    throws IOException
-    {
-        String xmlTag = "<?xml version=\"1.0\"?>\r\n";
-        out.write( xmlTag.getBytes() );
-
-        String docTag = "<!DOCTYPE modbuspal_project SYSTEM \"modbuspal.dtd\">\r\n";
-        out.write( docTag.getBytes() );
-
-        String openTag = "<modbuspal_project>\r\n";
-        out.write( openTag.getBytes() );
-
-        saveParameters(out);
-        GeneratorFactory.getFactory().save(out, projectFile);
-        BindingFactory.getFactory().save(out, projectFile);
-        saveAutomations(out);
-        saveSlaves(out);
-        saveScripts(out, projectFile);
-
-        String closeTag = "</modbuspal_project>\r\n";
-        out.write( closeTag.getBytes() );
-    }
-
-    /**
-     * Saves the project's parameters that do not fall into the "slave" or "automation"
-     * categories, like id generator and link settings. The parameters are written
-     * into the output stream as XML tags.
-     * @param out
-     * @throws IOException
-     */
-    private static void saveParameters(OutputStream out)
-    throws IOException
-    {
-        // save id creator:
-        idGenerator.save(out);
-
-        // save link parameters
-        ModbusPalGui.saveLinks(out);
+        uniqueInstance.modbusPalProject.projectFile = target;
+        uniqueInstance.modbusPalProject.save();
     }
 
 
 
 
 
-    private static void saveAutomations(OutputStream out)
-    throws IOException
-    {
-        for(int i=0; i<automations.size(); i++)
-        {
-            Automation automation = automations.get(i);
-            automation.save(out);
-        }
-    }
-
-    private static void saveSlaves(OutputStream out)
-    throws IOException
-    {
-        for( int i=0; i<MAX_MODBUS_SLAVE; i++ )
-        {
-            ModbusSlave slave = knownSlaves[i];
-            if( slave != null )
-            {
-                slave.save(out,true);
-            }
-        }
-    }
 
 
-    private static void saveScripts(OutputStream out, File projectFile)
-    throws IOException
-    {
-        saveStartupScripts(out,projectFile);
-        saveOndemandScripts(out,projectFile);
-    }
-
-    private static void saveStartupScripts(OutputStream out, File projectFile)
-    throws IOException
-    {
-        if( startupScripts.isEmpty() )
-        {
-            return;
-        }
-        
-        String openTag = "<startup>\r\n";
-        out.write( openTag.getBytes() );
-
-        for(ScriptRunner runner:startupScripts)
-        {
-            runner.save(out,projectFile);
-        }
-
-        String closeTag = "</startup>\r\n";
-        out.write(closeTag.getBytes());
-    }
-
-    private static void saveOndemandScripts(OutputStream out, File projectFile)
-    throws IOException
-    {
-        if( ondemandScripts.isEmpty() )
-        {
-            return;
-        }
-        
-        String openTag = "<ondemand>\r\n";
-        out.write( openTag.getBytes() );
-
-        for(ScriptRunner runner:ondemandScripts)
-        {
-            runner.save(out,projectFile);
-        }
-
-        String closeTag = "</ondemand>\r\n";
-        out.write(closeTag.getBytes());
-    }
 
     //
     //
     // " PROJECT
     //
     //
-
-
+    @Deprecated
     public static void loadProject(File source)
     throws ParserConfigurationException, SAXException, IOException, InstantiationException, IllegalAccessException
     {
-        // the parse will fail if xml doc doesn't match the dtd.
-        Document doc = XMLTools.ParseXML(source);
-
-        // normalize text representation
-         doc.getDocumentElement().normalize();
-
-         loadProject(doc, source);
-    }
-
-
-    private static void loadProject(Document doc, File projectFile)
-    throws InstantiationException, IllegalAccessException
-    {
-        // get the root node
-        String name = doc.getDocumentElement().getNodeName();
-        System.out.println("load "+name);
-
-        clearProject();
-        
-        loadParameters(doc);
-        GeneratorFactory.getFactory().load(doc, projectFile);
-        BindingFactory.getFactory().load(doc, projectFile);
-        loadAutomations(doc);
-        loadSlaves(doc);
-        loadBindings(doc);
-        loadScripts(doc, projectFile);
-
-        // execute startup scripts
-        for( ScriptRunner runner:startupScripts )
-        {
-            runner.execute();
-        }
-    }
-
-
-    /**
-     * looks for all occurences of the "slave" openTag in the provided document
-     * and create a modbus slave for each.
-     * @param doc
-     */
-    private static void loadSlaves(Document doc)
-    {
-        NodeList slavesList = doc.getElementsByTagName("slave");
-        for(int i=0; i<slavesList.getLength(); i++)
-        {
-            Node slaveNode = slavesList.item(i);
-            NamedNodeMap attributes = slaveNode.getAttributes();
-            ModbusSlave slave = new ModbusSlave( attributes );
-            slave.load( slaveNode );
-            addModbusSlave( slave );
-        }
-    }
-
-
-    /**
-     * this method  will parse the content of doc in order to find and parse
-     * elements from the doc that are related to the static part of the Automation
-     * class.
-     * @param doc
-     */
-    private static void loadParameters(Document doc)
-    {
-        idGenerator.load(doc);
-        ModbusPalGui.loadLinks(doc);
-    }
-
-
-
-    public static void loadAutomations(Document doc) throws InstantiationException, IllegalAccessException
-    {
-        NodeList automationsList = doc.getElementsByTagName("automation");
-        for(int i=0; i<automationsList.getLength(); i++)
-        {
-            Node automationNode = automationsList.item(i);
-            NamedNodeMap attributes = automationNode.getAttributes();
-
-            // Get the name of the automation we want to load
-            String name = attributes.getNamedItem("name").getNodeValue();
-
-            // Check if an automation already exists with the same name:
-            Automation automation = getAutomation( name );
-
-            // If already exists:
-            if( automation!=null )
-            {
-                // display a dialog and ask the user what to do:
-                ErrorMessage dialog = new ErrorMessage(2);
-                dialog.append("An automation called \""+name+"\" already exists. Do you want to overwrite the existing automation or to keep it ?");
-                dialog.setButton(0,"Overwrite");
-                dialog.setButton(1,"Keep existing");
-                dialog.setTitle("Importing automation \""+name+"\"");
-                dialog.setVisible(true);
-
-                // if the user does not want to overwrite the existing
-                // automation, skip and continue with the other automations
-                if( dialog.getButton() != 0 )
-                {
-                    continue;
-                }
-
-                // otherwise, replace the content of the existing automation
-                // with the new settings:
-                automation.loadAttributes(attributes);
-
-                // remove the existing generators before loading
-                // the new ones:
-                automation.removeAllGenerators();
-            }
-
-            // no automation with this name exists:
-            else
-            {
-                automation = new Automation( attributes );
-            }
-
-            // finally, load the generators (whether a new automation is created
-            // an existing automation is overwritten).
-            automation.loadGenerators( automationNode.getChildNodes() );
-            addAutomation(automation);
-        }
-    }
-
-
-
-    /**
-     * This method will examine the content of a "<binding>" tag in order to
-     * parse the attributes it conains, and also the child tags that may exist.
-     * @param node reference on the Node that represents a "<binding>" tag in the
-     * project.
-     * @throws java.lang.InstantiationException
-     * @throws java.lang.IllegalAccessException
-     */
-    private static void loadBinding(Node node)
-    throws InstantiationException, IllegalAccessException
-    {
-        // get the attributes of the "binding" openTag
-        NamedNodeMap attributes = node.getAttributes();
-
-        // extract the "automation" attribute
-        Node automationNode = attributes.getNamedItem("automation");
-        String automationName = automationNode.getNodeValue();
-
-        // retrieve the reference to the automation with id "automationID"
-        Automation automation = getAutomation(automationName);
-        if( automation == null )
-        {
-            // TODO: display an error message,
-            // the binding cannot be achieved if no automation!
-            return;
-        }
-
-        // extract the "class" attribute
-        Node classNode = attributes.getNamedItem("class");
-        String className = classNode.getNodeValue();
-        //Class bindingClass = Binding.getClass(className);
-
-        // extract the "order" attribute.
-        Node orderNode = attributes.getNamedItem("order");
-        String orderValue = orderNode.getNodeValue();
-        int wordOrder = Integer.parseInt(orderValue);
-
-        // retrieve the register that is the parent of this node
-        Node parentRegister = XMLTools.findParent(node,"register");
-        String parentAddress = XMLTools.getAttribute(XML_ADDRESS_ATTRIBUTE, parentRegister);
-        int registerAddress = Integer.parseInt( parentAddress );
-
-        // retrieve the slave that is the parent of this register
-        Node parentSlave = XMLTools.findParent(parentRegister, "slave");
-        String slaveAddress = XMLTools.getAttribute(XML_SLAVE_ID_ATTRIBUTE, parentSlave);
-        int slaveId = Integer.parseInt(slaveAddress);
-
-        // Instanciate the binding:
-        Binding binding = BindingFactory.newBinding(className);
-        binding.setup(automation, wordOrder);
-
-        // bind the register and the automation
-        ModbusSlave slave = knownSlaves[slaveId];
-        slave.getHoldingRegisters().bind(registerAddress, binding);
+        ModbusPalProject mpp = ModbusPalProject.load(source);
+        uniqueInstance.setProject(mpp);
     }
 
 
 
 
 
-    // TODO: why is it public ???
-    /**
-     * This method scans the content of the document in order to find all
-     * "<binding>" tags, and then call the loadBinding(Node) method for each
-     * of them.
-     * @param doc
-     */
-    public static void loadBindings(Document doc)
-    {
-        NodeList list = doc.getElementsByTagName("binding");
-        for(int i=0; i<list.getLength(); i++ )
-        {
-            Node bindingNode = list.item(i);
-            try
-            {
-                loadBinding(bindingNode);
-            }
-
-            catch (InstantiationException ex)
-            {
-                Logger.getLogger(ModbusPalGui.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            catch (IllegalAccessException ex)
-            {
-                Logger.getLogger(ModbusPalGui.class.getName()).log(Level.SEVERE, null, ex);
-            }
-        }
-    }
-
-    /**
-     * This method will only load "STARTUP" and "ON DEMAND" scripts.
-     * Generator and binding scripts are loaded in a separate procedure.
-     * @param doc
-     * @param projectFile
-     */
-    private static void loadScripts(Document doc, File projectFile)
-    {
-        // look for "startup" scripts section
-        NodeList startup = doc.getElementsByTagName("startup");
-        for( int i=0; i<startup.getLength(); i++ )
-        {
-            loadStartupScripts( startup.item(i), projectFile );
-        }
-
-        // look for "ondemand" scripts section
-        NodeList ondemand = doc.getElementsByTagName("ondemand");
-        for( int i=0; i<ondemand.getLength(); i++ )
-        {
-            loadOndemandScripts( ondemand.item(i), projectFile );
-        }
-    }
 
 
 
-    private static void loadStartupScripts(Node node, File projectFile)
-    {
-        // get list of sub nodes
-        NodeList nodes = node.getChildNodes();
-
-        for(int i=0; i<nodes.getLength(); i++ )
-        {
-            Node scriptNode = nodes.item(i);
-            if( scriptNode.getNodeName().compareTo("script")==0 )
-            {
-                File scriptFile = loadScript(scriptNode, projectFile, true);
-                if( scriptFile!=null )
-                {
-                    addStartupScript(scriptFile);
-                }
-            }
-        }
-    }
 
 
-    private static File loadScript(Node node, File projectFile, boolean promptUser)
-    {
-        // find "rel"
-        Node rel = XMLTools.findChild(node, "rel");
-        if( rel != null )
-        {
-            // try to load file from relative path
-            String relativePath = rel.getTextContent();
-            String absolutePath = FileTools.makeAbsolute(projectFile, relativePath);
-            File file = new File(absolutePath);
-            if( file.exists()==true )
-            {
-                return file;
-            }
-        }
-        
-        // find "abs"
-        Node abs = XMLTools.findChild(node, "abs");
-        if( abs == null )
-        {
-            throw new RuntimeException("malformed input");
-        }
-        
-        String path = abs.getTextContent();
-        File file = new File(path);
-        if( file.exists()==true )
-        {
-            return file;
-        }
 
-        // Print error
-        System.out.println("No file found for script "+file.getPath());
 
-        // IF NO FILE FOUND, PROMPT USER:
-        if(promptUser==true)
-        {
-            // create error message box with 2 buttons:
-            return GUITools.promptUserFileNotFound(null, file);
-        }
 
-        return null;
-    }
 
-    private static void loadOndemandScripts(Node node, File projectFile)
-    {
-        // get list of sub nodes
-        NodeList nodes = node.getChildNodes();
 
-        for(int i=0; i<nodes.getLength(); i++ )
-        {
-            Node scriptNode = nodes.item(i);
-            if( scriptNode.getNodeName().compareTo("script")==0 )
-            {
-                File scriptFile = loadScript(scriptNode, projectFile, true);
-                if( scriptFile!=null )
-                {
-                    addScript(scriptFile);
-                }
-            }
-        }
-    }
+
+
+
+
+
+
+
 
 
 
@@ -1267,91 +529,55 @@ implements ModbusPalXML, ModbusConst
     //
     //
 
-
+    @Deprecated
     public static void setLearnModeEnabled(boolean en)
     {
-        learnModeEnabled = en;
+        uniqueInstance.modbusPalProject.setLearnModeEnabled(en);
     }
 
+    @Deprecated
     public static byte getHoldingRegisters(int slaveID, int startingAddress, int quantity, byte[] buffer, int offset)
     {
-        assert( knownSlaves[slaveID] != null );
-        assert( startingAddress >= 0 );
-        assert( quantity >= 0 );
-        return knownSlaves[slaveID].getHoldingRegisters(startingAddress, quantity, buffer, offset);
+        return uniqueInstance.modbusPalProject.getHoldingRegisters(slaveID, startingAddress, quantity, buffer, offset);
     }
 
+    @Deprecated
     public static byte setHoldingRegisters(int slaveID, int startingAddress, int quantity, byte[] buffer, int offset)
     {
-        assert( knownSlaves[slaveID] != null );
-        assert( startingAddress >= 0 );
-        assert( quantity >= 0 );
-        return knownSlaves[slaveID].setHoldingRegisters(startingAddress, quantity, buffer, offset);
+        return uniqueInstance.modbusPalProject.setHoldingRegisters(slaveID, startingAddress, quantity, buffer, offset);
     }
 
+    @Deprecated
     public static boolean holdingRegistersExist(int slaveID, int startingAddress, int quantity)
     {
-        assert( knownSlaves[slaveID] != null );
-
-        if( knownSlaves[slaveID].getHoldingRegisters().exist(startingAddress,quantity) == true )
-        {
-            return true;
-        }
-        else if( learnModeEnabled )
-        {
-            knownSlaves[slaveID].getHoldingRegisters().create(startingAddress,quantity);
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return uniqueInstance.modbusPalProject.holdingRegistersExist(slaveID, startingAddress, quantity);
     }
 
+    @Deprecated
     public static byte getCoils(int slaveID, int startingAddress, int quantity, byte[] buffer, int offset)
     {
-        assert( knownSlaves[slaveID] != null );
-        assert( startingAddress >= 0 );
-        assert( quantity >= 0 );
-        return knownSlaves[slaveID].getCoils(startingAddress, quantity, buffer, offset);
+        return uniqueInstance.modbusPalProject.getCoils(slaveID, startingAddress, quantity, buffer, offset);
     }
 
+    @Deprecated
     public static byte setCoils(int slaveID, int startingAddress, int quantity, byte[] buffer, int offset)
     {
-        assert( knownSlaves[slaveID] != null );
-        assert( startingAddress >= 0 );
-        assert( quantity >= 0 );
-        return knownSlaves[slaveID].setCoils(startingAddress, quantity, buffer, offset);
+        return uniqueInstance.modbusPalProject.setCoils(slaveID, startingAddress, quantity, buffer, offset);
     }
 
+    @Deprecated
     public static byte setCoil(int slaveID, int address, int value)
     {
-        assert( knownSlaves[slaveID] != null );
-        assert( address >= 0 );
-        assert( (value==0x0000) || (value==0xFF00) );
-        return knownSlaves[slaveID].setCoil(address, value);
+        return uniqueInstance.modbusPalProject.setCoil(slaveID, address, value);
     }
 
+    @Deprecated
     public static boolean coilsExist(int slaveID, int startingAddress, int quantity)
     {
-        assert( knownSlaves[slaveID] != null );
-
-        if( knownSlaves[slaveID].getCoils().exist(startingAddress,quantity) == true )
-        {
-            return true;
-        }
-        else if( learnModeEnabled )
-        {
-            knownSlaves[slaveID].getCoils().create(startingAddress,quantity);
-            return true;
-        }
-        else
-        {
-            return false;
-        }
+        return uniqueInstance.modbusPalProject.coilsExist(slaveID, startingAddress, quantity);
     }
 
-    public static void clearProject()
+    /*public static void clearProject()
     {
         //TODO: put link in modbuspal instead of modbuspalgui
 //        if( isRunning()==true )
@@ -1365,54 +591,131 @@ implements ModbusPalXML, ModbusConst
         GeneratorFactory.getFactory().clear();
         BindingFactory.getFactory().clear();
         removeAllScripts();
-    }
+    }*/
 
 
-    private static void resetParameters()
+    /*private static void resetParameters()
     {
         // save id creator:
         idGenerator.reset();
-    }
+    }*/
 
+    @Deprecated
     public static void addGeneratorInstanciator(File scriptFile)
     {
-        // newInstance a scripted generator handler
-        ScriptRunner sr = ScriptRunner.create(scriptFile);
-
-        // test if newInstance would work:
-        if( sr.newGenerator() != null )
-        {
-            // add the handler to the factory:
-            GeneratorFactory.getFactory().add(sr);
-        }
-        else
-        {
-            ErrorMessage dialog = new ErrorMessage(null,"Close");
-            dialog.setTitle("Script error");
-            dialog.append("The script probably contains errors and cannot be executed properly.");
-            dialog.setVisible(true);
-        }
+        uniqueInstance.modbusPalProject.addGeneratorInstanciator(scriptFile);
     }
 
+    @Deprecated
     public static void addBindingInstanciator(File scriptFile)
     {
-        // newInstance a scripted generator handler
-        ScriptRunner sr = ScriptRunner.create(scriptFile);
+        uniqueInstance.modbusPalProject.addBindingInstanciator(scriptFile);
+    }
 
-        // test if newInstance would work:
-        if( sr.newBinding() != null )
+
+
+
+    //==========================================================================
+
+
+    private static ModbusPalPane uniqueInstance;
+
+
+    public static class ModbusPalInternalFrame
+    extends JInternalFrame
+    implements InternalFrameListener
+    {
+        final ModbusPalPane modbusPal;
+        
+        public ModbusPalInternalFrame()
         {
-            // add the handler to the factory:
-            BindingFactory.getFactory().add(sr);
+            setTitle(APP_STRING);
+            setIconImage();
+            setLayout( new BorderLayout() );
+            modbusPal = new ModbusPalPane(false);
+            add( modbusPal, BorderLayout.CENTER );
+            pack();
+            addInternalFrameListener(this);
+            uniqueInstance = modbusPal;
         }
-        else
+
+        private void setIconImage()
         {
-            ErrorMessage dialog = new ErrorMessage(null,"Close");
-            dialog.setTitle("Script error");
-            dialog.append("The script probably contains errors and cannot be executed properly.");
-            dialog.setVisible(true);
+            URL url2 = getClass().getClassLoader().getResource("modbuspal/main/img/icon.png");
+            Image image2 = getToolkit().createImage(url2);
+            setFrameIcon( new ImageIcon(image2) );
+        }
+
+        public void internalFrameOpened(InternalFrameEvent e) {
+        }
+
+        public void internalFrameClosing(InternalFrameEvent e) {
+            modbusPal.exit();
+        }
+
+        public void internalFrameClosed(InternalFrameEvent e) {
+        }
+
+        public void internalFrameIconified(InternalFrameEvent e) {
+        }
+
+        public void internalFrameDeiconified(InternalFrameEvent e) {
+        }
+
+        public void internalFrameActivated(InternalFrameEvent e) {
+        }
+
+        public void internalFrameDeactivated(InternalFrameEvent e) {
         }
     }
+
+
+    public static class ModbusPalFrame
+    extends JFrame
+    {
+        final ModbusPalPane modbusPal;
+
+        public ModbusPalFrame()
+        {
+            setTitle(APP_STRING);
+            setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+            setIconImage();
+            setLayout( new BorderLayout() );
+            modbusPal = new ModbusPalPane(false); // SET TO TRUE
+            add( modbusPal, BorderLayout.CENTER );
+            pack();
+            uniqueInstance = modbusPal;
+        }
+
+        private void setIconImage()
+        {
+            URL url2 = getClass().getClassLoader().getResource("modbuspal/main/img/icon.png");
+            Image image2 = getToolkit().createImage(url2);
+            setIconImage(image2);
+        }
+    }
+
+
+    public static ModbusPalFrame newFrame(String name)
+    {
+        ModbusPal.ModbusPalFrame frame = new ModbusPal.ModbusPalFrame();
+        
+        return frame;
+    }
+
+
+
+
+
+    public static void showScriptManagerDialog(int tabIndex)
+    {
+        uniqueInstance.scriptManagerDialog.setModalExclusionType(ModalExclusionType.APPLICATION_EXCLUDE);
+        uniqueInstance.scriptManagerDialog.setVisible(true);
+        uniqueInstance.scriptsToggleButton.setSelected(true);
+        uniqueInstance.scriptManagerDialog.setSelectedTab(tabIndex);
+    }
+
+
 
 
 

@@ -30,20 +30,14 @@ implements ActionListener
     /** Creates new form ErrorMessage */
     public ErrorMessage(int nbButtons)
     {
-        super(ModbusPalGui.getFrame(), true);
+        setModalityType(ModalityType.DOCUMENT_MODAL);
         create(nbButtons);
     }
 
-    /** Creates new form ErrorMessage */
-    public ErrorMessage(java.awt.Window parent, int nbButtons)
-    {
-        super(parent, ModalityType.DOCUMENT_MODAL);
-        create(nbButtons);
-    }
 
-    public ErrorMessage(java.awt.Window parent, String text)
+    public ErrorMessage(String text)
     {
-        super(parent, ModalityType.DOCUMENT_MODAL);
+        setModalityType(ModalityType.DOCUMENT_MODAL);
         create(1);
         setButton(0, text);
     }

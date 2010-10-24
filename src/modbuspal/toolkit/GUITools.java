@@ -8,6 +8,8 @@ package modbuspal.toolkit;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Frame;
+import java.awt.Point;
+import java.awt.Window;
 import java.io.File;
 import javax.swing.JFileChooser;
 import modbuspal.main.ErrorMessage;
@@ -41,11 +43,12 @@ public class GUITools
      * @param parent the reference for aligning the child component
      * @param child the component that must be aligned
      */
-    public static void align(Component parent, Component child)
+    public static void align(Component parent, Window child)
     {
+        Point p = parent.getLocationOnScreen();
         int w = parent.getWidth()-child.getWidth();
         int h = parent.getHeight()-child.getHeight();
-        child.setLocation(parent.getX()+w/2, parent.getY()+h/2);
+        child.setLocation(p.x+w/2, p.y+h/2);
     }
 
     public static Frame findFrame(Component c)

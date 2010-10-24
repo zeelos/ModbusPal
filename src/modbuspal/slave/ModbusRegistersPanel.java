@@ -30,14 +30,14 @@ implements ModbusConst
 {
     private ModbusSlaveDialog slaveDialog;
     private ModbusRegisters registers;
-    private ModbusSlave modbusSlave;
+    //private ModbusSlave modbusSlave;
 
     /** Creates new form ModbusRegistersPanel */
     public ModbusRegistersPanel(ModbusSlaveDialog parent, ModbusRegisters regs)
     {
         slaveDialog = parent;
         registers = regs;
-        modbusSlave = parent.getModbusSlave();
+        //modbusSlave = parent.getModbusSlave();
         initComponents();
         registersTable.setTransferHandler( new ModbusRegistersTransferHandler() );
     }
@@ -164,7 +164,7 @@ implements ModbusConst
         else
         {
             // display the bind dialog
-            BindingEditor dialog = new BindingEditor(GUITools.findFrame(this));
+            BindingEditor dialog = new BindingEditor(slaveDialog.modbusPalProject);
             slaveDialog.setStatus("Binding...");
             dialog.setVisible(true);
 
@@ -191,7 +191,8 @@ implements ModbusConst
                 try
                 {
                     // instanciate the binding:
-                    Binding binding = BindingFactory.newBinding(selectedClass);
+                    Binding binding = slaveDialog.modbusPalProject.getBindingFactory().newBinding(selectedClass);
+                    //Binding binding = BindingFactory.newBinding(selectedClass);
                     binding.setup(source, selectedOrder);
                     // do the binding:
                     registers.bind(selectedAddresses[i],binding);

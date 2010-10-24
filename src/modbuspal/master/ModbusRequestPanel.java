@@ -26,7 +26,7 @@ implements MasterListener
     private ModbusRequest modbusRequest;
 
     /** Creates new form ModbusRequestPanel */
-    public ModbusRequestPanel(Frame parent, ModbusRequest req)
+    public ModbusRequestPanel(ModbusRequest req)
     {
         modbusRequest = req;
         initComponents();

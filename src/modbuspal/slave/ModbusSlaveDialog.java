@@ -14,7 +14,6 @@ package modbuspal.slave;
 import modbuspal.toolkit.GUITools;
 import modbuspal.toolkit.XMLTools;
 import java.awt.BorderLayout;
-import java.awt.Frame;
 import modbuspal.main.*;
 import java.io.File;
 import java.io.IOException;
@@ -37,14 +36,17 @@ public class ModbusSlaveDialog
 extends javax.swing.JDialog
 implements ModbusConst, ModbusSlaveListener
 {
-    private ModbusSlave modbusSlave;
+    final ModbusSlave modbusSlave;
+    final ModbusPalProject modbusPalProject;
 
     /** Creates new form ModbusSlaveDialog */
-    public ModbusSlaveDialog(Frame frame, ModbusSlave slave)
+    public ModbusSlaveDialog(ModbusPalProject p, ModbusSlave s)
     {
-        super(frame, false);
-        setTitle( String.valueOf(slave.getSlaveId()) + ":" + slave.getName() );
-        modbusSlave = slave;
+        modbusPalProject = p;
+        modbusSlave = s;
+        
+        setTitle( String.valueOf(s.getSlaveId()) + ":" + s.getName() );
+        
         modbusSlave.addModbusSlaveListener(this);
         initComponents();
         holdingRegistersPanel.add(new ModbusRegistersPanel(this, modbusSlave.getHoldingRegisters()),BorderLayout.CENTER);
@@ -93,9 +95,9 @@ implements ModbusConst, ModbusSlaveListener
             // any bindings ?
             Node uniqNode = slaves.item(0);
             Collection<Node> bindings = XMLTools.findChildren(uniqNode,"binding");
-            if( bindings.size()==0 )
+            if( bindings.isEmpty() )
             {
-                modbusSlave.load(uniqNode);
+                modbusSlave.load(uniqNode,true);
                 return;
             }
         }
@@ -107,7 +109,7 @@ implements ModbusConst, ModbusSlaveListener
         boolean importBindings = dialog.importBindings();
         boolean importAutomations = dialog.importAutomations();
 
-        modbusSlave.importSlave(importFile, index, importBindings, importAutomations);
+        modbusSlave.importSlave(importFile, index, modbusPalProject, importBindings, importAutomations);
     }
 
     /** This method is called getStartingAddress within the constructor getQuantity

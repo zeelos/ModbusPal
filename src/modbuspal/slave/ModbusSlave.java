@@ -17,6 +17,7 @@ import modbuspal.automation.Automation;
 import modbuspal.automation.NullAutomation;
 import modbuspal.main.ModbusConst;
 import modbuspal.main.ModbusPal;
+import modbuspal.main.ModbusPalProject;
 import modbuspal.main.ModbusPalXML;
 import modbuspal.toolkit.ModbusTools;
 import modbuspal.toolkit.XMLTools;
@@ -49,7 +50,7 @@ implements ModbusPalXML, ModbusConst
         enabled = true;
     }
 
-    public ModbusSlave(NamedNodeMap attributes)
+    /*public ModbusSlave(NamedNodeMap attributes)
     {
         Node idNode = attributes.getNamedItem(XML_SLAVE_ID_ATTRIBUTE);
         String id = idNode.getNodeValue();
@@ -64,12 +65,17 @@ implements ModbusPalXML, ModbusConst
         customName = nam;
 
         loadAttributes(attributes);
+    }*/
+
+    public ModbusSlave(ModbusPalProject mpp, Node slaveNode)
+    {
+        load(slaveNode, false);
     }
 
     public void clear()
     {
         // remove listeners
-        listeners.clear();
+        // listeners.clear();
         
         // propage clear
         holdingRegisters.clear();
@@ -157,7 +163,7 @@ implements ModbusPalXML, ModbusConst
         return modbusImplementation;
     }
 
-    String[] getRequiredAutomations()
+    public String[] getRequiredAutomations()
     {
         ArrayList<String> automationNames = new ArrayList<String>();
         Collection<String> tmpNames;
@@ -285,8 +291,23 @@ implements ModbusPalXML, ModbusConst
         return enabled;
     }
 
-    private void loadAttributes(NamedNodeMap attributes)
+    private void loadAttributes(NamedNodeMap attributes, boolean importMode)
     {
+        if( importMode!=true )
+        {
+            Node idNode = attributes.getNamedItem(XML_SLAVE_ID_ATTRIBUTE);
+            String id = idNode.getNodeValue();
+            slaveId = Integer.valueOf(id);
+
+            Node enNode = attributes.getNamedItem("enabled");
+            String en = enNode.getNodeValue();
+            enabled = Boolean.parseBoolean(en);
+
+            Node namNode = attributes.getNamedItem("name");
+            String nam = namNode.getNodeValue();
+            setName(nam);
+        }
+        
         Node imNode = attributes.getNamedItem("implementation");
         if( imNode != null )
         {
@@ -299,28 +320,30 @@ implements ModbusPalXML, ModbusConst
             {
                 setImplementation(IMPLEMENTATION_JBUS);
             }
+            notifyModbusImplChanged();
         }
     }
 
 
     public void load(Node node)
     {
-        loadAttributes( node.getAttributes() );
+        load(node,true);
+    }
+
+    public void load(Node node, boolean importMode)
+    {
+        clear();
+        loadAttributes( node.getAttributes(), importMode );
         NodeList nodes = node.getChildNodes();
         loadHoldingRegisters(nodes);
         loadCoils(nodes);
-        notifyModbusImplChanged();
+        
     }
 
-
-    void changeName(String name)
-    {
-        customName = name;
-    }
 
     public void setName(String name)
     {
-        changeName(name);
+        customName = name;
         notifyNameChanged();
     }
 
@@ -330,7 +353,7 @@ implements ModbusPalXML, ModbusConst
 
     private String xmlOpenTag()
     {
-        StringBuffer openTag = new StringBuffer();
+        StringBuilder openTag = new StringBuilder();
         openTag.append( "<slave "+ XML_SLAVE_ID_ATTRIBUTE +"=\"" );
         openTag.append( String.valueOf(slaveId) );
 
@@ -421,7 +444,7 @@ implements ModbusPalXML, ModbusConst
     }
 
 
-    public void importSlave(File importFile, int index, boolean withBindings, boolean withAutomations)
+    public void importSlave(File importFile, int index, ModbusPalProject modbusPalProject, boolean withBindings, boolean withAutomations)
     throws ParserConfigurationException, SAXException, IOException, InstantiationException, IllegalAccessException
     {
         Document doc = XMLTools.ParseXML(importFile);
@@ -436,14 +459,14 @@ implements ModbusPalXML, ModbusConst
 
         if( withAutomations==true )
         {
-            ModbusPal.loadAutomations(doc);
+            modbusPalProject.loadAutomations(doc);
         }
 
-        load(slaveNode);
+        load(slaveNode,true);
 
         if( withBindings==true )
         {
-            ModbusPal.loadBindings(doc);
+            modbusPalProject.loadBindings(doc, this);
         }
     }
 

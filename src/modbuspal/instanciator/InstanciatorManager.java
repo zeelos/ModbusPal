@@ -291,6 +291,12 @@ public abstract class InstanciatorManager
         return null;
     }
 
+
+    public Iterable<Instanciator> getScripts()
+    {
+        return scriptedInstanciators;
+    }
+
     public String[] getList()
     {
         // prepare list

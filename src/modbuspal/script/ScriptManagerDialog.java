@@ -29,6 +29,7 @@ import modbuspal.instanciator.InstanciatorListener;
 import modbuspal.instanciator.InstanciatorManager;
 import modbuspal.main.ListLayout;
 import modbuspal.main.ModbusPal;
+import modbuspal.main.ModbusPalProject;
 import modbuspal.script.panels.*;
 import modbuspal.toolkit.FileTransferHandler;
 
@@ -44,11 +45,12 @@ implements InstanciatorListener, ScriptListener, FileTransferHandler.FileTransfe
     private static final String REGISTRY_KEY = ModbusPal.BASE_REGISTRY_KEY + "/instanciators";
     public static final int TAB_GENERATORS = 2;
     public static final int TAB_BINDINGS = 3;
+    private ModbusPalProject modbusPalProject;
     
     /** Creates new form ScriptManagerDialog */
-    public ScriptManagerDialog(java.awt.Frame parent)
+    public ScriptManagerDialog()
     {
-        super(parent, false);
+        super();
         initComponents();
         startupScriptsList.setDropTarget( new DropTarget(this, new FileTransferHandler(this) ) );
         ondemandScriptsList.setDropTarget( new DropTarget(this, new FileTransferHandler(this) ) );
@@ -213,7 +215,7 @@ implements InstanciatorListener, ScriptListener, FileTransferHandler.FileTransfe
         }
 
         // add startup script:
-        ModbusPal.addStartupScript(scriptFile);
+        modbusPalProject.addStartupScript(scriptFile);
     }//GEN-LAST:event_addStartupScriptButtonActionPerformed
 
 
@@ -271,7 +273,7 @@ implements InstanciatorListener, ScriptListener, FileTransferHandler.FileTransfe
             return;
         }
 
-        ModbusPal.addGeneratorInstanciator(scriptFile);
+        modbusPalProject.addGeneratorInstanciator(scriptFile);
     }//GEN-LAST:event_addGeneratorInstanciatorButtonActionPerformed
 
     private void addOndemandScriptButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addOndemandScriptButtonActionPerformed
@@ -285,7 +287,7 @@ implements InstanciatorListener, ScriptListener, FileTransferHandler.FileTransfe
         }
         
         // add script to project
-        ModbusPal.addScript(scriptFile);
+        modbusPalProject.addScript(scriptFile);
 
 }//GEN-LAST:event_addOndemandScriptButtonActionPerformed
 
@@ -299,7 +301,7 @@ implements InstanciatorListener, ScriptListener, FileTransferHandler.FileTransfe
             return;
         }
 
-        ModbusPal.addBindingInstanciator(scriptFile);
+        modbusPalProject.addBindingInstanciator(scriptFile);
 
 }//GEN-LAST:event_addBindingInstanciatorButtonActionPerformed
 
@@ -471,19 +473,19 @@ implements InstanciatorListener, ScriptListener, FileTransferHandler.FileTransfe
 
             if( target==startupScriptsList)
             {
-                ModbusPal.addStartupScript(scriptFile);
+                modbusPalProject.addStartupScript(scriptFile);
             }
             else if( target==ondemandScriptsList )
             {
-                ModbusPal.addScript(scriptFile);
+                modbusPalProject.addScript(scriptFile);
             }
             else if( target==generatorInstanciatorsList)
             {
-                ModbusPal.addGeneratorInstanciator(scriptFile);
+                modbusPalProject.addGeneratorInstanciator(scriptFile);
             }
             else if( target==bindingInstanciatorsList )
             {
-                ModbusPal.addBindingInstanciator(scriptFile);
+                modbusPalProject.addBindingInstanciator(scriptFile);
             }
             else
             {
@@ -492,6 +494,54 @@ implements InstanciatorListener, ScriptListener, FileTransferHandler.FileTransfe
         }
 
         return true;
+    }
+
+    public void setProject(ModbusPalProject mpp)
+    {
+        if( modbusPalProject!=null )
+        {
+            modbusPalProject.removeScriptListener(this);
+            modbusPalProject.getGeneratorFactory().removeInstanciatorListener(this);
+            modbusPalProject.getBindingFactory().removeInstanciatorListener(this);
+        }
+        modbusPalProject = mpp;
+        modbusPalProject.addScriptListener(this);
+        modbusPalProject.getGeneratorFactory().addInstanciatorListener(this);
+        modbusPalProject.getBindingFactory().addInstanciatorListener(this);
+
+
+        // update list of startup scripts:
+        startupScriptsList.removeAll();
+        for(ScriptRunner runner:modbusPalProject.getStartupScripts())
+        {
+            startupScriptAdded(runner);
+        }
+
+        // update list of on-demand scripts:
+        ondemandScriptsList.removeAll();
+        for(ScriptRunner runner:modbusPalProject.getScripts())
+        {
+            scriptAdded(runner);
+        }
+
+        // update list of generators:
+        generatorInstanciatorsList.removeAll();
+        GeneratorFactory genFac = modbusPalProject.getGeneratorFactory();
+        for(Instanciator i:genFac.getScripts())
+        {
+            instanciatorAdded(genFac, i);
+        }
+
+        // update list of bindings:
+        bindingInstanciatorsList.removeAll();
+        BindingFactory binFac = modbusPalProject.getBindingFactory();
+        for(Instanciator i:binFac.getScripts())
+        {
+            instanciatorAdded(binFac, i);
+        }
+
+
+        
     }
 
 }

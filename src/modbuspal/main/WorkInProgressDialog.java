@@ -54,13 +54,13 @@ extends javax.swing.JDialog
 */
 
     /** Creates new form WorkInProgressDialog */
-    public WorkInProgressDialog(java.awt.Frame parent, String title, String message)
+    public WorkInProgressDialog(String title, String message)
     {
-        super(parent, ModalityType.DOCUMENT_MODAL);
+        setModalityType(ModalityType.DOCUMENT_MODAL);
         setTitle(title);
         initComponents();
         messageLabel.setText(message);
-        GUITools.align(parent, this);
+        //TODO: GUITools.align(parent, this);
     }
 
     /** This method is called from within the constructor to

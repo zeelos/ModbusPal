@@ -12,6 +12,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import modbuspal.main.ModbusPalProject;
 import modbuspal.main.ModbusRequest;
 import modbuspal.recorder.ModbusPalRecord;
 
@@ -20,7 +21,7 @@ import modbuspal.recorder.ModbusPalRecord;
  * @author nnovic
  */
 public class ModbusReplayLink
-extends ModbusSlaveDispatcher
+extends ModbusSlaveProcessor
 implements ModbusLink, Runnable
 {
     private File recordFile = null;
@@ -28,8 +29,9 @@ implements ModbusLink, Runnable
     private Thread serverThread;
     private ModbusLinkListener listener = null;
 
-    public ModbusReplayLink(File source)
+    public ModbusReplayLink(ModbusPalProject mpp, File source)
     {
+        super(mpp);
         recordFile = source;
     }
 

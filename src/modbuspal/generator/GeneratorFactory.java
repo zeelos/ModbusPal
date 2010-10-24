@@ -22,21 +22,21 @@ import org.w3c.dom.NodeList;
 public class GeneratorFactory
 extends InstanciatorManager
 {
-    private static GeneratorFactory factory = new GeneratorFactory();
+    //private static GeneratorFactory factory = new GeneratorFactory();
 
 
-    public static GeneratorFactory getFactory()
-    {
-        return factory;
-    }
+//    public static GeneratorFactory getFactory()
+//    {
+//        return factory;
+//    }
 
     
-    public static Generator newGenerator(String classname)
-    throws InstantiationException, IllegalAccessException
-    {
-        Instanciator is = factory.getInstanciator(classname);
-        return is.newGenerator();
-    }
+//    public static Generator newGenerator(String classname)
+//    throws InstantiationException, IllegalAccessException
+//    {
+//        Instanciator is = factory.getInstanciator(classname);
+//        return is.newGenerator();
+//    }
 
     /**
      * List of predefined generators:
@@ -48,6 +48,13 @@ extends InstanciatorManager
         new ClassInstanciator(modbuspal.generator.sine.SineGenerator.class)
     };
 
+
+    public Generator newGenerator(String classname)
+    throws InstantiationException, IllegalAccessException
+    {
+        Instanciator is = getInstanciator(classname);
+        return is.newGenerator();
+    }
 
 
     @Override

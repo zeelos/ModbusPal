@@ -7,6 +7,7 @@ package modbuspal.link;
 
 import modbuspal.toolkit.ModbusTools;
 import modbuspal.main.*;
+import modbuspal.main.ModbusConst;
 import modbuspal.recorder.ModbusPalRecorder;
 
 
@@ -14,9 +15,16 @@ import modbuspal.recorder.ModbusPalRecorder;
  *
  * @author nnovic
  */
-public abstract class ModbusSlaveDispatcher
+public abstract class ModbusSlaveProcessor
 implements ModbusConst
 {
+    protected final ModbusPalProject modbusPalProject;
+
+    protected ModbusSlaveProcessor(ModbusPalProject mpp)
+    {
+        modbusPalProject = mpp;
+    }
+
 
     protected int processPDU(int slaveID, byte[] buffer, int offset, int pduLength)
     {
@@ -24,19 +32,20 @@ implements ModbusConst
         ModbusPalRecorder.recordIncoming(slaveID,buffer,offset,pduLength);
 
         // check if the slave is enabled
-        if( ModbusPal.isSlaveEnabled(slaveID) == false )
+        if( modbusPalProject.isSlaveEnabled(slaveID) == false )
         {
             System.err.println("Slave "+slaveID+" is not enabled");
+            modbusPalProject.notifyPDUnotServiced();
             return 0;
         }
 
         // check if the function code is enabled
         byte functionCode = buffer[offset+0];
-        if( ModbusPal.isFunctionEnabled(slaveID, functionCode) == false )
+        if( modbusPalProject.isFunctionEnabled(slaveID, functionCode) == false )
         {
             int length = makeExceptionResponse(functionCode,XC_ILLEGAL_FUNCTION, buffer, offset);
             ModbusPalRecorder.recordOutgoing(slaveID,buffer,offset,length);
-            ModbusPal.notifyExceptionResponse();
+            modbusPalProject.notifyExceptionResponse();
             return length;
         }
 
@@ -80,11 +89,11 @@ implements ModbusConst
 
         if( isExceptionResponse(buffer,offset)==true )
         {
-            ModbusPal.notifyExceptionResponse();
+            modbusPalProject.notifyExceptionResponse();
         }
         else
         {
-            ModbusPal.notifyPDUprocessed();
+            modbusPalProject.notifyPDUprocessed();
         }
 
         ModbusPalRecorder.recordOutgoing(slaveID,buffer,offset,length);
@@ -116,14 +125,14 @@ implements ModbusConst
             return makeExceptionResponse(FC_READ_HOLDING_REGISTERS, XC_ILLEGAL_DATA_VALUE, buffer, offset);
         }
 
-        if( ModbusPal.holdingRegistersExist(slaveID, startingAddress,quantity) == false )
+        if( modbusPalProject.holdingRegistersExist(slaveID, startingAddress,quantity) == false )
         {
             System.err.println("Read holding registers: bad address range "+startingAddress+" to "+ startingAddress+quantity);
             return makeExceptionResponse(FC_READ_HOLDING_REGISTERS, XC_ILLEGAL_DATA_ADDRESS, buffer, offset);
         }
 
         buffer[offset+1] = (byte) (2*quantity);
-        byte rc = ModbusPal.getHoldingRegisters(slaveID,startingAddress,quantity,buffer,offset+2);
+        byte rc = modbusPalProject.getHoldingRegisters(slaveID,startingAddress,quantity,buffer,offset+2);
         if( rc != (byte)0x00 )
         {
             return makeExceptionResponse(FC_READ_HOLDING_REGISTERS, rc, buffer, offset);
@@ -143,13 +152,13 @@ implements ModbusConst
             return makeExceptionResponse(FC_WRITE_MULTIPLE_REGISTERS, XC_ILLEGAL_DATA_VALUE, buffer, offset);
         }
 
-        if( ModbusPal.holdingRegistersExist(slaveID, startingAddress,quantity) == false )
+        if( modbusPalProject.holdingRegistersExist(slaveID, startingAddress,quantity) == false )
         {
             System.err.println("Write multiple registers: bad address range "+startingAddress+" to "+ startingAddress+quantity);
             return makeExceptionResponse(FC_WRITE_MULTIPLE_REGISTERS, XC_ILLEGAL_DATA_ADDRESS, buffer, offset);
         }
 
-        byte rc = ModbusPal.setHoldingRegisters(slaveID,startingAddress,quantity,buffer,offset+6);
+        byte rc = modbusPalProject.setHoldingRegisters(slaveID,startingAddress,quantity,buffer,offset+6);
         if( rc != (byte)0x00 )
         {
             return makeExceptionResponse(FC_WRITE_MULTIPLE_REGISTERS, rc, buffer, offset);
@@ -162,13 +171,13 @@ implements ModbusConst
     {
         int address = ModbusTools.getUint16(buffer, offset+1);
 
-        if( ModbusPal.holdingRegistersExist(slaveID, address, 1) == false )
+        if( modbusPalProject.holdingRegistersExist(slaveID, address, 1) == false )
         {
             System.err.println("Write single register: bad address "+address);
             return makeExceptionResponse(FC_WRITE_SINGLE_REGISTER, XC_ILLEGAL_DATA_ADDRESS, buffer, offset);
         }
 
-        byte rc = ModbusPal.setHoldingRegisters(slaveID,address,1,buffer,offset+3);
+        byte rc = modbusPalProject.setHoldingRegisters(slaveID,address,1,buffer,offset+3);
         if( rc != (byte)0x00 )
         {
             return makeExceptionResponse(FC_WRITE_SINGLE_REGISTER, rc, buffer, offset);
@@ -202,21 +211,21 @@ implements ModbusConst
         }
 
         // verify that registers to be read exist:
-        if( ModbusPal.holdingRegistersExist(slaveID, readStartingAddress,quantityToRead) == false )
+        if( modbusPalProject.holdingRegistersExist(slaveID, readStartingAddress,quantityToRead) == false )
         {
             System.err.println("Read/Write multiple registers: bad address range "+readStartingAddress+" to "+ readStartingAddress+quantityToRead);
             return makeExceptionResponse(FC_READ_WRITE_MULTIPLE_REGISTERS, XC_ILLEGAL_DATA_VALUE, buffer, offset);
         }
 
         // verify that registers to be written exist:
-        if( ModbusPal.holdingRegistersExist(slaveID, writeStartingAddress,quantityToWrite) == false )
+        if( modbusPalProject.holdingRegistersExist(slaveID, writeStartingAddress,quantityToWrite) == false )
         {
             System.err.println("Read/Write multiple registers: bad address range "+writeStartingAddress+" to "+ writeStartingAddress+quantityToWrite);
             return makeExceptionResponse(FC_READ_WRITE_MULTIPLE_REGISTERS, XC_ILLEGAL_DATA_VALUE, buffer, offset);
         }
 
         // perform write operation first:
-        byte rc = ModbusPal.setHoldingRegisters(slaveID,writeStartingAddress,quantityToWrite,buffer,offset+10);
+        byte rc = modbusPalProject.setHoldingRegisters(slaveID,writeStartingAddress,quantityToWrite,buffer,offset+10);
         if( rc != (byte)0x00 )
         {
             return makeExceptionResponse(FC_WRITE_MULTIPLE_REGISTERS, rc, buffer, offset);
@@ -224,7 +233,7 @@ implements ModbusConst
 
         // then perform read operation:
         buffer[offset+1] = (byte) (2*quantityToRead);
-        rc = ModbusPal.getHoldingRegisters(slaveID,readStartingAddress,quantityToRead,buffer,offset+2);
+        rc = modbusPalProject.getHoldingRegisters(slaveID,readStartingAddress,quantityToRead,buffer,offset+2);
         if( rc != (byte)0x00 )
         {
             return makeExceptionResponse(FC_READ_WRITE_MULTIPLE_REGISTERS, rc, buffer, offset);
@@ -245,7 +254,7 @@ implements ModbusConst
             return makeExceptionResponse(FC_READ_COILS, XC_ILLEGAL_DATA_VALUE, buffer, offset);
         }
 
-        if( ModbusPal.coilsExist(slaveID, startingAddress,quantity) == false )
+        if( modbusPalProject.coilsExist(slaveID, startingAddress,quantity) == false )
         {
             System.err.println("Read coils: bad address range "+startingAddress+" to "+ startingAddress+quantity);
             return makeExceptionResponse(FC_READ_COILS, XC_ILLEGAL_DATA_ADDRESS, buffer, offset);
@@ -253,7 +262,7 @@ implements ModbusConst
 
         byte byteCount = (byte) (  (quantity+7)/8 );
         buffer[offset+1] = byteCount;
-        byte rc = ModbusPal.getCoils(slaveID,startingAddress,quantity,buffer,offset+2);
+        byte rc = modbusPalProject.getCoils(slaveID,startingAddress,quantity,buffer,offset+2);
         if( rc != (byte)0x00 )
         {
             return makeExceptionResponse(FC_READ_COILS, rc, buffer, offset);
@@ -273,13 +282,13 @@ implements ModbusConst
             return makeExceptionResponse(FC_WRITE_MULTIPLE_COILS, XC_ILLEGAL_DATA_VALUE, buffer, offset);
         }
 
-        if( ModbusPal.coilsExist(slaveID, startingAddress,quantity) == false )
+        if( modbusPalProject.coilsExist(slaveID, startingAddress,quantity) == false )
         {
             System.err.println("Write multiple coils: bad address range "+startingAddress+" to "+ startingAddress+quantity);
             return makeExceptionResponse(FC_WRITE_MULTIPLE_COILS, XC_ILLEGAL_DATA_ADDRESS, buffer, offset);
         }
 
-        byte rc = ModbusPal.setCoils(slaveID,startingAddress,quantity,buffer,offset+6);
+        byte rc = modbusPalProject.setCoils(slaveID,startingAddress,quantity,buffer,offset+6);
         if( rc != (byte)0x00 )
         {
             return makeExceptionResponse(FC_WRITE_MULTIPLE_REGISTERS, rc, buffer, offset);
@@ -300,13 +309,13 @@ implements ModbusConst
             return makeExceptionResponse(FC_WRITE_SINGLE_COIL, XC_ILLEGAL_DATA_VALUE, buffer, offset);
         }
 
-        if( ModbusPal.coilsExist(slaveID, outputAddress, 1) == false )
+        if( modbusPalProject.coilsExist(slaveID, outputAddress, 1) == false )
         {
             System.err.println("Write single coil: bad address "+outputAddress);
             return makeExceptionResponse(FC_WRITE_SINGLE_COIL, XC_ILLEGAL_DATA_ADDRESS, buffer, offset);
         }
 
-        byte rc = ModbusPal.setCoil(slaveID,outputAddress,outputValue);
+        byte rc = modbusPalProject.setCoil(slaveID,outputAddress,outputValue);
         if( rc != (byte)0x00 )
         {
             return makeExceptionResponse(FC_WRITE_SINGLE_COIL, rc, buffer, offset);
