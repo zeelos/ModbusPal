@@ -62,4 +62,8 @@ implements Transferable
         return registers;
     }
 
+    public int getRegistersCount()
+    {
+        return registers.size();
+    }
 }

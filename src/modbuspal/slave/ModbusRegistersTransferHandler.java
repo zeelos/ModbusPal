@@ -89,7 +89,9 @@ extends TransferHandler
     {
         if( c instanceof ModbusRegistersTable )
         {
-            return new ModbusTransferableRegisters( (ModbusRegistersTable)c );
+            ModbusTransferableRegisters mtr = new ModbusTransferableRegisters( (ModbusRegistersTable)c );
+            System.out.printf("createTransferable for %d registers\r\n", mtr.getRegistersCount() );
+            return mtr;
         }
         else
         {

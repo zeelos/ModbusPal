@@ -336,7 +336,11 @@ implements TableModel, ModbusPalXML, ModbusConst
     {
         try
         {
-            Binding b = (Binding) src.registerBinding.clone();
+            Binding b = null;
+            if( src.registerBinding!=null )
+            {
+                b = (Binding) src.registerBinding.clone();
+            }
             set( destAddress, src.registerValue, src.registerName, b);
         }
         catch(CloneNotSupportedException ex)
@@ -385,8 +389,11 @@ implements TableModel, ModbusPalXML, ModbusConst
     public void unbind(int address)
     {
         Binding removed = bindings.remove(address);
-        removed.detach();
-        notifyTableChanged( values.getOrderOf(address) );
+        if( removed!=null )
+        {
+            removed.detach();
+            notifyTableChanged( values.getOrderOf(address) );
+        }
     }
 
 

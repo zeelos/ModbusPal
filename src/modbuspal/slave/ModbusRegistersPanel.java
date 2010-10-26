@@ -164,7 +164,7 @@ implements ModbusConst
         else
         {
             // display the bind dialog
-            BindingEditor dialog = new BindingEditor(slaveDialog.modbusPalProject);
+            BindingEditor dialog = new BindingEditor(slaveDialog.modbusPalPane);
             slaveDialog.setStatus("Binding...");
             dialog.setVisible(true);
 

@@ -11,11 +11,16 @@
 
 package modbuspal.slave;
 
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
+import javax.swing.event.AncestorEvent;
 import modbuspal.toolkit.GUITools;
-import java.awt.Frame;
 import modbuspal.main.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import javax.swing.event.AncestorListener;
 
 /**
  *
@@ -23,22 +28,25 @@ import java.awt.event.WindowListener;
  */
 public class ModbusSlavePanel
 extends javax.swing.JPanel
-implements WindowListener, ModbusSlaveListener
+implements WindowListener, ModbusSlaveListener,AncestorListener
 {
 
     private final ModbusSlave modbusSlave;
     private final ModbusSlaveDialog modbusSlaveDialog;
     private final ModbusPalProject modbusPalProject;
+    private final ModbusPalPane modbusPalPane;
 
     /** Creates new form listOfSlavesCellRenderer */
-    public ModbusSlavePanel(ModbusPalProject p, ModbusSlave s)
+    public ModbusSlavePanel(ModbusPalPane p, ModbusSlave s)
     {
         modbusSlave = s;
-        modbusPalProject = p;
-        modbusSlaveDialog = new ModbusSlaveDialog(modbusPalProject, modbusSlave);
+        modbusPalPane = p;
+        modbusPalProject = modbusPalPane.getProject();
+        modbusSlaveDialog = new ModbusSlaveDialog(modbusPalPane, modbusSlave);
         modbusSlaveDialog.addWindowListener(this);
         initComponents();
         setBackground();
+        addAncestorListener(this);
     }
 
 
@@ -174,7 +182,7 @@ implements WindowListener, ModbusSlaveListener
 
     private void duplicateButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_duplicateButtonActionPerformed
 
-        AddSlaveDialog dialog = new AddSlaveDialog(modbusSlave.getName() );
+        AddSlaveDialog dialog = new AddSlaveDialog(modbusSlave.getName(), modbusPalProject.getModbusSlaves() );
         GUITools.align(this, dialog);
         dialog.setVisible(true);
 
@@ -184,7 +192,7 @@ implements WindowListener, ModbusSlaveListener
             String name = dialog.getSlaveName();
             for( int i=0; i<ids.length; i++ )
             {
-                modbusPalProject.duplicateModbusSlave(ids[i], name, modbusSlave);
+                modbusPalProject.duplicateModbusSlave(modbusSlave.getSlaveId(), ids[i], name);
             }
         }
 
@@ -272,5 +280,23 @@ implements WindowListener, ModbusSlaveListener
     {
         nameTextField.setText(newName);
     }
+
+    @Override
+    public void ancestorAdded(AncestorEvent event) {
+    }
+
+    @Override
+    public void ancestorRemoved(AncestorEvent event)
+    {
+        modbusSlaveDialog.removeWindowListener(this);
+        modbusSlaveDialog.setVisible(false);
+        modbusSlaveDialog.dispose();
+    }
+
+    @Override
+    public void ancestorMoved(AncestorEvent event) {
+    }
+
+
 
 }

@@ -28,7 +28,7 @@ import modbuspal.generator.GeneratorFactory;
 import modbuspal.instanciator.InstanciatorListener;
 import modbuspal.instanciator.InstanciatorManager;
 import modbuspal.main.ListLayout;
-import modbuspal.main.ModbusPal;
+import modbuspal.main.ModbusPalPane;
 import modbuspal.main.ModbusPalProject;
 import modbuspal.script.panels.*;
 import modbuspal.toolkit.FileTransferHandler;
@@ -42,7 +42,7 @@ public class ScriptManagerDialog
 extends javax.swing.JDialog
 implements InstanciatorListener, ScriptListener, FileTransferHandler.FileTransferTarget
 {
-    private static final String REGISTRY_KEY = ModbusPal.BASE_REGISTRY_KEY + "/instanciators";
+    private static final String REGISTRY_KEY = ModbusPalPane.BASE_REGISTRY_KEY + "/instanciators";
     public static final int TAB_GENERATORS = 2;
     public static final int TAB_BINDINGS = 3;
     private ModbusPalProject modbusPalProject;
@@ -338,7 +338,7 @@ implements InstanciatorListener, ScriptListener, FileTransferHandler.FileTransfe
         {
             ScriptRunner si = (ScriptRunner)def;
             // create a new panel and add it
-            ScriptRunnerPanel panel = new GeneratorScriptRunnerPanel(si,false);
+            ScriptRunnerPanel panel = new GeneratorScriptRunnerPanel(si,modbusPalProject);
             generatorInstanciatorsList.add(panel);
             validate(); repaint();
         }
@@ -347,7 +347,7 @@ implements InstanciatorListener, ScriptListener, FileTransferHandler.FileTransfe
         {
             ScriptRunner si = (ScriptRunner)def;
             // create a new panel and add it
-            ScriptRunnerPanel panel = new BindingScriptRunnerPanel(si,false);
+            ScriptRunnerPanel panel = new BindingScriptRunnerPanel(si,modbusPalProject);
             bindingInstanciatorsList.add(panel);
             validate(); repaint();
         }
@@ -417,7 +417,7 @@ implements InstanciatorListener, ScriptListener, FileTransferHandler.FileTransfe
     public void startupScriptAdded(ScriptRunner runner)
     {
         // create a new panel and add it
-        ScriptRunnerPanel panel = new StartupScriptRunnerPanel(runner,true);
+        ScriptRunnerPanel panel = new StartupScriptRunnerPanel(runner,modbusPalProject);
         startupScriptsList.add(panel);
         validate(); repaint();
     }
@@ -426,7 +426,7 @@ implements InstanciatorListener, ScriptListener, FileTransferHandler.FileTransfe
     public void scriptAdded(ScriptRunner runner)
     {
         // create a new panel and add it
-        ScriptRunnerPanel panel = new OnDemandScriptRunnerPanel(runner,true);
+        ScriptRunnerPanel panel = new OnDemandScriptRunnerPanel(runner,modbusPalProject);
         ondemandScriptsList.add(panel);
         validate(); repaint();
     }

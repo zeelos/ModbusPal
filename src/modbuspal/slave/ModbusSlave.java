@@ -5,27 +5,19 @@
 
 package modbuspal.slave;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import javax.xml.parsers.ParserConfigurationException;
-import modbuspal.automation.Automation;
 import modbuspal.automation.NullAutomation;
 import modbuspal.main.ModbusConst;
-import modbuspal.main.ModbusPal;
 import modbuspal.main.ModbusPalProject;
 import modbuspal.main.ModbusPalXML;
 import modbuspal.toolkit.ModbusTools;
 import modbuspal.toolkit.XMLTools;
-import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
 /**
  *
@@ -412,7 +404,7 @@ implements ModbusPalXML, ModbusConst
     }
 
 
-    public void exportSlave(File exportFile, boolean withBindings, boolean withAutomations)
+/*    public void exportSlave(File exportFile, boolean withBindings, boolean withAutomations)
     throws FileNotFoundException, IOException
     {
         OutputStream out = new FileOutputStream(exportFile);
@@ -469,7 +461,7 @@ implements ModbusPalXML, ModbusConst
             modbusPalProject.loadBindings(doc, this);
         }
     }
-
+*/
 
 
 

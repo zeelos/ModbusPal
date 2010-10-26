@@ -36,7 +36,7 @@ import javax.swing.JTextField;
 import javax.xml.parsers.ParserConfigurationException;
 import modbuspal.instanciator.InstanciatorManager;
 import modbuspal.main.ListLayout;
-import modbuspal.main.ModbusPal;
+import modbuspal.main.ModbusPalPane;
 import modbuspal.script.ScriptManagerDialog;
 import modbuspal.toolkit.XFileChooser;
 import modbuspal.toolkit.XMLTools;
@@ -57,12 +57,14 @@ implements AutomationEditionListener, AutomationExecutionListener, InstanciatorL
     private final Automation automation;
     private final ListLayout listLayout;
     private final GeneratorFactory generatorFactory;
+    private final ModbusPalPane modbusPalPane;
 
     /** Creates new form AutomationEditor */
-    public AutomationEditor(Automation a, GeneratorFactory f)
+    public AutomationEditor(Automation a, ModbusPalPane p)
     {
         //mainGui = gui;
-        generatorFactory = f;
+        modbusPalPane = p;
+        generatorFactory = modbusPalPane.getProject().getGeneratorFactory();
         automation = a;
         
         setTitle( "Automation:"+automation.getName() );
@@ -583,7 +585,7 @@ implements AutomationEditionListener, AutomationExecutionListener, InstanciatorL
     private void removeInstanciatorButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeInstanciatorButtonActionPerformed
 
         // ask script manager to appear, with the "generators" tab selected
-        ModbusPal.showScriptManagerDialog(ScriptManagerDialog.TAB_GENERATORS);
+        modbusPalPane.showScriptManagerDialog(ScriptManagerDialog.TAB_GENERATORS);
 
     }//GEN-LAST:event_removeInstanciatorButtonActionPerformed
 

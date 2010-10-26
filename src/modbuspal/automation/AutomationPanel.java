@@ -12,9 +12,11 @@
 
 package modbuspal.automation;
 
+import javax.swing.event.AncestorEvent;
 import modbuspal.main.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import javax.swing.event.AncestorListener;
 import modbuspal.generator.GeneratorFactory;
 
 /**
@@ -23,23 +25,28 @@ import modbuspal.generator.GeneratorFactory;
  */
 public class AutomationPanel
 extends javax.swing.JPanel
-implements WindowListener, AutomationExecutionListener
+implements WindowListener, AutomationExecutionListener, AncestorListener
 {
 
     private final Automation automation;
     private final AutomationEditor automationEditor;
+    private final ModbusPalProject modbusPalProject;
     private final GeneratorFactory generatorFactory;
+    private final ModbusPalPane modbusPalPane;
 
     /** Creates new form listOfSlavesCellRenderer */
-    public AutomationPanel(Automation a, GeneratorFactory f)
+    public AutomationPanel(Automation a, ModbusPalPane p)
     {
-        generatorFactory = f;
+        modbusPalPane = p;
+        modbusPalProject = modbusPalPane.getProject();
+        generatorFactory = modbusPalProject.getGeneratorFactory();
         automation = a;
         automation.addAutomationExecutionListener(this);
-        automationEditor = new AutomationEditor(automation, generatorFactory);
+        automationEditor = new AutomationEditor(automation, modbusPalPane);
         automationEditor.addWindowListener(this);
         initComponents();
         setBackground();
+        addAncestorListener(this);
     }
 
 
@@ -160,13 +167,13 @@ implements WindowListener, AutomationExecutionListener
 
     private void nameTextFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_nameTextFieldFocusLost
         String newName = nameTextField.getText().trim();
-        newName = ModbusPal.checkAutomationNewName(automation, newName);
+        newName = modbusPalProject.checkAutomationNewName(automation, newName);
         nameTextField.setText(newName);
         automation.setName(newName);
     }//GEN-LAST:event_nameTextFieldFocusLost
 
     private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
-        ModbusPal.removeAutomation(automation);
+        modbusPalProject.removeAutomation(automation);
     }//GEN-LAST:event_deleteButtonActionPerformed
 
 
@@ -250,5 +257,20 @@ implements WindowListener, AutomationExecutionListener
     @Override
     public void automationValueHasChanged(Automation source, double time, double value)
     {
+    }
+
+    @Override
+    public void ancestorAdded(AncestorEvent event) {
+    }
+
+    @Override
+    public void ancestorRemoved(AncestorEvent event) {
+        automationEditor.removeWindowListener(this);
+        automationEditor.setVisible(false);
+        automationEditor.dispose();
+    }
+
+    @Override
+    public void ancestorMoved(AncestorEvent event) {
     }
 }

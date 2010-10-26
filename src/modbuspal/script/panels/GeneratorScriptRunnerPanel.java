@@ -5,7 +5,7 @@
 
 package modbuspal.script.panels;
 
-import modbuspal.main.ModbusPal;
+import modbuspal.main.ModbusPalProject;
 import modbuspal.script.ScriptRunner;
 import modbuspal.script.ScriptRunnerPanel;
 
@@ -17,9 +17,11 @@ import modbuspal.script.ScriptRunnerPanel;
 public class GeneratorScriptRunnerPanel
 extends ScriptRunnerPanel
 {
-    public GeneratorScriptRunnerPanel(ScriptRunner def, boolean canExecute)
+    private final ModbusPalProject modbusPalProject;
+    public GeneratorScriptRunnerPanel(ScriptRunner def, ModbusPalProject p)
     {
-        super(def, canExecute);
+        super(def, false);
+        modbusPalProject = p;
     }
 
     @Override
@@ -27,6 +29,6 @@ extends ScriptRunnerPanel
     {
         ScriptRunner runner = getScriptRunner();
         System.out.println("Deleting " + runner.getClassName() + " generator..." );
-        ModbusPal.removeGeneratorScript( runner );
+        modbusPalProject.removeGeneratorScript( runner );
     }
 }

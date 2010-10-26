@@ -11,8 +11,13 @@
 
 package modbuspal.slave;
 
+import java.awt.Component;
 import java.util.Collection;
+import javax.swing.AbstractListModel;
+import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JList;
 import modbuspal.toolkit.XMLTools;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -26,9 +31,65 @@ import org.w3c.dom.NodeList;
 class ImportSlaveDialog
 extends javax.swing.JDialog
 {
+    class SlaveListModel
+    extends AbstractListModel
+    implements ComboBoxModel
+    {
+        private final NodeList slaves;
+        private Node selected;
+
+        SlaveListModel(NodeList list) {
+            slaves = list;
+        }
+
+        @Override
+        public int getSize() {
+            return slaves.getLength();
+        }
+
+        @Override
+        public Object getElementAt(int index) {
+            Node slave = slaves.item(index);
+            return slave;
+        }
+
+        @Override
+        public void setSelectedItem(Object anItem) {
+            selected = (Node)anItem;
+        }
+
+        @Override
+        public Object getSelectedItem() {
+            return selected;
+        }
+
+        int getSelectedSlaveID() {
+            if( selected==null ) return -1;
+            Node slave = (Node)selected;
+            NamedNodeMap attributes = slave.getAttributes();
+            String id = attributes.getNamedItem("id").getNodeValue();
+            return Integer.valueOf(id);
+        }
+    }
+
+    class SlaveListRenderer
+    extends DefaultListCellRenderer
+    {
+        @Override
+        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected, boolean cellHasFocus)
+        {
+            Node slave = (Node)value;
+            NamedNodeMap attributes = slave.getAttributes();
+            String id = attributes.getNamedItem("id").getNodeValue();
+            String name = attributes.getNamedItem("name").getNodeValue();
+            String value2 = id+":"+name;
+            return super.getListCellRendererComponent(list, value2, index, isSelected, cellHasFocus);
+        }
+    }
+
     private boolean validate = false;
-    private DefaultComboBoxModel model = new DefaultComboBoxModel();
-    private NodeList slavesList;
+    private final SlaveListModel model;
+    //private NodeList slavesList;
     private NodeList automationsList;
 
     /** Creates new form AddSlaveDialog */
@@ -36,20 +97,14 @@ extends javax.swing.JDialog
     {
         super(parent, true);
 
-        slavesList = doc.getElementsByTagName("slave");
+        NodeList slavesList = doc.getElementsByTagName("slave");
+        model = new SlaveListModel(slavesList);
         automationsList = doc.getElementsByTagName("automation");
 
         // populate the list model with slaves:
-        for( int i=0; i<slavesList.getLength(); i++ )
-        {
-            Node slave = slavesList.item(i);
-            NamedNodeMap attributes = slave.getAttributes();
-            String id = attributes.getNamedItem("id").getNodeValue();
-            String name = attributes.getNamedItem("name").getNodeValue();
-            model.addElement( id+":"+name );
-        }
         
         initComponents();
+        slaveComboBox.setRenderer( new SlaveListRenderer() );
 
         // if only one slave, select it and disable the combobox:
         if( model.getSize() == 1 )
@@ -61,13 +116,13 @@ extends javax.swing.JDialog
         slaveHasBeenSelected(0);
     }
 
-    public int getIndex()
+    public int getSelectedSlaveID()
     {
         if( validate == false )
         {
             return -1;
         }
-        return slaveComboBox.getSelectedIndex();
+        return model.getSelectedSlaveID();
     }
 
     boolean importBindings()
@@ -181,7 +236,7 @@ extends javax.swing.JDialog
     private void slaveHasBeenSelected(int i)
     {
         // get the selected object:
-        Node slaveNode = slavesList.item(i);
+        Node slaveNode = (Node)model.getElementAt(i);
 
         // has bindings ?
         Collection<Node> bindings = XMLTools.findChildren(slaveNode, "binding");

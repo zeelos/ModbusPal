@@ -9,6 +9,7 @@ import modbuspal.instanciator.Instanciator;
 import java.io.IOException;
 import java.io.File;
 import java.io.OutputStream;
+import modbuspal.main.ModbusPalProject;
 import modbuspal.toolkit.FileTools;
 
 /**
@@ -20,6 +21,11 @@ implements Instanciator
 
     public static ScriptRunner create(File scriptFile)
     {
+        return create(null, scriptFile);
+    }
+    
+    public static ScriptRunner create(ModbusPalProject mpp, File scriptFile)
+    {
         String extension = FileTools.getExtension(scriptFile);
         if( extension==null)
         {
@@ -28,14 +34,14 @@ implements Instanciator
 
         if( extension.compareToIgnoreCase("py")==0 )
         {
-            return new PythonRunner(scriptFile);
+            return new PythonRunner(mpp, scriptFile);
         }
 
         return null;
     }
 
 
-    protected File scriptFile = null;
+    protected final File scriptFile;
 
     
     public ScriptRunner(File file)
@@ -133,4 +139,6 @@ implements Instanciator
     {
         return scriptFile.getPath();
     }
+
+    protected abstract void interrupt();
 }

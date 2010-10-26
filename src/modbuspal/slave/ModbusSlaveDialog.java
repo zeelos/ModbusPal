@@ -37,12 +37,14 @@ extends javax.swing.JDialog
 implements ModbusConst, ModbusSlaveListener
 {
     final ModbusSlave modbusSlave;
+    final ModbusPalPane modbusPalPane;
     final ModbusPalProject modbusPalProject;
 
     /** Creates new form ModbusSlaveDialog */
-    public ModbusSlaveDialog(ModbusPalProject p, ModbusSlave s)
+    public ModbusSlaveDialog(ModbusPalPane p, ModbusSlave s)
     {
-        modbusPalProject = p;
+        modbusPalPane = p;
+        modbusPalProject = modbusPalPane.getProject();
         modbusSlave = s;
         
         setTitle( String.valueOf(s.getSlaveId()) + ":" + s.getName() );
@@ -82,6 +84,7 @@ implements ModbusConst, ModbusSlaveListener
     private void importSlave(File importFile)
     throws ParserConfigurationException, SAXException, IOException, InstantiationException, IllegalAccessException
     {
+        // open import file
         Document doc = XMLTools.ParseXML(importFile);
         
         // normalize text representation
@@ -90,11 +93,14 @@ implements ModbusConst, ModbusSlaveListener
         // how many slaves in the file?
         NodeList slaves = doc.getElementsByTagName("slave");
 
+        // if only one slave...
         if( slaves.getLength()==1 )
         {
             // any bindings ?
             Node uniqNode = slaves.item(0);
             Collection<Node> bindings = XMLTools.findChildren(uniqNode,"binding");
+            
+            // if no bindings, then make a simle call to "load"
             if( bindings.isEmpty() )
             {
                 modbusSlave.load(uniqNode,true);
@@ -102,14 +108,31 @@ implements ModbusConst, ModbusSlaveListener
             }
         }
 
+        // if several slaves are defined in the import file, and/or if
+        // bindings are defined in the import file, display the import dialog:
         ImportSlaveDialog dialog = new ImportSlaveDialog(GUITools.findFrame(this), doc);
         dialog.setVisible(true);
 
-        int index = dialog.getIndex();
+        // get the selected slave:
+        int idSrc = dialog.getSelectedSlaveID();
+
+        // rip-off any information that is not related to this slave:
+        for( int i=0; i<slaves.getLength(); i++ )
+        {
+            Node slave = slaves.item(i);
+            String id = XMLTools.getAttribute("id", slave);
+            int sId = Integer.valueOf(id);
+            if(sId!=idSrc)
+            {
+                doc.removeChild(slave);
+            }
+        }
+        ModbusPalProject.optimize(doc,false);
+
         boolean importBindings = dialog.importBindings();
         boolean importAutomations = dialog.importAutomations();
 
-        modbusSlave.importSlave(importFile, index, modbusPalProject, importBindings, importAutomations);
+        modbusPalProject.importSlave(doc, modbusSlave, importBindings, importAutomations);
     }
 
     /** This method is called getStartingAddress within the constructor getQuantity
@@ -221,7 +244,7 @@ implements ModbusConst, ModbusSlaveListener
         
         try
         {
-            modbusSlave.exportSlave(exportFile, exportBindings, exportAutomations );
+            modbusPalProject.exportSlave(exportFile, modbusSlave.getSlaveId(), exportBindings, exportAutomations );
             setStatus("Export completed.");
         }
         catch (Exception ex)

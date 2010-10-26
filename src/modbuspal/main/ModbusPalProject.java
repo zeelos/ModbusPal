@@ -38,6 +38,7 @@ import org.xml.sax.SAXException;
  */
 public class ModbusPalProject
 {
+
     final IdGenerator idGenerator = new IdGenerator();
     File projectFile = null;
     private final ArrayList<ModbusPalListener> listeners = new ArrayList<ModbusPalListener>(); // synchronized
@@ -989,7 +990,7 @@ public class ModbusPalProject
     public void addGeneratorInstanciator(File scriptFile)
     {
         // newInstance a scripted generator handler
-        ScriptRunner sr = ScriptRunner.create(scriptFile);
+        ScriptRunner sr = ScriptRunner.create(this, scriptFile);
 
         // test if newInstance would work:
         if( sr.newGenerator() != null )
@@ -1050,7 +1051,7 @@ public class ModbusPalProject
     public void addBindingInstanciator(File scriptFile)
     {
         // newInstance a scripted generator handler
-        ScriptRunner sr = ScriptRunner.create(scriptFile);
+        ScriptRunner sr = ScriptRunner.create(this, scriptFile);
 
         // test if newInstance would work:
         if( sr.newBinding() != null )
@@ -1175,6 +1176,11 @@ public class ModbusPalProject
         return knownSlaves.clone();
     }
 
+    public ModbusSlave getModbusSlave(int id)
+    {
+        return knownSlaves[id];
+    }
+
         /**
      * This method adds a modbus slave into the application. If a modbus slave
      * with the same id already exists, a dialog will popup and invite the user
@@ -1243,9 +1249,9 @@ public class ModbusPalProject
 
 
 
-    public void duplicateModbusSlave(int id, String name, ModbusSlave model)
+    public void duplicateModbusSlave(int idSrc, int idDst, String name)
     {
-        ModbusSlave newSlave = new ModbusSlave(id);
+        ModbusSlave newSlave = new ModbusSlave(idDst);
         newSlave.setName(name);
 
         try
@@ -1258,16 +1264,16 @@ public class ModbusPalProject
             tempFile.deleteOnExit();
 
             // exportSlave model into xml
-            model.exportSlave(tempFile, true, false );
+            exportSlave(tempFile, idSrc, true, false );
 
             // import xml into new slave
-            newSlave.importSlave(tempFile, 0, this, true, false);
+            importSlave(tempFile, idDst, true, false);
 
             tempFile.delete();
         }
         catch (Exception ex)
         {
-            Logger.getLogger(ModbusPal.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(ModbusPalProject.class.getName()).log(Level.SEVERE, null, ex);
             return;
         }
 
@@ -1331,7 +1337,82 @@ public class ModbusPalProject
         }
     }
 
+    public void exportSlave(File exportFile, int modbusID, boolean withBindings, boolean withAutomations)
+    throws FileNotFoundException, IOException
+    {
+        ModbusSlave exportedSlave = knownSlaves[modbusID];
+        
+        OutputStream out = new FileOutputStream(exportFile);
 
+        String xmlTag = "<?xml version=\"1.0\"?>\r\n";
+        out.write( xmlTag.getBytes() );
+
+        String docTag = "<!DOCTYPE modbuspal_slave SYSTEM \"modbuspal.dtd\">\r\n";
+        out.write( docTag.getBytes() );
+
+        String openTag = "<modbuspal_slave>\r\n";
+        out.write( openTag.getBytes() );
+
+        // if needed, first exportSlave automations (they need to be imported first!)
+        if( withAutomations == true )
+        {
+            String names[] = exportedSlave.getRequiredAutomations();
+            for(int i=0; i<names.length; i++)
+            {
+                Automation automation = getAutomation( names[i] );
+                automation.save(out);
+            }
+        }
+        exportedSlave.save(out,withBindings);
+
+        String closeTag = "</modbuspal_slave>\r\n";
+        out.write( closeTag.getBytes() );
+        out.close();
+    }
+
+
+    public void importSlave(File importFile, int idDst, boolean withBindings, boolean withAutomations)
+    throws ParserConfigurationException, SAXException, IOException, InstantiationException, IllegalAccessException
+    {
+        Document doc = XMLTools.ParseXML(importFile);
+
+        // normalize text representation
+        doc.getDocumentElement().normalize();
+
+        importSlave(doc, idDst, withBindings, withAutomations);
+    }
+
+    public void importSlave(Document doc, int idDst, boolean withBindings, boolean withAutomations)
+    throws ParserConfigurationException, SAXException, IOException, InstantiationException, IllegalAccessException
+    {
+        ModbusSlave target = knownSlaves[idDst];
+        if( target==null )
+        {
+            target = new ModbusSlave(idDst);
+            addModbusSlave(target);
+        }
+        importSlave(doc, target, withBindings, withAutomations);
+    }
+
+    public void importSlave(Document doc, ModbusSlave target, boolean withBindings, boolean withAutomations)
+    throws ParserConfigurationException, SAXException, IOException, InstantiationException, IllegalAccessException
+    {
+        // how many slaves in the file?
+        NodeList slaves = doc.getElementsByTagName("slave");
+        Node slaveNode = slaves.item(0);
+
+        if( withAutomations==true )
+        {
+            loadAutomations(doc);
+        }
+
+        target.load(slaveNode,true);
+
+        if( withBindings==true )
+        {
+            loadBindings(doc, target);
+        }
+    }
 
 
     //==========================================================================
@@ -1436,7 +1517,7 @@ public class ModbusPalProject
     public void addStartupScript(File scriptFile)
     {
         // create a new script handler
-        ScriptRunner runner = ScriptRunner.create(scriptFile);
+        ScriptRunner runner = ScriptRunner.create(this, scriptFile);
         startupScripts.add(runner);
         notifyStartupScriptAdded(runner);
     }
@@ -1452,7 +1533,7 @@ public class ModbusPalProject
 
     public void addScript(File scriptFile)
     {
-        ScriptRunner runner = ScriptRunner.create(scriptFile);
+        ScriptRunner runner = ScriptRunner.create(this, scriptFile);
         ondemandScripts.add(runner);
         notifyScriptAdded(runner);
     }
@@ -1620,5 +1701,83 @@ public class ModbusPalProject
         //TODO: implement isFunctionEnabled
         return true;
     }
+
+
+    public static void optimize(Document doc, boolean fix)
+    {
+        optimizeBindingsVsAutomations(doc,fix);
+    }
+
+    private static void optimizeBindingsVsAutomations(Document doc, boolean fix)
+    {
+        // get list of bindings:
+        NodeList bindingList = doc.getElementsByTagName("binding");
+
+        // get list of automations:
+        NodeList automationList = doc.getElementsByTagName("automation");
+
+        // for each automation, check that at least one binding is actually
+        // using it:
+
+        for( int i=0; i<automationList.getLength(); i++ )
+        {
+            String name = XMLTools.getAttribute("name", automationList.item(i));
+            boolean matched = false;
+
+            for( int j=0; j<bindingList.getLength(); j++)
+            {
+                String automation = XMLTools.getAttribute("automation", bindingList.item(j));
+                if( automation.compareTo(name)==0 )
+                {
+                    matched = true;
+                    break;
+                }
+            }
+
+            // automation not matched, remove the useless automation:
+            if( matched==false )
+            {
+                doc.removeChild(automationList.item(i));
+            }
+        }
+        
+
+        if( fix==true )
+        {
+            // for each binding, check that the automation specified in the
+            // "automation" attribute actually exists:
+            for( int i=0; i<bindingList.getLength(); i++ )
+            {
+                String automation = XMLTools.getAttribute("automation", bindingList.item(i));
+                boolean matched = false;
+
+                for( int j=0; j<automationList.getLength(); j++)
+                {
+                    String name = XMLTools.getAttribute("name", automationList.item(j));
+                    if( automation.compareTo(name)==0 )
+                    {
+                        matched = true;
+                        break;
+                    }
+                }
+
+                // automation not matched, remove the invalid binding:
+                if( matched==false )
+                {
+                    doc.removeChild(doc);
+                }
+            }
+        }
+    }
+
+    public String getName()
+    {
+        if( projectFile==null )
+        {
+            return "no name";
+        }
+        return projectFile.getName();
+    }
+
 
 }

@@ -11,11 +11,11 @@
 
 package modbuspal.master;
 
-import java.awt.Frame;
+import modbuspal.main.ModbusPalProject;
 import modbuspal.main.ModbusRequest;
 import modbuspal.main.ErrorMessage;
 import modbuspal.main.ListLayout;
-import modbuspal.main.ModbusPal;
+import modbuspal.main.ModbusPalPane;
 
 /**
  *
@@ -25,11 +25,15 @@ public class ModbusMasterDialog
 extends javax.swing.JDialog
 implements MasterListener
 {
-    private ModbusMaster modbusMaster;
+    private final ModbusMaster modbusMaster;
+    private final ModbusPalPane modbusPalPane;
+    private final ModbusPalProject modbusPalProject;
 
     /** Creates new form ModbusMasterDialog */
-    public ModbusMasterDialog(ModbusMaster master)
+    public ModbusMasterDialog(ModbusPalPane p, ModbusMaster master)
     {
+        modbusPalPane = p;
+        modbusPalProject = modbusPalPane.getProject();
         modbusMaster = master;
         modbusMaster.addMasterListener(this);
         initComponents();
@@ -153,7 +157,7 @@ implements MasterListener
 
         // there are no defined modbus slaves, so display an error
         // message and do not perform action.
-        if( ModbusPal.getModbusSlaveCount() < 1 )
+        if( modbusPalProject.getModbusSlaveCount() < 1 )
         {
             ErrorMessage dialog = new ErrorMessage("Close");
             dialog.append("You can't add a master request, because no Modbus slave is defined.");
@@ -161,7 +165,7 @@ implements MasterListener
             return;
         }
 
-        AddRequestDialog dialog = new AddRequestDialog(this);
+        AddRequestDialog dialog = new AddRequestDialog(modbusPalPane);
         setStatus("Adding request...");
         dialog.setVisible(true);
 

@@ -15,13 +15,17 @@ import java.awt.Desktop;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JPanel;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 
 /**
  *
  * @author nnovic
  */
 public abstract class ScriptRunnerPanel
-extends javax.swing.JPanel
+extends JPanel
+implements AncestorListener
 {
     private ScriptRunner runner;
 
@@ -127,5 +131,18 @@ extends javax.swing.JPanel
     private javax.swing.JButton executeButton;
     private javax.swing.JButton openButton;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void ancestorAdded(AncestorEvent event) {
+    }
+
+    @Override
+    public void ancestorMoved(AncestorEvent event) {
+        runner.interrupt();
+    }
+
+    @Override
+    public void ancestorRemoved(AncestorEvent event) {
+    }
 
 }

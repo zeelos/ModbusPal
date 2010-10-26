@@ -13,6 +13,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import modbuspal.binding.Binding;
 import modbuspal.generator.Generator;
+import modbuspal.main.ModbusPalProject;
 import org.python.core.PyObject;
 import org.python.util.PythonInterpreter;
 
@@ -41,10 +42,12 @@ public class PythonRunner
 extends ScriptRunner
 {
     private PyObject pythonClass = null;
+    private final ModbusPalProject modbusPalProject;
 
-    public PythonRunner(File file)
+    public PythonRunner(ModbusPalProject mpp, File file)
     {
         super(file);
+        modbusPalProject = mpp;
     }
 
 
@@ -70,9 +73,13 @@ extends ScriptRunner
 
     private void initEnvironment(PythonInterpreter pi)
     {
+        // init vars for script file
         pi.set("mbp_script_path", scriptFile.getPath() );
         pi.set("mbp_script_directory", scriptFile.getParent() );
         pi.set("mbp_script_file", scriptFile );
+
+        // init vars for modbuspal project
+        pi.set("ModbusPal", modbusPalProject);
     }
 
 
@@ -161,6 +168,12 @@ extends ScriptRunner
         bd.install(this);
         bd.init();
         return bd;
+    }
+
+    @Override
+    protected void interrupt()
+    {
+        //xxxx
     }
 }
 

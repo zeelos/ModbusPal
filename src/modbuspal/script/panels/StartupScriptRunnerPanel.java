@@ -5,7 +5,7 @@
 
 package modbuspal.script.panels;
 
-import modbuspal.main.ModbusPal;
+import modbuspal.main.ModbusPalProject;
 import modbuspal.script.ScriptRunner;
 import modbuspal.script.ScriptRunnerPanel;
 
@@ -16,9 +16,11 @@ import modbuspal.script.ScriptRunnerPanel;
 public class StartupScriptRunnerPanel
 extends ScriptRunnerPanel
 {
-    public StartupScriptRunnerPanel(ScriptRunner def, boolean canExecute)
+    private final ModbusPalProject modbusPalProject;
+    public StartupScriptRunnerPanel(ScriptRunner def, ModbusPalProject p)
     {
-        super(def, canExecute);
+        super(def, true);
+        modbusPalProject = p;
     }
 
     @Override
@@ -26,7 +28,7 @@ extends ScriptRunnerPanel
     {
         ScriptRunner runner = getScriptRunner();
         System.out.println("Deleting " + runner.getClassName() + " startup script..." );
-        ModbusPal.removeStartupScript( runner );
+        modbusPalProject.removeStartupScript( runner );
     }
 }
 

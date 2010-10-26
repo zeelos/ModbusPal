@@ -12,7 +12,7 @@ import java.util.Collection;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import modbuspal.main.ModbusPal;
+import modbuspal.main.ModbusPalPane;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -41,7 +41,7 @@ public class XMLTools
             {
                 if( systemId.endsWith("modbuspal.dtd") )
                 {
-                    return new InputSource( ModbusPal.class.getResourceAsStream("modbuspal.dtd") );
+                    return new InputSource( ModbusPalPane.class.getResourceAsStream("modbuspal.dtd") );
                 }
                 return null;
             }
@@ -121,4 +121,5 @@ public class XMLTools
         return list;
 
     }
+
 }

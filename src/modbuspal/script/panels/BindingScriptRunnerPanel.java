@@ -5,8 +5,7 @@
 
 package modbuspal.script.panels;
 
-import modbuspal.binding.BindingFactory;
-import modbuspal.main.ModbusPal;
+import modbuspal.main.ModbusPalProject;
 import modbuspal.script.ScriptRunner;
 import modbuspal.script.ScriptRunnerPanel;
 
@@ -18,9 +17,11 @@ import modbuspal.script.ScriptRunnerPanel;
 public class BindingScriptRunnerPanel
 extends ScriptRunnerPanel
 {
-    public BindingScriptRunnerPanel(ScriptRunner def, boolean canExecute)
+    private final ModbusPalProject modbusPalProject;
+    public BindingScriptRunnerPanel(ScriptRunner def, ModbusPalProject p)
     {
-        super(def, canExecute);
+        super(def, false);
+        modbusPalProject = p;
     }
 
     @Override
@@ -28,6 +29,6 @@ extends ScriptRunnerPanel
     {
         ScriptRunner runner = getScriptRunner();
         System.out.println("Deleting " + runner.getClassName() + " binding..." );
-        ModbusPal.removeBindingScript( runner );
+        modbusPalProject.removeBindingScript( runner );
     }
 }

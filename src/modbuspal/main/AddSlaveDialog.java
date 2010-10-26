@@ -28,9 +28,9 @@ extends javax.swing.JDialog
      * Creates new form AddSlaveDialog. This constructor is usually
      * called when the user add a new slave in the project.
      */
-    public AddSlaveDialog()
+    public AddSlaveDialog(ModbusSlave slaves[])
     {
-        this(null);
+        this(null,slaves);
         setTitle("New slave");
     }
 
@@ -38,11 +38,10 @@ extends javax.swing.JDialog
      * Creates new form AddSlaveDialog. This constructor is usually
      * called when the user duplicates a modbus slave.
      */
-    public AddSlaveDialog(String name)
+    public AddSlaveDialog(String name, ModbusSlave slaves[])
     {
         setModalityType(ModalityType.DOCUMENT_MODAL);
 
-        ModbusSlave slaves[] = ModbusPal.getModbusSlaves();
         for( int i=1; i<slaves.length; i++ )
         {
             if( slaves[i] == null )

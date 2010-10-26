@@ -11,7 +11,6 @@
 
 package modbuspal.binding;
 
-import java.awt.Frame;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -22,7 +21,7 @@ import javax.swing.ComboBoxModel;
 import modbuspal.automation.*;
 import javax.swing.ListModel;
 import javax.swing.event.ListDataListener;
-import modbuspal.main.ModbusPal;
+import modbuspal.main.ModbusPalPane;
 import modbuspal.main.ModbusPalProject;
 import modbuspal.script.ScriptManagerDialog;
 
@@ -147,6 +146,7 @@ extends javax.swing.JDialog
 
     }
 
+    private final ModbusPalPane modbusPalPane;
     private final ModbusPalProject modbusPalProject;
     private final AutomationList automations;
     private final BindingList bindings;
@@ -154,12 +154,13 @@ extends javax.swing.JDialog
     private final OrderList orderList = new OrderList();
 
     /** Creates new form BindingEditor */
-    public BindingEditor(ModbusPalProject p)
+    public BindingEditor(ModbusPalPane p)
     {
-        modbusPalProject = p;
+        modbusPalPane = p;
+        modbusPalProject = modbusPalPane.getProject();
         setModalityType(ModalityType.APPLICATION_MODAL);
-        automations = new AutomationList( p.getAutomations() );
-        bindings = new BindingList( p.getBindingFactory().getList() );
+        automations = new AutomationList( modbusPalProject.getAutomations() );
+        bindings = new BindingList( modbusPalProject.getBindingFactory().getList() );
         initComponents();
     }
 
@@ -281,7 +282,7 @@ extends javax.swing.JDialog
     private void scriptedBindingsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_scriptedBindingsButtonActionPerformed
 
         // ask script manager to appear, with the "generators" tab selected
-        ModbusPal.showScriptManagerDialog(ScriptManagerDialog.TAB_BINDINGS);
+        modbusPalPane.showScriptManagerDialog(ScriptManagerDialog.TAB_BINDINGS);
 
 }//GEN-LAST:event_scriptedBindingsButtonActionPerformed
 
