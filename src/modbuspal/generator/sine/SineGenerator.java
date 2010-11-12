@@ -20,6 +20,7 @@ extends Generator
     double amplitude = 1.0;
     double period = 1.0;
     boolean catchup = false;
+    double offset = 0.0;
 
     public SineGenerator()
     {
@@ -31,13 +32,14 @@ extends Generator
     public double getValue(double time)
     {
         double angle = (2*Math.PI) / period;
-        return amplitude * Math.sin( initialAngle+time * angle );
+        return offset + amplitude * Math.sin( initialAngle+time*angle );
     }
 
     @Override
     public void setInitialValue(double value)
     {
         super.setInitialValue(value);
+        value -= offset;
         if( value > amplitude )
         {
             initialAngle = 2*Math.PI;

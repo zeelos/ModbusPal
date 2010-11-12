@@ -44,6 +44,9 @@ implements WindowListener, AutomationExecutionListener, AncestorListener
         automation.addAutomationExecutionListener(this);
         automationEditor = new AutomationEditor(automation, modbusPalPane);
         automationEditor.addWindowListener(this);
+        automation.addAutomationEditionListener(automationEditor);
+        automation.addAutomationExecutionListener(automationEditor);
+        generatorFactory.addInstanciatorListener(automationEditor);
         initComponents();
         setBackground();
         addAncestorListener(this);
@@ -189,9 +192,9 @@ implements WindowListener, AutomationExecutionListener, AncestorListener
     {
         if( e.getSource()==automationEditor)
         {
-            automation.addAutomationEditionListener(automationEditor);
-            automation.addAutomationExecutionListener(automationEditor);
-            generatorFactory.addInstanciatorListener(automationEditor);
+            //automation.addAutomationEditionListener(automationEditor);
+            //automation.addAutomationExecutionListener(automationEditor);
+            //generatorFactory.addInstanciatorListener(automationEditor);
         }
     }
 
@@ -206,9 +209,9 @@ implements WindowListener, AutomationExecutionListener, AncestorListener
         if( e.getSource() == automationEditor )
         {
             showToggleButton.setSelected(false);
-            automation.removeAutomationEditionListener(automationEditor);
-            automation.removeAutomationExecutionListener(automationEditor);
-            generatorFactory.removeInstanciatorListener(automationEditor);
+            //automation.removeAutomationEditionListener(automationEditor);
+            //automation.removeAutomationExecutionListener(automationEditor);
+            //generatorFactory.removeInstanciatorListener(automationEditor);
 
         }
     }
@@ -265,6 +268,9 @@ implements WindowListener, AutomationExecutionListener, AncestorListener
 
     @Override
     public void ancestorRemoved(AncestorEvent event) {
+        automation.removeAutomationEditionListener(automationEditor);
+        automation.removeAutomationExecutionListener(automationEditor);
+        generatorFactory.removeInstanciatorListener(automationEditor);
         automationEditor.removeWindowListener(this);
         automationEditor.setVisible(false);
         automationEditor.dispose();

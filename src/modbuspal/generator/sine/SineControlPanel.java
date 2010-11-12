@@ -44,11 +44,15 @@ extends javax.swing.JPanel
         jLabel2 = new javax.swing.JLabel();
         periodTextField = new NumericTextField(sineGen.period);
         catchupCheckBox = new javax.swing.JCheckBox();
+        jLabel3 = new javax.swing.JLabel();
+        offsetTextField = new NumericTextField(sineGen.period);
 
         setLayout(new java.awt.GridBagLayout());
 
         jLabel1.setText("Amplitude:");
         gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         add(jLabel1, gridBagConstraints);
 
@@ -90,10 +94,29 @@ extends javax.swing.JPanel
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         add(catchupCheckBox, gridBagConstraints);
+
+        jLabel3.setText("Offset:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        add(jLabel3, gridBagConstraints);
+
+        offsetTextField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                offsetTextFieldFocusLost(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        add(offsetTextField, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
 
     private void amplitudeTextFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_amplitudeTextFieldFocusLost
@@ -127,12 +150,19 @@ extends javax.swing.JPanel
         sineGen.catchup = catchupCheckBox.isSelected();
     }//GEN-LAST:event_catchupCheckBoxFocusLost
 
+    private void offsetTextFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_offsetTextFieldFocusLost
+        double newO = ((NumericTextField)offsetTextField).getDouble();
+        sineGen.offset = newO;
+    }//GEN-LAST:event_offsetTextFieldFocusLost
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextField amplitudeTextField;
     private javax.swing.JCheckBox catchupCheckBox;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JTextField offsetTextField;
     private javax.swing.JTextField periodTextField;
     // End of variables declaration//GEN-END:variables
 
