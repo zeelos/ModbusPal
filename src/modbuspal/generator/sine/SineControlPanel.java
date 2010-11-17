@@ -157,13 +157,13 @@ extends javax.swing.JPanel
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextField amplitudeTextField;
-    private javax.swing.JCheckBox catchupCheckBox;
+    javax.swing.JTextField amplitudeTextField;
+    javax.swing.JCheckBox catchupCheckBox;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JTextField offsetTextField;
-    private javax.swing.JTextField periodTextField;
+    javax.swing.JTextField offsetTextField;
+    javax.swing.JTextField periodTextField;
     // End of variables declaration//GEN-END:variables
 
 }

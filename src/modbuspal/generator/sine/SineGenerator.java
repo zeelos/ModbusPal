@@ -5,8 +5,13 @@
 
 package modbuspal.generator.sine;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import modbuspal.generator.Generator;
 import javax.swing.JPanel;
+import modbuspal.toolkit.XMLTools;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 /**
  *
@@ -54,34 +59,64 @@ extends Generator
         }
     }
 
-    /*@Override
+    @Override
     protected void saveSettings(OutputStream out)
     throws IOException
     {
-        StringBuffer start = new StringBuffer("<start");
-        start.append(" value=\""+String.valueOf(startValue)+"\"");
-        start.append(" relative=\""+Boolean.toString(relativeStart)+"\"");
-        start.append("/>\r\n");
-        out.write( start.toString().getBytes() );
+        StringBuilder amp = new StringBuilder("<amplitude");
+        amp.append(" value=\"").append(amplitude).append("\" />\r\n");
+        out.write( amp.toString().getBytes() );
 
-        StringBuffer end = new StringBuffer("<end");
-        end.append(" value=\""+String.valueOf(endValue)+"\"");
-        end.append(" relative=\""+Boolean.toString(relativeEnd)+"\"");
-        end.append("/>\r\n");
-        out.write( end.toString().getBytes() );
-    }*/
+        StringBuilder per = new StringBuilder("<period");
+        per.append(" value=\"").append(period).append("\" />\r\n");
+        out.write( per.toString().getBytes() );
 
-    /*
+        StringBuilder off = new StringBuilder("<offset");
+        off.append(" value=\"").append(offset).append("\" />\r\n");
+        out.write( off.toString().getBytes() );
+
+        StringBuilder cu = new StringBuilder("<catchup");
+        cu.append(" enabled=\"").append(catchup).append("\" />\r\n");
+        out.write( cu.toString().getBytes() );
+
+}
+
+    
     @Override
     protected void loadSettings(NodeList childNodes)
     {
-        Node startNode = XMLTools.getNode(childNodes, "start");
-        loadStart(startNode);
+        Node ampNode = XMLTools.getNode(childNodes, "amplitude");
+        if( ampNode!=null )
+        {
+            String amp = XMLTools.getAttribute("value", ampNode);
+            amplitude = Double.parseDouble(amp);
+        }
 
-        Node endNode = XMLTools.getNode(childNodes, "end");
-        loadEnd(endNode);
+        Node perNode = XMLTools.getNode(childNodes, "period");
+        if( perNode!=null )
+        {
+            period = Double.parseDouble( XMLTools.getAttribute("value", perNode) );
+        }
+
+        Node offNode = XMLTools.getNode(childNodes, "offset");
+        if( offNode!=null )
+        {
+            offset = Double.parseDouble( XMLTools.getAttribute("value", offNode) );
+        }
+
+        Node cuNode = XMLTools.getNode(childNodes, "catchup");
+        if( cuNode!=null )
+        {
+            catchup = Boolean.parseBoolean( XMLTools.getAttribute("enabled", cuNode) );
+        }
+
+
+        panel.amplitudeTextField.setText( String.valueOf(amplitude) );
+        panel.periodTextField.setText( String.valueOf(period) );
+        panel.offsetTextField.setText( String.valueOf(offset) );
+        panel.catchupCheckBox.setSelected(catchup);
     }
-    */
+    
 
     /*
      private void loadEnd(Node node)
