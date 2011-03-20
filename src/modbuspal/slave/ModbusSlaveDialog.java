@@ -151,6 +151,7 @@ implements ModbusConst, ModbusSlaveListener
         importButton = new javax.swing.JButton();
         exportButton = new javax.swing.JButton();
         implementationComboBox = new javax.swing.JComboBox();
+        stayOnTopCheckBox = new javax.swing.JCheckBox();
         jPanel3 = new javax.swing.JPanel();
         statusLabel = new javax.swing.JLabel();
 
@@ -191,6 +192,14 @@ implements ModbusConst, ModbusSlaveListener
             }
         });
         jPanel1.add(implementationComboBox);
+
+        stayOnTopCheckBox.setText("Stay on top");
+        stayOnTopCheckBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                stayOnTopCheckBoxActionPerformed(evt);
+            }
+        });
+        jPanel1.add(stayOnTopCheckBox);
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.PAGE_START);
 
@@ -298,6 +307,10 @@ implements ModbusConst, ModbusSlaveListener
         }        
 }//GEN-LAST:event_implementationComboBoxActionPerformed
 
+    private void stayOnTopCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stayOnTopCheckBoxActionPerformed
+        setAlwaysOnTop( stayOnTopCheckBox.isSelected() );
+    }//GEN-LAST:event_stayOnTopCheckBoxActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel coilsPanel;
@@ -309,6 +322,7 @@ implements ModbusConst, ModbusSlaveListener
     private javax.swing.JPanel jPanel3;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JLabel statusLabel;
+    private javax.swing.JCheckBox stayOnTopCheckBox;
     // End of variables declaration//GEN-END:variables
 
     void setStatus(String text)

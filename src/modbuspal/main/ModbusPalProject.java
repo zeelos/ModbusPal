@@ -541,7 +541,7 @@ public class ModbusPalProject
     private void save(OutputStream out, File projectFile)
     throws IOException
     {
-        String xmlTag = "<?xml version=\"1.0\"?>\r\n";
+        String xmlTag = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?>\r\n";
         out.write( xmlTag.getBytes() );
 
         String docTag = "<!DOCTYPE modbuspal_project SYSTEM \"modbuspal.dtd\">\r\n";

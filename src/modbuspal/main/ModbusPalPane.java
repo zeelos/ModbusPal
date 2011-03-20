@@ -1143,6 +1143,13 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         }
 }//GEN-LAST:event_masterToggleButtonActionPerformed
 
+    public void setModbusSlaveEnabled(int id, boolean enabled)
+    {
+        ModbusSlave slave = modbusPalProject.getModbusSlave(id);
+        slave.setEnabled(enabled);
+    }
+
+
     /**
      * This method is called when the user clicks on the "enable all" button
      * located in the "modbus slaves" frame.
