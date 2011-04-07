@@ -6,7 +6,9 @@
 package modbuspal.main;
 
 /**
- *
+ * Defines the subset of the MODBUS specification that is currently
+ * supported by ModbusPal.
+ * 
  * @author nnovic
  */
 public interface ModbusConst

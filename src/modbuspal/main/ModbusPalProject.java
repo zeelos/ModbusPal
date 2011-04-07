@@ -23,6 +23,7 @@ import modbuspal.link.ModbusSerialLink;
 import modbuspal.script.ScriptListener;
 import modbuspal.script.ScriptRunner;
 import modbuspal.slave.ModbusSlave;
+import modbuspal.slave.ModbusSlavePduProcessor;
 import modbuspal.toolkit.FileTools;
 import modbuspal.toolkit.GUITools;
 import modbuspal.toolkit.XMLTools;
@@ -37,13 +38,13 @@ import org.xml.sax.SAXException;
  * @author avincon
  */
 public class ModbusPalProject
+extends ModbusPalProject2
 {
 
     final IdGenerator idGenerator = new IdGenerator();
     File projectFile = null;
     private final ArrayList<ModbusPalListener> listeners = new ArrayList<ModbusPalListener>(); // synchronized
     private final ArrayList<Automation> automations = new ArrayList<Automation>();
-    final ModbusSlave[] knownSlaves = new ModbusSlave[ModbusConst.MAX_MODBUS_SLAVE];
     private final ArrayList<ScriptRunner> startupScripts = new ArrayList<ScriptRunner>();
     private final ArrayList<ScriptListener> scriptListeners = new ArrayList<ScriptListener>(); // synchronized
     private final ArrayList<ScriptRunner> ondemandScripts = new ArrayList<ScriptRunner>();
@@ -399,7 +400,7 @@ public class ModbusPalProject
             Node parentSlave = XMLTools.findParent(parentRegister, "slave");
             String slaveAddress = XMLTools.getAttribute(ModbusPalXML.XML_SLAVE_ID_ATTRIBUTE, parentSlave);
             int slaveId = Integer.parseInt(slaveAddress);
-            slave = knownSlaves[slaveId];
+            slave = getModbusSlave(slaveId);
         }
 
         // bind the register and the automation
@@ -682,7 +683,7 @@ public class ModbusPalProject
     {
         for( int i=0; i<ModbusConst.MAX_MODBUS_SLAVE; i++ )
         {
-            ModbusSlave slave = knownSlaves[i];
+            ModbusSlave slave = getModbusSlave(i);
             if( slave != null )
             {
                 slave.save(out,true);
@@ -882,7 +883,8 @@ public class ModbusPalProject
      * has a unique name.
      * @param auto
      * @param name
-     * @return
+     * @return a unique automation name. same value as 'name' if it is already
+     * unique, or a modified version of 'name'.
      */
     public String checkAutomationNewName(Automation auto, String name)
     {
@@ -1034,7 +1036,7 @@ public class ModbusPalProject
     {
         for( int i=0; i<ModbusConst.MAX_MODBUS_SLAVE; i++ )
         {
-            ModbusSlave slave = knownSlaves[i];
+            ModbusSlave slave = getModbusSlave(i);
             if( slave != null )
             {
                 slave.removeAllBindings(classname);
@@ -1092,17 +1094,17 @@ public class ModbusPalProject
         int slaveID = slave.getSlaveId();
 
         // check if slaveID is already assigned:
-        if( knownSlaves[slaveID] != null )
+        if( getModbusSlave(slaveID) != null )
         {
             return false;
         }
 
-        knownSlaves[slaveID] = slave;
-        notifySlaveAdded(slave);
+        setModbusSlave(slaveID, slave);
         return true;
     }
 
-    private void notifySlaveAdded(ModbusSlave slave)
+    @Override
+    protected void notifySlaveAdded(ModbusSlave slave)
     {
         synchronized(listeners)
         {
@@ -1125,9 +1127,9 @@ public class ModbusPalProject
     {
         ArrayList<ModbusSlave> found = new ArrayList<ModbusSlave>();
 
-        for( int i=0; i<knownSlaves.length; i++ )
+        for( int i=0; i<ModbusConst.MAX_MODBUS_SLAVE; i++ )
         {
-            ModbusSlave slave = knownSlaves[i];
+            ModbusSlave slave = getModbusSlave(i);
             if( slave != null )
             {
                 if( slave.getName().compareTo(name)==0 )
@@ -1149,39 +1151,8 @@ public class ModbusPalProject
         }
     }
 
-    /**
-     * Count how many modbus slaves are defined in the current project.
-     * @return the number of modbus slaves defined in the project.
-     */
-    public int getModbusSlaveCount()
-    {
-        int count = 0;
-        for(int i=0; i<knownSlaves.length; i++)
-        {
-            if( knownSlaves[i]!=null )
-            {
-                count++;
-            }
-        }
-        return count;
-    }
 
     /**
-     * Get all the slaves indexed by their modbus address.
-     * @return an array containing the modbus slaves currently defined in the
-     * application.
-     */
-    public ModbusSlave[] getModbusSlaves()
-    {
-        return knownSlaves.clone();
-    }
-
-    public ModbusSlave getModbusSlave(int id)
-    {
-        return knownSlaves[id];
-    }
-
-        /**
      * This method adds a modbus slave into the application. If a modbus slave
      * with the same id already exists, a dialog will popup and invite the user
      * to choose between keeping the existing slave or replacing it by the new.
@@ -1194,7 +1165,7 @@ public class ModbusPalProject
         int slaveID = slave.getSlaveId();
 
         // check if slaveID is already assigned:
-        if( knownSlaves[slaveID] != null )
+        if( getModbusSlave(slaveID) != null )
         {
             // show a dialog to let the user decide
             // what to do in order to resolve the conflict:
@@ -1209,13 +1180,13 @@ public class ModbusPalProject
             // if "Keep existing" is chosen:
             if( conflict.getButton()==0 )
             {
-                return knownSlaves[slaveID];
+                return getModbusSlave(slaveID);
             }
 
             else
             {
                 // before replacing with new, remove old:
-                removeModbusSlave(knownSlaves[slaveID]);
+                removeModbusSlave(slaveID);
             }
         }
 
@@ -1226,17 +1197,25 @@ public class ModbusPalProject
         return null;
     }
 
+    public void removeModbusSlave(int slaveID)
+    {
+        ModbusSlave slave = getModbusSlave(slaveID);
+        if( slave!=null )
+        {
+            slave.clear();
+        }
+        // disconnect slave from list
+        setModbusSlave(slaveID, null);
+    }
+
     public void removeModbusSlave(ModbusSlave slave)
     {
         int slaveID = slave.getSlaveId();
-        slave.clear();
-
-        // disconnect slave from list
-        knownSlaves[slaveID] = null;
-        notifySlaveRemoved(slave);
+        removeModbusSlave(slaveID);
     }
 
-    private void notifySlaveRemoved(ModbusSlave slave)
+    @Override
+    protected void notifySlaveRemoved(ModbusSlave slave)
     {
         synchronized(listeners)
         {
@@ -1283,20 +1262,10 @@ public class ModbusPalProject
 
     public void setSlaveEnabled(int slaveID, boolean b)
     {
-        if( knownSlaves[slaveID] == null )
+        ModbusSlave ms = getModbusSlave(slaveID, learnModeEnabled);
+        if( ms!=null )
         {
-            if( learnModeEnabled == true )
-            {
-                // create a new modbus slave
-                ModbusSlave slave = new ModbusSlave(slaveID);
-                addModbusSlave( slave );
-                slave.setEnabled(b);
-            }
-        }
-
-        else
-        {
-            knownSlaves[slaveID].setEnabled(b);
+            ms.setEnabled(b);
         }
     }
 
@@ -1316,31 +1285,18 @@ public class ModbusPalProject
             return false;
         }
 
-        if( knownSlaves[slaveID] == null )
+        ModbusSlave ms = getModbusSlave(slaveID,learnModeEnabled);
+        if( ms!=null )
         {
-            if( learnModeEnabled == true )
-            {
-                // create a new modbus slave
-                ModbusSlave slave = new ModbusSlave(slaveID);
-                addModbusSlave( slave );
-                return slave.isEnabled();
-            }
-            else
-            {
-                return false;
-            }
+            return ms.isEnabled();
         }
-
-        else
-        {
-            return knownSlaves[slaveID].isEnabled();
-        }
+        return false;
     }
 
     public void exportSlave(File exportFile, int modbusID, boolean withBindings, boolean withAutomations)
     throws FileNotFoundException, IOException
     {
-        ModbusSlave exportedSlave = knownSlaves[modbusID];
+        ModbusSlave exportedSlave = getModbusSlave(modbusID);
         
         OutputStream out = new FileOutputStream(exportFile);
 
@@ -1385,12 +1341,7 @@ public class ModbusPalProject
     public void importSlave(Document doc, int idDst, boolean withBindings, boolean withAutomations)
     throws ParserConfigurationException, SAXException, IOException, InstantiationException, IllegalAccessException
     {
-        ModbusSlave target = knownSlaves[idDst];
-        if( target==null )
-        {
-            target = new ModbusSlave(idDst);
-            addModbusSlave(target);
-        }
+        ModbusSlave target = getModbusSlave(idDst,true);
         importSlave(doc, target, withBindings, withAutomations);
     }
 
@@ -1421,82 +1372,40 @@ public class ModbusPalProject
     //
     //==========================================================================
 
-    public byte getHoldingRegisters(int slaveID, int startingAddress, int quantity, byte[] buffer, int offset)
+
+    public ModbusSlavePduProcessor getSlavePduProcessor(int slaveID, byte functionCode)
     {
-        assert( knownSlaves[slaveID] != null );
-        assert( startingAddress >= 0 );
-        assert( quantity >= 0 );
-        return knownSlaves[slaveID].getHoldingRegisters(startingAddress, quantity, buffer, offset);
+        ModbusSlave ms = getModbusSlave(slaveID, learnModeEnabled);
+        if( ms != null )
+        {
+            return ms.getPduProcessor(functionCode);
+        }
+
+        return null;
     }
 
-    public byte setHoldingRegisters(int slaveID, int startingAddress, int quantity, byte[] buffer, int offset)
-    {
-        assert( knownSlaves[slaveID] != null );
-        assert( startingAddress >= 0 );
-        assert( quantity >= 0 );
-        return knownSlaves[slaveID].setHoldingRegisters(startingAddress, quantity, buffer, offset);
-    }
 
+
+    @Deprecated
     public boolean holdingRegistersExist(int slaveID, int startingAddress, int quantity)
     {
-        assert( knownSlaves[slaveID] != null );
-
-        if( knownSlaves[slaveID].getHoldingRegisters().exist(startingAddress,quantity) == true )
-        {
-            return true;
-        }
-        else if( learnModeEnabled )
-        {
-            knownSlaves[slaveID].getHoldingRegisters().create(startingAddress,quantity);
-            return true;
-        }
-        else
+        ModbusSlave ms = getModbusSlave(quantity, learnModeEnabled);
+        if(ms==null)
         {
             return false;
         }
+        return ms.getHoldingRegisters().exist(startingAddress, quantity, learnModeEnabled);
     }
 
-    public byte getCoils(int slaveID, int startingAddress, int quantity, byte[] buffer, int offset)
-    {
-        assert( knownSlaves[slaveID] != null );
-        assert( startingAddress >= 0 );
-        assert( quantity >= 0 );
-        return knownSlaves[slaveID].getCoils(startingAddress, quantity, buffer, offset);
-    }
-
-    public byte setCoils(int slaveID, int startingAddress, int quantity, byte[] buffer, int offset)
-    {
-        assert( knownSlaves[slaveID] != null );
-        assert( startingAddress >= 0 );
-        assert( quantity >= 0 );
-        return knownSlaves[slaveID].setCoils(startingAddress, quantity, buffer, offset);
-    }
-
-    public byte setCoil(int slaveID, int address, int value)
-    {
-        assert( knownSlaves[slaveID] != null );
-        assert( address >= 0 );
-        assert( (value==0x0000) || (value==0xFF00) );
-        return knownSlaves[slaveID].setCoil(address, value);
-    }
-
+    @Deprecated
     public boolean coilsExist(int slaveID, int startingAddress, int quantity)
     {
-        assert( knownSlaves[slaveID] != null );
-
-        if( knownSlaves[slaveID].getCoils().exist(startingAddress,quantity) == true )
-        {
-            return true;
-        }
-        else if( learnModeEnabled )
-        {
-            knownSlaves[slaveID].getCoils().create(startingAddress,quantity);
-            return true;
-        }
-        else
+        ModbusSlave ms = getModbusSlave(quantity, learnModeEnabled);
+        if(ms==null)
         {
             return false;
         }
+        return ms.getCoils().exist(startingAddress, quantity, learnModeEnabled);
     }
 
 
@@ -1663,6 +1572,11 @@ public class ModbusPalProject
         learnModeEnabled = en;
     }
 
+    public boolean isLeanModeEnabled()
+    {
+        return learnModeEnabled;
+    }
+
     public void notifyPDUnotServiced()
     {
         synchronized(listeners)
@@ -1696,6 +1610,14 @@ public class ModbusPalProject
         }
     }
 
+    /**
+     * 
+     * @param slaveID
+     * @param functionCode
+     * @return
+     * @deprecated
+     */
+    @Deprecated
     public boolean isFunctionEnabled(int slaveID, byte functionCode)
     {
         //TODO: implement isFunctionEnabled

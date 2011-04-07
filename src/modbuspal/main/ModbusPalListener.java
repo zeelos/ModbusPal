@@ -9,7 +9,8 @@ import modbuspal.automation.Automation;
 import modbuspal.slave.ModbusSlave;
 
 /**
- *
+ * An object interested in ModbusPal related events should implement
+ * this interface.
  * @author nnovic
  */
 public interface ModbusPalListener

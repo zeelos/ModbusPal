@@ -6,7 +6,7 @@
 package modbuspal.main;
 
 /**
- *
+ * The tags used by ModbusPal when generating xml files. Incomplete.
  * @author nnovic
  */
 public interface ModbusPalXML

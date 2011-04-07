@@ -13,7 +13,6 @@ import modbuspal.automation.NullAutomation;
 import modbuspal.main.ModbusConst;
 import modbuspal.main.ModbusPalProject;
 import modbuspal.main.ModbusPalXML;
-import modbuspal.toolkit.ModbusTools;
 import modbuspal.toolkit.XMLTools;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -33,34 +32,32 @@ implements ModbusPalXML, ModbusConst
     private String customName;
     private ArrayList<ModbusSlaveListener> listeners = new ArrayList<ModbusSlaveListener>();
     private int modbusImplementation = IMPLEMENTATION_MODBUS;
+    private ModbusSlavePduProcessor pduProcessors[] = new ModbusSlavePduProcessor[128];
 
+    private ModbusSlave()
+    {
+        pduProcessors[FC_READ_COILS] = coils;
+        pduProcessors[FC_READ_HOLDING_REGISTERS] = holdingRegisters;
+        pduProcessors[FC_WRITE_SINGLE_COIL] = coils;
+        pduProcessors[FC_WRITE_SINGLE_REGISTER] = holdingRegisters;
+        pduProcessors[FC_WRITE_MULTIPLE_COILS] = coils;
+        pduProcessors[FC_WRITE_MULTIPLE_REGISTERS] = holdingRegisters;
+        pduProcessors[FC_READ_WRITE_MULTIPLE_REGISTERS] = holdingRegisters;
+    }
 
     public ModbusSlave(int id)
     {
+        this();
         slaveId = id;
         customName = "Slave " + id;
         enabled = true;
+
     }
 
-    /*public ModbusSlave(NamedNodeMap attributes)
-    {
-        Node idNode = attributes.getNamedItem(XML_SLAVE_ID_ATTRIBUTE);
-        String id = idNode.getNodeValue();
-        slaveId = Integer.valueOf(id);
-
-        Node enNode = attributes.getNamedItem("enabled");
-        String en = enNode.getNodeValue();
-        enabled = Boolean.parseBoolean(en);
-
-        Node namNode = attributes.getNamedItem("name");
-        String nam = namNode.getNodeValue();
-        customName = nam;
-
-        loadAttributes(attributes);
-    }*/
 
     public ModbusSlave(ModbusPalProject mpp, Node slaveNode)
     {
+        this();
         load(slaveNode, false);
     }
 
@@ -81,30 +78,26 @@ implements ModbusPalXML, ModbusConst
     }
 
 
-    public byte getHoldingRegisters(int startingAddress, int quantity, byte[] buffer, int offset)
+    public ModbusSlavePduProcessor getPduProcessor(byte functionCode)
     {
-        for(int i=0; i<quantity; i++)
+        if( functionCode>=0x80)
         {
-            Integer reg = holdingRegisters.getValue(startingAddress+i);
-            ModbusTools.setUint16(buffer, offset+(2*i), reg);
+            throw new ArrayIndexOutOfBoundsException(functionCode);
         }
-        return (byte)0x00;
+        return pduProcessors[functionCode];
     }
 
+
+    @Deprecated
+    public byte getHoldingRegisters(int startingAddress, int quantity, byte[] buffer, int offset)
+    {
+        return holdingRegisters.getValues(startingAddress, quantity, buffer, offset);
+    }
+
+    @Deprecated
     public byte setHoldingRegisters(int startingAddress, int quantity, byte[] buffer, int offset)
     {
-        byte rc = (byte)0x00;
-        for(int i=0; i<quantity; i++)
-        {
-            Integer reg = ModbusTools.getUint16(buffer, offset + 2* i);
-            rc = holdingRegisters.setValueSilent(startingAddress+i,reg);
-            if( rc != (byte)0x00 )
-            {
-                break;
-            }
-        }
-        holdingRegisters.notifyTableChanged();
-        return rc;
+        return holdingRegisters.setValues(startingAddress, quantity, buffer, offset);
     }
 
 
@@ -113,32 +106,19 @@ implements ModbusPalXML, ModbusConst
         return holdingRegisters;
     }
 
+    @Deprecated
     public byte getCoils(int startingAddress, int quantity, byte[] buffer, int offset)
     {
-        for(int i=0; i<quantity; i++)
-        {
-            int coil = coils.getValue(startingAddress+i);
-            ModbusTools.setBit(buffer, (offset*8)+i, coil);
-        }
-        return (byte)0x00;
+        return coils.getValues(startingAddress, quantity, buffer, offset);
     }
 
+    @Deprecated
     public byte setCoils(int startingAddress, int quantity, byte[] buffer, int offset)
     {
-        byte rc = (byte)0x00;
-        for(int i=0; i<quantity; i++)
-        {
-            int coil = ModbusTools.getBit(buffer, (offset*8)+i);
-            rc = coils.setValueSilent(startingAddress+i,coil);
-            if( rc != (byte)0x00 )
-            {
-                break;
-            }
-        }
-        coils.notifyTableChanged();
-        return rc;
+        return coils.setValues(startingAddress, quantity, buffer, offset);
     }
 
+    @Deprecated
     public byte setCoil(int address, int value)
     {
         byte rc = coils.setValue(address,value);

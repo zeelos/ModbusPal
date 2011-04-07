@@ -114,9 +114,9 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         slavesListPanel.removeAll();
         for(int i=0; i<ModbusConst.MAX_MODBUS_SLAVE; i++)
         {
-            if( project.knownSlaves[i]!=null )
+            if( project.getModbusSlave(i)!=null )
             {
-                modbusSlaveAdded(project.knownSlaves[i]);
+                modbusSlaveAdded(project.getModbusSlave(i));
             }
         }
 

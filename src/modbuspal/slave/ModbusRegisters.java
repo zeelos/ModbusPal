@@ -15,9 +15,11 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 import modbuspal.binding.Binding;
+import modbuspal.link.ModbusSlaveProcessor;
 import modbuspal.main.ModbusConst;
 import modbuspal.main.ModbusValuesMap;
 import modbuspal.main.ModbusPalXML;
+import modbuspal.toolkit.ModbusTools;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -27,8 +29,9 @@ import org.w3c.dom.NodeList;
  * @author nnovic
  */
 public class ModbusRegisters
-implements TableModel, ModbusPalXML, ModbusConst
+implements ModbusSlavePduProcessor, TableModel, ModbusPalXML, ModbusConst
 {
+
     class RegisterCopy
     {
         int registerAddress;
@@ -64,6 +67,150 @@ implements TableModel, ModbusPalXML, ModbusConst
 
     //==========================================================================
     //
+    // PDU PROCESSOR
+    //
+    //==========================================================================
+
+
+    public int processPDU(byte functionCode, int slaveID, byte[] buffer, int offset, boolean createIfNotExist)
+    {
+        switch( functionCode )
+        {
+            case FC_READ_HOLDING_REGISTERS: return readMultipleRegisters(functionCode, buffer, offset, createIfNotExist);
+            case FC_WRITE_SINGLE_REGISTER: return writeSingleRegister(functionCode, buffer, offset, createIfNotExist);
+            case FC_WRITE_MULTIPLE_REGISTERS: return writeMultipleRegisters(functionCode, buffer, offset, createIfNotExist);
+            case FC_READ_WRITE_MULTIPLE_REGISTERS: return readWriteMultipleRegisters(functionCode, buffer, offset, createIfNotExist);
+        }
+        return -1;
+    }
+
+    private int readWriteMultipleRegisters(byte functionCode, byte[] buffer, int offset, boolean createIfNotExist)
+    {
+        int readStartingAddress = ModbusTools.getUint16(buffer, offset+1);
+        int quantityToRead = ModbusTools.getUint16(buffer, offset+3);
+        int writeStartingAddress = ModbusTools.getUint16(buffer, offset+5);
+        int quantityToWrite = ModbusTools.getUint16(buffer, offset+7);
+        int writeByteCount = ModbusTools.getUint8(buffer, offset+9);
+
+        // verify quantity to read
+        if( (quantityToRead<1) || (quantityToRead>118) )
+        {
+            return ModbusSlaveProcessor.makeExceptionResponse(functionCode, XC_ILLEGAL_DATA_ADDRESS, buffer, offset);
+        }
+
+        // verify quantity to write
+        if( (quantityToWrite<1) || (quantityToWrite>118) || (writeByteCount!=2*quantityToWrite) )
+        {
+            return ModbusSlaveProcessor.makeExceptionResponse(functionCode, XC_ILLEGAL_DATA_ADDRESS, buffer, offset);
+        }
+
+        // verify that registers to be read exist:
+        if( exist(readStartingAddress,quantityToRead,createIfNotExist) == false )
+        {
+            return ModbusSlaveProcessor.makeExceptionResponse(functionCode, XC_ILLEGAL_DATA_VALUE, buffer, offset);
+        }
+
+        // verify that registers to be written exist:
+        if( exist(writeStartingAddress,quantityToWrite,createIfNotExist) == false )
+        {
+            return ModbusSlaveProcessor.makeExceptionResponse(functionCode, XC_ILLEGAL_DATA_VALUE, buffer, offset);
+        }
+
+        byte rc = setValues(writeStartingAddress, quantityToWrite, buffer, offset+10);
+        if( rc != XC_SUCCESSFUL )
+        {
+            return ModbusSlaveProcessor.makeExceptionResponse(functionCode, rc, buffer, offset);
+        }
+
+        // then perform read operation:
+        buffer[offset+1] = (byte) (2*quantityToRead);
+        for(int i=0; i<quantityToRead; i++)
+        {
+            Integer reg = getValue(readStartingAddress+i);
+            ModbusTools.setUint16(buffer, offset+2+(2*i), reg);
+        }
+
+        return 2 + (2*quantityToRead);
+    }
+
+
+    private int writeMultipleRegisters(byte functionCode, byte[] buffer, int offset, boolean createIfNotExist)
+    {
+        int startingAddress = ModbusTools.getUint16(buffer, offset+1);
+        int quantity = ModbusTools.getUint16(buffer, offset+3);
+        int byteCount = ModbusTools.getUint8(buffer, offset+5);
+
+        if( (quantity<1) || (quantity>123) || (byteCount!=2*quantity) )
+        {
+            return ModbusSlaveProcessor.makeExceptionResponse(functionCode, XC_ILLEGAL_DATA_VALUE, buffer, offset);
+        }
+
+        if( exist(startingAddress,quantity, createIfNotExist) == false )
+        {
+            return ModbusSlaveProcessor.makeExceptionResponse(functionCode, XC_ILLEGAL_DATA_ADDRESS, buffer, offset);
+        }
+
+        byte rc = setValues(startingAddress, quantity, buffer, offset+6);
+        if( rc != XC_SUCCESSFUL )
+        {
+            return ModbusSlaveProcessor.makeExceptionResponse(functionCode, rc, buffer, offset);
+        }
+
+        return 5;
+    }
+
+
+    private int writeSingleRegister(byte functionCode, byte[] buffer, int offset, boolean createIfNotExist)
+    {
+        int address = ModbusTools.getUint16(buffer, offset+1);
+
+        if( exist(address, 1, createIfNotExist) == false )
+        {
+            return ModbusSlaveProcessor.makeExceptionResponse(functionCode, XC_ILLEGAL_DATA_ADDRESS, buffer, offset);
+        }
+
+        Integer reg = ModbusTools.getUint16(buffer, offset + 3);
+        byte rc = setValue(address,reg);
+        if( rc != XC_SUCCESSFUL )
+        {
+            return ModbusSlaveProcessor.makeExceptionResponse(functionCode, rc, buffer, offset);
+        }
+
+        return 5;
+    }
+
+
+    private int readMultipleRegisters(byte functionCode, byte[] buffer, int offset, boolean createIfNotExist)
+    {
+        int startingAddress = ModbusTools.getUint16(buffer, offset+1);
+        int quantity = ModbusTools.getUint16(buffer, offset+3);
+
+        if( (quantity<1) || (quantity>125) )
+        {
+            return ModbusSlaveProcessor.makeExceptionResponse(functionCode, XC_ILLEGAL_DATA_VALUE, buffer, offset);
+        }
+
+        if( exist(startingAddress,quantity,createIfNotExist) == false )
+        {
+            return ModbusSlaveProcessor.makeExceptionResponse(functionCode, XC_ILLEGAL_DATA_ADDRESS, buffer, offset);
+        }
+
+        // write byte count
+        buffer[offset+1] = (byte) (2*quantity);
+
+        // write registers
+        for(int i=0; i<quantity; i++)
+        {
+            Integer reg = getValue(startingAddress+i);
+            ModbusTools.setUint16(buffer, offset+2+(2*i), reg);
+        }
+
+        return 2 + (2*quantity);
+    }
+
+
+    //==========================================================================
+    //
     // REGISTERS
     //
     //==========================================================================
@@ -71,7 +218,6 @@ implements TableModel, ModbusPalXML, ModbusConst
 
     /**
      * Creates and initialize several registers with default value.
-     * @see #add creates one register with the specified settings.
      * @param startingAddress
      * @param quantity
      */
@@ -133,6 +279,16 @@ implements TableModel, ModbusPalXML, ModbusConst
     protected int getValue(Binding binding)
     {
         return binding.getRegister();
+    }
+
+    public byte getValues(int startingAddress, int quantity, byte[] buffer, int offset)
+    {
+        for(int i=0; i<quantity; i++)
+        {
+            Integer reg = getValue(startingAddress+i);
+            ModbusTools.setUint16(buffer, offset+(2*i), reg);
+        }
+        return XC_SUCCESSFUL;
     }
 
 
@@ -222,6 +378,21 @@ implements TableModel, ModbusPalXML, ModbusConst
         return retval;
     }
 
+    public byte setValues(int startingAddress, int quantity, byte[] buffer, int offset)
+    {
+        byte retval = XC_SUCCESSFUL;
+        for(int i=0; i<quantity; i++)
+        {
+            Integer reg = ModbusTools.getUint16(buffer, offset + 2* i);
+            retval = setValueSilent(startingAddress+i,reg);
+            if( retval != XC_SUCCESSFUL )
+            {
+                break;
+            }
+        }
+        notifyTableChanged();
+        return retval;
+    }
 
     public int rowIndexOf(int address)
     {
@@ -259,6 +430,11 @@ implements TableModel, ModbusPalXML, ModbusConst
     }
 
 
+    public boolean exist(int startingAddress, int quantity)
+    {
+        return exist(startingAddress, quantity, false);
+    }
+
     /**
      * Check if a range of registers, defined by the starting address
      * and the quantity of registers in the range, is already defined
@@ -268,7 +444,7 @@ implements TableModel, ModbusPalXML, ModbusConst
      * @return true if all registers comprised in the range are already defined;
      * @return false if any register in the range is not defined yet.
      */
-    public boolean exist(int startingAddress, int quantity)
+    public boolean exist(int startingAddress, int quantity, boolean createIfNotExist)
     {
         assert( startingAddress >= 0 );
         assert( quantity >= 0 );
@@ -278,7 +454,14 @@ implements TableModel, ModbusPalXML, ModbusConst
             int address = startingAddress + i;
             if( exist(address) == false )
             {
-                return false;
+                if( createIfNotExist==true )
+                {
+                    create(address, 1);
+                }
+                else
+                {
+                    return false;
+                }
             }
         }
         return true;
