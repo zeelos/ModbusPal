@@ -87,6 +87,44 @@ implements ModbusPalXML, ModbusConst
         return pduProcessors[functionCode];
     }
 
+    public ModbusSlavePduProcessor[] getPduProcessorInstances()
+    {
+        ArrayList<ModbusSlavePduProcessor> instances = new ArrayList<ModbusSlavePduProcessor>();
+        for(int i=0; i<pduProcessors.length;i++)
+        {
+            if(pduProcessors[i]!=null)
+            {
+                if( instances.contains(pduProcessors[i])==false )
+                {
+                    instances.add(pduProcessors[i]);
+                }
+            }
+        }
+        
+        ModbusSlavePduProcessor output[] = new ModbusSlavePduProcessor[0];
+        return instances.toArray(output);
+    }
+
+    public ModbusSlavePduProcessor setPduProcessor(byte functionCode, ModbusSlavePduProcessor mspp)
+    {
+        if( functionCode>=0x80)
+        {
+            throw new ArrayIndexOutOfBoundsException(functionCode);
+        }
+        ModbusSlavePduProcessor old = pduProcessors[functionCode];
+        pduProcessors[functionCode]=mspp;
+        return old;
+    }
+
+    /**
+     * Remove all pdu processors with the specified class name from this
+     * slave.
+     * @param classname
+     */
+    public void removeAllFunctions(String classname) {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
 
     @Deprecated
     public byte getHoldingRegisters(int startingAddress, int quantity, byte[] buffer, int offset)
@@ -479,5 +517,6 @@ implements ModbusPalXML, ModbusConst
                 break;
         }
     }
+
 
 }

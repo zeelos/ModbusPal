@@ -9,7 +9,6 @@ import modbuspal.instanciator.Instanciator;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import modbuspal.instanciator.ClassInstanciator;
 import modbuspal.instanciator.InstanciatorManager;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -22,31 +21,12 @@ import org.w3c.dom.NodeList;
 public class BindingFactory
 extends InstanciatorManager
 {
-    //private static BindingFactory factory = new BindingFactory();
 
-
-//    public static BindingFactory getFactory()
-//    {
-//        return factory;
-//    }
-
-    
-//    public static Binding newBinding(String classname)
-//    throws InstantiationException, IllegalAccessException
-//    {
-//        Instanciator is = factory.getInstanciator(classname);
-//        return is.newBinding();
-//    }
-
-    /**
-     * List of predefined bindings:
-     */
-    private final ClassInstanciator classInstanciators[] =
+    public BindingFactory()
     {
-        new ClassInstanciator(modbuspal.binding.Binding_SINT32.class),
-        new ClassInstanciator(modbuspal.binding.Binding_FLOAT32.class)
-    };
-
+        add( modbuspal.binding.Binding_SINT32.class );
+        add( modbuspal.binding.Binding_FLOAT32.class);
+    }
 
     public Binding newBinding(String classname)
     throws InstantiationException, IllegalAccessException
@@ -86,15 +66,4 @@ extends InstanciatorManager
         out.write( closeTag.getBytes() );
     }
 
-    @Override
-    protected int getClassInstanciatorsCount()
-    {
-        return classInstanciators.length;
-    }
-
-    @Override
-    protected Instanciator getClassInstanciator(int index)
-    {
-        return classInstanciators[index];
-    }
 }

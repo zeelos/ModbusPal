@@ -53,6 +53,7 @@ implements ModbusConst, ModbusSlaveListener
         initComponents();
         holdingRegistersPanel.add(new ModbusRegistersPanel(this, modbusSlave.getHoldingRegisters()),BorderLayout.CENTER);
         coilsPanel.add(new ModbusCoilsPanel(this, modbusSlave.getCoils()),BorderLayout.CENTER);
+        functionsPanel.add( new ModbusFunctionsPanel(this,modbusPalProject.getFunctionFactory()),BorderLayout.CENTER);
     }
 
     ModbusSlave getModbusSlave()
@@ -147,6 +148,7 @@ implements ModbusConst, ModbusSlaveListener
         jTabbedPane1 = new javax.swing.JTabbedPane();
         holdingRegistersPanel = new javax.swing.JPanel();
         coilsPanel = new javax.swing.JPanel();
+        functionsPanel = new javax.swing.JPanel();
         jPanel1 = new javax.swing.JPanel();
         importButton = new javax.swing.JButton();
         exportButton = new javax.swing.JButton();
@@ -163,6 +165,10 @@ implements ModbusConst, ModbusSlaveListener
 
         coilsPanel.setLayout(new java.awt.BorderLayout());
         jTabbedPane1.addTab("Coils", coilsPanel);
+
+        functionsPanel.setPreferredSize(new java.awt.Dimension(400, 300));
+        functionsPanel.setLayout(new java.awt.BorderLayout());
+        jTabbedPane1.addTab("Functions", functionsPanel);
 
         getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
 
@@ -315,6 +321,7 @@ implements ModbusConst, ModbusSlaveListener
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel coilsPanel;
     private javax.swing.JButton exportButton;
+    private javax.swing.JPanel functionsPanel;
     private javax.swing.JPanel holdingRegistersPanel;
     private javax.swing.JComboBox implementationComboBox;
     private javax.swing.JButton importButton;

@@ -18,10 +18,12 @@ import modbuspal.automation.Automation;
 import modbuspal.automation.NullAutomation;
 import modbuspal.binding.Binding;
 import modbuspal.binding.BindingFactory;
+import modbuspal.generator.Generator;
 import modbuspal.generator.GeneratorFactory;
 import modbuspal.link.ModbusSerialLink;
 import modbuspal.script.ScriptListener;
 import modbuspal.script.ScriptRunner;
+import modbuspal.slave.FunctionFactory;
 import modbuspal.slave.ModbusSlave;
 import modbuspal.slave.ModbusSlavePduProcessor;
 import modbuspal.toolkit.FileTools;
@@ -35,7 +37,7 @@ import org.xml.sax.SAXException;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 public class ModbusPalProject
 extends ModbusPalProject2
@@ -52,6 +54,7 @@ extends ModbusPalProject2
 
     final GeneratorFactory generatorFactory = new GeneratorFactory();
     final BindingFactory bindingFactory = new BindingFactory();
+    final FunctionFactory functionFactory = new FunctionFactory();
     
     String selectedLink = "none";
     String linkTcpipPort = "502";
@@ -989,6 +992,16 @@ extends ModbusPalProject2
         generatorFactory.remove( runner );
     }
 
+    public void addGeneratorInstanciator(Generator g)
+    {
+        addGeneratorInstanciator(g.getClass());
+    }
+
+    public void addGeneratorInstanciator(Class<? extends Generator> clazz )
+    {
+        bindingFactory.add(clazz);
+    }
+
     public void addGeneratorInstanciator(File scriptFile)
     {
         // newInstance a scripted generator handler
@@ -1050,6 +1063,16 @@ extends ModbusPalProject2
         bindingFactory.remove( runner );
     }
 
+    public void addBindingInstanciator(Binding b)
+    {
+        addBindingInstanciator(b.getClass());
+    }
+
+    public void addBindingInstanciator(Class<? extends Binding> clazz )
+    {
+        bindingFactory.add(clazz);
+    }
+
     public void addBindingInstanciator(File scriptFile)
     {
         // newInstance a scripted generator handler
@@ -1074,6 +1097,81 @@ extends ModbusPalProject2
     {
         return bindingFactory;
     }
+
+
+
+    //==========================================================================
+    //
+    // BINDINGS
+    //
+    //==========================================================================
+
+    /**
+     * remove all instances of the function whose name is passed
+     * in argument. the method will scan all slaves of the current
+     * project and remove each instance of the function identified
+     * by the provided name.
+     * @param classname
+     */
+    void removeAllFunctions(String classname)
+    {
+        for( int i=0; i<ModbusConst.MAX_MODBUS_SLAVE; i++ )
+        {
+            ModbusSlave slave = getModbusSlave(i);
+            if( slave != null )
+            {
+                slave.removeAllFunctions(classname);
+            }
+        }
+    }
+
+    public void removeFunctionScript(ScriptRunner runner)
+    {
+        removeAllFunctions(runner.getClassName());
+        functionFactory.remove( runner );
+    }
+
+
+    public void addFunctionInstanciator(ModbusSlavePduProcessor mspp)
+    {
+        addFunctionInstanciator(mspp.getClass(),mspp.getClassName());
+    }
+
+    public void addFunctionInstanciator(Class<? extends ModbusSlavePduProcessor> clazz, String name )
+    {
+        functionFactory.add(clazz,name);
+    }
+    public void addFunctionInstanciator(Class<? extends ModbusSlavePduProcessor> clazz )
+    {
+        functionFactory.add(clazz);
+    }
+
+    public void addFunctionInstanciator(File scriptFile)
+    {
+        // newInstance a scripted generator handler
+        ScriptRunner sr = ScriptRunner.create(this, scriptFile);
+
+        // test if newInstance would work:
+        if( sr.newFunction() != null )
+        {
+            // add the handler to the factory:
+            functionFactory.add(sr);
+        }
+        else
+        {
+            ErrorMessage dialog = new ErrorMessage("Close");
+            dialog.setTitle("Script error");
+            dialog.append("The script probably contains errors and cannot be executed properly.");
+            dialog.setVisible(true);
+        }
+    }
+
+    public FunctionFactory getFunctionFactory()
+    {
+        return functionFactory;
+    }
+
+
 
 
 

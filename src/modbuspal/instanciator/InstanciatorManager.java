@@ -38,6 +38,11 @@ public abstract class InstanciatorManager
      */
     protected ArrayList<Instanciator> scriptedInstanciators = new ArrayList<Instanciator>();
 
+    /**
+     * List of generators that are dynimacally inserted by the user.
+     */
+    protected ArrayList<ClassInstanciator> classInstanciators = new ArrayList<ClassInstanciator>();
+
 
     public abstract void load(Document doc, File projectFile);
 
@@ -217,6 +222,18 @@ public abstract class InstanciatorManager
         //out.write( closeTag.getBytes() );
     }*/
 
+    public void add(Class clazz)
+    {
+        ClassInstanciator ci = new ClassInstanciator(clazz);
+        classInstanciators.add(ci);
+    }
+
+    public void add(Class clazz, String name)
+    {
+        ClassInstanciator ci = new ClassInstanciator(clazz,name);
+        classInstanciators.add(ci);
+    }
+
     public void add(Instanciator gi)
     {
         if( scriptedInstanciators.contains(gi)==false )
@@ -262,20 +279,20 @@ public abstract class InstanciatorManager
 
 
 
-    protected abstract int getClassInstanciatorsCount();
+    //protected abstract int getClassInstanciatorsCount();
 
-    protected abstract Instanciator getClassInstanciator(int index);
+    //protected abstract Instanciator getClassInstanciator(int index);
 
 
     public Instanciator getInstanciator(String className)
     {
         // look into the list of predefined classes
-        for( int i=0; i<getClassInstanciatorsCount(); i++ )
+        for( ClassInstanciator ci:classInstanciators ) //int i=0; i<getClassInstanciatorsCount(); i++ )
         {
-            Instanciator gi = getClassInstanciator(i);
-            if( gi.getClassName().compareTo(className)==0 )
+            //Instanciator gi = getClassInstanciator(i);
+            if( ci.getClassName().compareTo(className)==0 )
             {
-                return gi;
+                return ci;
             }
         }
 
@@ -300,14 +317,14 @@ public abstract class InstanciatorManager
     public String[] getList()
     {
         // prepare list
-        int size = getClassInstanciatorsCount() + scriptedInstanciators.size();
+        int size = classInstanciators.size() + scriptedInstanciators.size();
         String list[] = new String[size];
         int index=0;
 
         // fill list with the predefined generators
-        for(index=0; index<getClassInstanciatorsCount(); index++)
+        for(ClassInstanciator ci : classInstanciators)
         {
-            list[index]=getClassInstanciator(index).getClassName();
+            list[index++]=ci.getClassName();
         }
 
         for(Instanciator gi:scriptedInstanciators)

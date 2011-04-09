@@ -24,6 +24,7 @@ import org.w3c.dom.NodeList;
  */
 public class PythonGenerator
 extends Generator
+implements PythonInstanciatorInterface
 {
     private PythonRunner instanciator;
     
@@ -90,7 +91,7 @@ extends Generator
     }
 
 
-    void install(PythonRunner inst)
+    public void install(PythonRunner inst)
     {
         instanciator = inst;
     }

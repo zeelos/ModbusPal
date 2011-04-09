@@ -3,13 +3,12 @@
  * and open the template in the editor.
  */
 
-package modbuspal.generator;
+package modbuspal.slave;
 
 import modbuspal.instanciator.Instanciator;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import modbuspal.instanciator.ClassInstanciator;
 import modbuspal.instanciator.InstanciatorManager;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
@@ -19,30 +18,31 @@ import org.w3c.dom.NodeList;
  *
  * @author nnovic
  */
-public class GeneratorFactory
+public class FunctionFactory
 extends InstanciatorManager
 {
-
-    public GeneratorFactory()
+    public FunctionFactory()
     {
-        add(modbuspal.generator.linear.LinearGenerator.class);
-        add(modbuspal.generator.random.RandomGenerator.class);
-        add(modbuspal.generator.sine.SineGenerator.class);
+
+    }
+    
+    public static String makeInstanceName(ModbusSlavePduProcessor mspp)
+    {
+        return mspp.getClassName() + '@' + Integer.toHexString(mspp.hashCode());
     }
 
-
-    public Generator newGenerator(String classname)
+    public ModbusSlavePduProcessor newFunction(String classname)
     throws InstantiationException, IllegalAccessException
     {
         Instanciator is = getInstanciator(classname);
-        return is.newGenerator();
+        return is.newFunction();
     }
 
 
     @Override
     public void load(Document doc, File projectFile)
     {
-        NodeList list = doc.getElementsByTagName("generators");
+        NodeList list = doc.getElementsByTagName("functions");
         loadInstanciators(list,projectFile);
     }
 
@@ -57,7 +57,7 @@ extends InstanciatorManager
             return;
         }
         
-        String openTag = "<generators>\r\n";
+        String openTag = "<functions>\r\n";
         out.write( openTag.getBytes() );
 
         for( Instanciator gi:scriptedInstanciators)
@@ -65,7 +65,7 @@ extends InstanciatorManager
             gi.save(out,projectFile);
         }
 
-        String closeTag = "</generators>\r\n";
+        String closeTag = "</functions>\r\n";
         out.write( closeTag.getBytes() );
     }
 

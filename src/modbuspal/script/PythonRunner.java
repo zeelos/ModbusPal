@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 import modbuspal.binding.Binding;
 import modbuspal.generator.Generator;
 import modbuspal.main.ModbusPalProject;
+import modbuspal.slave.ModbusSlavePduProcessor;
 import org.python.core.PyObject;
 import org.python.util.PythonInterpreter;
 
@@ -169,6 +170,35 @@ extends ScriptRunner
         bd.init();
         return bd;
     }
+
+    @Override
+    public ModbusSlavePduProcessor newFunction()
+    {
+        if( pythonClass==null )
+        {
+            try
+            {
+                pythonClass = executeInstanciator();
+            }
+            catch (FileNotFoundException ex)
+            {
+                Logger.getLogger(PythonRunner.class.getName()).log(Level.SEVERE, null, ex);
+                return null;
+            }
+            catch (IOException ex)
+            {
+                Logger.getLogger(PythonRunner.class.getName()).log(Level.SEVERE, null, ex);
+                return null;
+            }
+        }
+
+        PyObject instance = pythonClass.__call__();
+        PythonFunction pf = (PythonFunction)instance.__tojava__( PythonFunction.class );
+        pf.install(this);
+        pf.init();
+        return pf;
+    }
+
 
     @Override
     protected void interrupt()

@@ -135,7 +135,7 @@ implements Runnable
                 // interpret PDU and get result:
                 pduLength = processPDU(uID,buffer,7,pduLength);
 
-                if( pduLength > 0 )
+                if( pduLength >= 0 )
                 {
                     // change length in MBAP
                     ModbusTools.setUint16(buffer,4,pduLength+1);

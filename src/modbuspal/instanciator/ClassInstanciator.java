@@ -11,6 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import modbuspal.binding.Binding;
 import modbuspal.generator.Generator;
+import modbuspal.slave.ModbusSlavePduProcessor;
 
 
 /**
@@ -22,7 +23,8 @@ import modbuspal.generator.Generator;
 public class ClassInstanciator
 implements Instanciator
 {
-    private Class clazz;
+    private final Class clazz;
+    private final String clazzName;
 
     /**
      * Constructor a the ClassInstanciator.
@@ -31,11 +33,25 @@ implements Instanciator
     public ClassInstanciator(Class cl)
     {
         clazz = cl;
+        clazzName = null;
     }
 
+    /**
+     * Constructor a the ClassInstanciator.
+     * @param cl the class definition of the generator that will be instanciated.
+     */
+    public ClassInstanciator(Class cl, String name)
+    {
+        clazz = cl;
+        clazzName = name;
+    }
     @Override
     public String getClassName()
     {
+        if(clazzName!=null)
+        {
+            return clazzName;
+        }
         return clazz.getSimpleName();
     }
 
@@ -60,6 +76,21 @@ implements Instanciator
         {
             Object obj = clazz.newInstance();
             return (Binding)obj;
+        }
+        catch (Exception ex)
+        {
+            Logger.getLogger(ClassInstanciator.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
+    }
+
+    @Override
+    public ModbusSlavePduProcessor newFunction()
+    {
+        try
+        {
+            Object obj = clazz.newInstance();
+            return (ModbusSlavePduProcessor)obj;
         }
         catch (Exception ex)
         {

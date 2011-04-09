@@ -31,6 +31,7 @@ import modbuspal.main.ListLayout;
 import modbuspal.main.ModbusPalPane;
 import modbuspal.main.ModbusPalProject;
 import modbuspal.script.panels.*;
+import modbuspal.slave.FunctionFactory;
 import modbuspal.toolkit.FileTransferHandler;
 
 
@@ -56,6 +57,7 @@ implements InstanciatorListener, ScriptListener, FileTransferHandler.FileTransfe
         ondemandScriptsList.setDropTarget( new DropTarget(this, new FileTransferHandler(this) ) );
         generatorInstanciatorsList.setDropTarget( new DropTarget(this, new FileTransferHandler(this) ) );
         bindingInstanciatorsList.setDropTarget( new DropTarget(this, new FileTransferHandler(this) ) );
+        functionInstanciatorsList.setDropTarget( new DropTarget(this, new FileTransferHandler(this) ) );
     }
 
     public void setSelectedTab(int tabIndex)
@@ -93,6 +95,11 @@ implements InstanciatorListener, ScriptListener, FileTransferHandler.FileTransfe
         bindingInstanciatorsList = new javax.swing.JPanel();
         bindingInstanciatorButtons = new javax.swing.JPanel();
         addBindingInstanciatorButton = new javax.swing.JButton();
+        functionInstanciatorsTab = new javax.swing.JPanel();
+        functionInstanciatorsScrollPane = new javax.swing.JScrollPane();
+        functionInstanciatorsList = new javax.swing.JPanel();
+        functionInstanciatorButtons = new javax.swing.JPanel();
+        addFunctionInstanciatorButton = new javax.swing.JButton();
         statusPanel = new javax.swing.JPanel();
         statusLabel = new javax.swing.JLabel();
 
@@ -191,6 +198,29 @@ implements InstanciatorListener, ScriptListener, FileTransferHandler.FileTransfe
         bindingInstanciatorsTab.add(bindingInstanciatorButtons, java.awt.BorderLayout.PAGE_START);
 
         jTabbedPane1.addTab("Binding scripts", bindingInstanciatorsTab);
+
+        functionInstanciatorsTab.setLayout(new java.awt.BorderLayout());
+
+        functionInstanciatorsList.setBackground(javax.swing.UIManager.getDefaults().getColor("List.background"));
+        functionInstanciatorsList.setLayout(null);
+        functionInstanciatorsList.setLayout( new ListLayout() );
+        functionInstanciatorsScrollPane.setViewportView(functionInstanciatorsList);
+
+        functionInstanciatorsTab.add(functionInstanciatorsScrollPane, java.awt.BorderLayout.CENTER);
+
+        functionInstanciatorButtons.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
+
+        addFunctionInstanciatorButton.setText("Add");
+        addFunctionInstanciatorButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addFunctionInstanciatorButtonActionPerformed(evt);
+            }
+        });
+        functionInstanciatorButtons.add(addFunctionInstanciatorButton);
+
+        functionInstanciatorsTab.add(functionInstanciatorButtons, java.awt.BorderLayout.PAGE_START);
+
+        jTabbedPane1.addTab("Function scripts", functionInstanciatorsTab);
 
         getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
 
@@ -305,8 +335,24 @@ implements InstanciatorListener, ScriptListener, FileTransferHandler.FileTransfe
 
 }//GEN-LAST:event_addBindingInstanciatorButtonActionPerformed
 
+    private void addFunctionInstanciatorButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addFunctionInstanciatorButtonActionPerformed
+
+        // get the selected file, in any.
+        File scriptFile = chooseScriptFile(this);
+        if( scriptFile==null )
+        {
+            setStatus("Cancelled by user.");
+            return;
+        }
+
+        // add startup script:
+        modbusPalProject.addFunctionInstanciator(scriptFile);
+
+    }//GEN-LAST:event_addFunctionInstanciatorButtonActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addBindingInstanciatorButton;
+    private javax.swing.JButton addFunctionInstanciatorButton;
     private javax.swing.JButton addGeneratorInstanciatorButton;
     private javax.swing.JButton addOndemandScriptButton;
     private javax.swing.JButton addStartupScriptButton;
@@ -314,6 +360,10 @@ implements InstanciatorListener, ScriptListener, FileTransferHandler.FileTransfe
     private javax.swing.JPanel bindingInstanciatorsList;
     private javax.swing.JScrollPane bindingInstanciatorsScrollPane;
     private javax.swing.JPanel bindingInstanciatorsTab;
+    private javax.swing.JPanel functionInstanciatorButtons;
+    private javax.swing.JPanel functionInstanciatorsList;
+    private javax.swing.JScrollPane functionInstanciatorsScrollPane;
+    private javax.swing.JPanel functionInstanciatorsTab;
     private javax.swing.JPanel generatorInstanciatorButtons;
     private javax.swing.JPanel generatorInstanciatorsList;
     private javax.swing.JScrollPane generatorInstanciatorsScrollPane;
@@ -334,22 +384,37 @@ implements InstanciatorListener, ScriptListener, FileTransferHandler.FileTransfe
     @Override
     public void instanciatorAdded(InstanciatorManager factory, Instanciator def)
     {
-        if( factory instanceof GeneratorFactory )
+        if( def instanceof ScriptRunner )
         {
             ScriptRunner si = (ScriptRunner)def;
-            // create a new panel and add it
-            ScriptRunnerPanel panel = new GeneratorScriptRunnerPanel(si,modbusPalProject);
-            generatorInstanciatorsList.add(panel);
-            validate(); repaint();
-        }
 
-        else if( factory instanceof BindingFactory )
-        {
-            ScriptRunner si = (ScriptRunner)def;
-            // create a new panel and add it
-            ScriptRunnerPanel panel = new BindingScriptRunnerPanel(si,modbusPalProject);
-            bindingInstanciatorsList.add(panel);
-            validate(); repaint();
+            if( factory instanceof GeneratorFactory )
+            {
+                // create a new panel and add it
+                ScriptRunnerPanel panel = new GeneratorScriptRunnerPanel(si,modbusPalProject);
+                generatorInstanciatorsList.add(panel);
+                validate(); repaint();
+            }
+
+            else if( factory instanceof BindingFactory )
+            {
+                // create a new panel and add it
+                ScriptRunnerPanel panel = new BindingScriptRunnerPanel(si,modbusPalProject);
+                bindingInstanciatorsList.add(panel);
+                validate(); repaint();
+            }
+
+            else if( factory instanceof FunctionFactory )
+            {
+                // create a new panel and add it
+                ScriptRunnerPanel panel = new FunctionScriptRunnerPanel(si,modbusPalProject);
+                functionInstanciatorsList.add(panel);
+                validate(); repaint();
+            }
+            else
+            {
+                throw new ClassCastException();
+            }
         }
     }
 
@@ -503,11 +568,13 @@ implements InstanciatorListener, ScriptListener, FileTransferHandler.FileTransfe
             modbusPalProject.removeScriptListener(this);
             modbusPalProject.getGeneratorFactory().removeInstanciatorListener(this);
             modbusPalProject.getBindingFactory().removeInstanciatorListener(this);
+            modbusPalProject.getFunctionFactory().removeInstanciatorListener(this);
         }
         modbusPalProject = mpp;
         modbusPalProject.addScriptListener(this);
         modbusPalProject.getGeneratorFactory().addInstanciatorListener(this);
         modbusPalProject.getBindingFactory().addInstanciatorListener(this);
+        modbusPalProject.getFunctionFactory().addInstanciatorListener(this);
 
 
         // update list of startup scripts:

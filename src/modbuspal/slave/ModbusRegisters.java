@@ -84,6 +84,11 @@ implements ModbusSlavePduProcessor, TableModel, ModbusPalXML, ModbusConst
         return -1;
     }
 
+    public String getClassName()
+    {
+        return getClass().getSimpleName();
+    }
+
     private int readWriteMultipleRegisters(byte functionCode, byte[] buffer, int offset, boolean createIfNotExist)
     {
         int readStartingAddress = ModbusTools.getUint16(buffer, offset+1);

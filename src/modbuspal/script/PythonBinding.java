@@ -13,11 +13,12 @@ import modbuspal.binding.Binding;
  */
 public class PythonBinding
 extends Binding
+implements PythonInstanciatorInterface
 {
     private PythonRunner instanciator;
 
     
-    void install(PythonRunner inst)
+    public void install(PythonRunner inst)
     {
         instanciator = inst;
     }

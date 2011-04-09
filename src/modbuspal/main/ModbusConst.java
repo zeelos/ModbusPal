@@ -40,4 +40,6 @@ public interface ModbusConst
     public static final int FIRST_MODBUS_SLAVE = 1;
     public static final int LAST_MODBUS_SLAVE = 247;
     public static final int MAX_MODBUS_SLAVE = LAST_MODBUS_SLAVE+1;
+
+    public static final byte USER_DEFINED_FUNCTION_CODES[] = {65,66,67,68,69,70,71,72,73,74,75,100,101,102,103,104,105,106,107,108,109,110};
 }

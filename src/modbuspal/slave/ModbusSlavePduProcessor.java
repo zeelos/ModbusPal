@@ -13,5 +13,5 @@ public interface ModbusSlavePduProcessor
 {
 
     public int processPDU(byte functionCode, int slaveID, byte[] buffer, int offset, boolean createIfNotExist);
-
+    public String getClassName();
 }
