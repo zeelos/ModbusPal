@@ -11,7 +11,7 @@ import modbuspal.toolkit.HexaTools;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 public class ModbusPalRecord
 {

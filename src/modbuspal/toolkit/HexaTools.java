@@ -7,7 +7,7 @@ package modbuspal.toolkit;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 public class HexaTools
 {

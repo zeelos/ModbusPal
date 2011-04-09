@@ -25,7 +25,7 @@ import javax.swing.event.InternalFrameListener;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 public class ModbusPalGui
 {

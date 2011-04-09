@@ -7,7 +7,7 @@ package modbuspal.link;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 public interface ModbusLinkListener
 {

@@ -15,7 +15,7 @@ import modbuspal.toolkit.NumericTextField;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 public class SineControlPanel
 extends javax.swing.JPanel

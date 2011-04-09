@@ -11,7 +11,7 @@ import org.python.util.PythonInterpreter;
 /**
  * \page jython
  * \section Jythools, a toolkit class
- * @author avincon
+ * @author nnovic
  */
 public class Jythools
 {

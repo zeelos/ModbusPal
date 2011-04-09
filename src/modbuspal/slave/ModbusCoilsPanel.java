@@ -7,7 +7,7 @@ package modbuspal.slave;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 class ModbusCoilsPanel
 extends ModbusRegistersPanel

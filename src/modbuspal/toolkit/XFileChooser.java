@@ -14,7 +14,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 public class XFileChooser
 extends JFileChooser

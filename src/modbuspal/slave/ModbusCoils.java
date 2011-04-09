@@ -11,7 +11,7 @@ import modbuspal.toolkit.ModbusTools;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 public class ModbusCoils
 extends ModbusRegisters

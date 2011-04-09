@@ -16,7 +16,7 @@ import modbuspal.toolkit.XFileChooser;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 public class ModbusPalRecorder
 //implements Runnable

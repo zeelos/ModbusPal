@@ -11,7 +11,7 @@ import modbuspal.script.ScriptRunnerPanel;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 
 public class GeneratorScriptRunnerPanel

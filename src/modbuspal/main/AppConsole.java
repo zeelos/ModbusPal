@@ -25,7 +25,7 @@ import javax.swing.text.StyledDocument;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 public class AppConsole
 extends javax.swing.JDialog

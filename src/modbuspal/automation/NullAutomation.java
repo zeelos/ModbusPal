@@ -7,7 +7,7 @@ package modbuspal.automation;
 
 /**
  *
- * @author avincon
+ * @author nnovic
  */
 public class NullAutomation
 extends Automation
