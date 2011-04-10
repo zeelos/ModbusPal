@@ -5,28 +5,156 @@
 
 package modbuspal.script;
 
-import modbuspal.instanciator.Instanciator;
 import java.io.IOException;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.OutputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import modbuspal.main.ModbusPalProject;
+import modbuspal.main.ModbusPalXML;
 import modbuspal.toolkit.FileTools;
+import modbuspal.toolkit.GUITools;
+import modbuspal.toolkit.XMLTools;
+import org.python.util.PythonInterpreter;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
 
 /**
  * @author nnovic
  */
-public abstract class ScriptRunner
-implements Instanciator
+public class ScriptRunner
+implements ModbusPalXML
 {
+    public static final int SCRIPT_TYPE_ANY = -1;
+    public static final int SCRIPT_TYPE_ON_DEMAND = 0;
+    public static final int SCRIPT_TYPE_AFTER_INIT = 1;
+    public static final int SCRIPT_TYPE_BEFORE_INIT = 2;
+    public static final int SCRIPT_TYPE_OLD_BINDINGS = 3;
+    public static final int SCRIPT_TYPE_OLD_GENERATORS = 4;
+
+    private static final String SCRIPT_UPDATED_COMMENT ="#---Added by MODBUSPAL, please do not remove---";
+    
+    public static ScriptRunner create(Node node, ModbusPalProject mpp, File projectFile, boolean promptUser)
+    {
+        return create(node,mpp,projectFile,promptUser,SCRIPT_TYPE_ON_DEMAND);
+    }
+    
+    
+    static int stringToType(String s, int d)
+    {
+        if( s.compareToIgnoreCase(XML_SCRIPT_TYPE_ONDEMAND)==0)
+        {
+            return SCRIPT_TYPE_ON_DEMAND;
+        }
+        else if( s.compareToIgnoreCase(XML_SCRIPT_TYPE_AFTERINIT)==0 )
+        {
+            return SCRIPT_TYPE_AFTER_INIT;
+        }
+        else if( s.compareToIgnoreCase(XML_SCRIPT_TYPE_BEFOREINIT)==0 )
+        {
+            return SCRIPT_TYPE_BEFORE_INIT;
+        }
+       return d;
+    }
+
+    static String typeToString(int t)
+    {
+        switch(t)
+        {
+            case SCRIPT_TYPE_ON_DEMAND: return XML_SCRIPT_TYPE_ONDEMAND;
+            case SCRIPT_TYPE_AFTER_INIT: return XML_SCRIPT_TYPE_AFTERINIT;
+            case SCRIPT_TYPE_BEFORE_INIT: return XML_SCRIPT_TYPE_BEFOREINIT;
+            default:
+                return null;
+        }
+    }
+
+    public static ScriptRunner create(Node node, ModbusPalProject mpp, File projectFile, boolean promptUser, int assumedScriptType)
+    {
+        File scriptFile = null;
+
+        //------------------------
+        // find "rel"
+        //------------------------
+
+        Node rel = XMLTools.findChild(node, XML_FILE_RELATIVE_PATH_TAG);
+        if( rel != null )
+        {
+            // try to load file from relative path
+            String relativePath = rel.getTextContent();
+            String absolutePath = FileTools.makeAbsolute(projectFile, relativePath);
+            scriptFile = new File(absolutePath);
+            if( scriptFile.exists()==false )
+            {
+                scriptFile=null;
+            }
+        }
+
+        if( scriptFile==null )
+        {
+            //-----------------
+            // find "abs"
+            //-----------------
+
+            Node abs = XMLTools.findChild(node, XML_FILE_ABSOLUTE_PATH_TAG);
+            if( abs == null )
+            {
+                throw new RuntimeException("malformed input");
+            }
+
+            String path = abs.getTextContent();
+            scriptFile = new File(path);
+
+        }
+
+        //------------------
+        // File not found
+        //------------------
+
+        if (scriptFile.exists()==false )
+        {
+            System.out.println("No file found for script "+scriptFile.getPath());
+
+            // IF NO FILE FOUND, PROMPT USER:
+            if(promptUser==true)
+            {
+                // create error message box with 2 buttons:
+                scriptFile = GUITools.promptUserFileNotFound(null, scriptFile);
+            }
+
+        }
+
+        //-------------------------
+        // get script attributes
+        //-------------------------
+
+        int sType = assumedScriptType;
+        NamedNodeMap attributes = node.getAttributes();
+        if(attributes!=null)
+        {
+            Node typeNode = attributes.getNamedItem(XML_SCRIPT_TYPE_ATTRIBUTE);
+            if(typeNode!=null)
+            {
+                String type = typeNode.getNodeValue();
+                sType = stringToType(type, sType);
+            }
+        }
+
+        ScriptRunner runner = create(mpp, scriptFile, sType);
+        return runner;
+
+    }
 
     public static ScriptRunner create(File scriptFile)
     {
-        return create(null, scriptFile);
+        return create(null, scriptFile, SCRIPT_TYPE_ON_DEMAND);
     }
     
-    public static ScriptRunner create(ModbusPalProject mpp, File scriptFile)
+    public static ScriptRunner create(ModbusPalProject mpp, File file, int type)
     {
-        String extension = FileTools.getExtension(scriptFile);
+        String extension = FileTools.getExtension(file);
         if( extension==null)
         {
             return null;
@@ -34,30 +162,39 @@ implements Instanciator
 
         if( extension.compareToIgnoreCase("py")==0 )
         {
-            return new PythonRunner(mpp, scriptFile);
+            return new ScriptRunner(mpp, file, type);
         }
 
         return null;
     }
 
 
-    protected final File scriptFile;
+    private final ModbusPalProject modbusPalProject;
+    private final File scriptFile;
+    private int scriptType;
 
     
-    public ScriptRunner(File file)
+    public ScriptRunner(ModbusPalProject mpp, File file, int type)
     {
+        modbusPalProject = mpp;
         scriptFile = file;
+        scriptType = type;
     }
 
 
 
-    @Override
     public void save(OutputStream out, File projectFile)
     throws IOException
     {
         // create open tag
-        String openTag = "<script>";
-        out.write(openTag.getBytes());
+        StringBuilder openTag = new StringBuilder("<script");
+        String type = typeToString(scriptType);
+        if(type!=null)
+        {
+            openTag.append(" type=\"").append(type).append("\"");
+        }
+        openTag.append(">\r\n");
+        out.write(openTag.toString().getBytes());
 
         // write absolute file projectPath
         saveAbs(out);
@@ -108,14 +245,53 @@ implements Instanciator
         }
     }
 
+    private void initEnvironment(PythonInterpreter pi)
+    {
+        // init vars for script file
+        pi.set("mbp_script_path", scriptFile.getPath() );
+        pi.set("mbp_script_directory", scriptFile.getParent() );
+        pi.set("mbp_script_file", scriptFile );
 
-    public abstract void execute();
+        // init vars for modbuspal project
+        pi.set("ModbusPal", modbusPalProject);
+    }
 
-    public abstract String getFileExtension();
+    public void execute()
+    {
+        FileInputStream in = null;
+
+        try
+        {
+            in = new FileInputStream(scriptFile);
+            PythonInterpreter interp = new PythonInterpreter();
+            initEnvironment(interp);
+            interp.execfile(in);
+        }
+        catch (FileNotFoundException ex)
+        {
+            Logger.getLogger(ScriptRunner.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        if( in != null )
+        {
+            try
+            {
+                in.close();
+            }
+            catch (IOException ex)
+            {
+                Logger.getLogger(ScriptRunner.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
 
 
-    @Override
-    public String getClassName()
+    public String getFileExtension()
+    {
+        return "py";
+    }
+
+    public String getName()
     {
         String filename = scriptFile.getName();
         if( filename!=null )
@@ -134,11 +310,84 @@ implements Instanciator
     }
 
 
-    @Override
     public String getPath()
     {
         return scriptFile.getPath();
     }
 
-    protected abstract void interrupt();
+    public void interrupt()
+    {
+        
+    }
+
+    public int getType()
+    {
+        return scriptType;
+    }
+
+    public void setType(int type)
+    {
+        scriptType = type;
+    }
+
+
+    public File getScriptFile()
+    {
+        return scriptFile;
+    }
+
+    public void updateForOldBindings()
+    {
+        try
+        {
+            // assume that the class name if the name as
+            // the name of the runner, as it was specified
+            String classname = getName();
+            // open the script file and check is it has been updated already:
+            if (FileTools.containsLine(scriptFile, SCRIPT_UPDATED_COMMENT) == false)
+            {
+                StringBuilder upgrade = new StringBuilder();
+                upgrade.append("\r\n\r\n").append(SCRIPT_UPDATED_COMMENT).append("\r\n");
+                upgrade.append(classname).append("Instance = ").append(classname).append("();\r\n");
+                upgrade.append("ModbusPal.addBindingInstantiator(\"").append(classname).append("\",").append(classname).append("Instance);\r\n\r\n");
+                FileTools.append(scriptFile,upgrade.toString());
+            }
+        }
+        catch (FileNotFoundException ex)
+        {
+            Logger.getLogger(ScriptRunner.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        catch (IOException ex)
+        {
+            Logger.getLogger(ScriptRunner.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void updateForOldGenerators()
+    {
+        try
+        {
+            // assume that the class name if the name as
+            // the name of the runner, as it was specified
+            String classname = getName();
+            // open the script file and check is it has been updated already:
+            if (FileTools.containsLine(scriptFile, SCRIPT_UPDATED_COMMENT) == false)
+            {
+                StringBuilder upgrade = new StringBuilder();
+                upgrade.append("\r\n\r\n").append(SCRIPT_UPDATED_COMMENT).append("\r\n");
+                upgrade.append(classname).append("Instance = ").append(classname).append("();\r\n");
+                upgrade.append("ModbusPal.addGeneratorInstantiator(\"").append(classname).append("\",").append(classname).append("Instance);\r\n\r\n");
+                FileTools.append(scriptFile,upgrade.toString());
+            }
+        }
+        catch (FileNotFoundException ex)
+        {
+            Logger.getLogger(ScriptRunner.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        catch (IOException ex)
+        {
+            Logger.getLogger(ScriptRunner.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
 }

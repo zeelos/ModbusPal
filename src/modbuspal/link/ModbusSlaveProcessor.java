@@ -8,7 +8,7 @@ package modbuspal.link;
 import modbuspal.main.*;
 import modbuspal.main.ModbusConst;
 import modbuspal.recorder.ModbusPalRecorder;
-import modbuspal.slave.ModbusSlavePduProcessor;
+import modbuspal.slave.ModbusPduProcessor;
 
 
 /**
@@ -40,7 +40,7 @@ implements ModbusConst
         }
 
         byte functionCode = buffer[offset+0];
-        ModbusSlavePduProcessor mspp = modbusPalProject.getSlavePduProcessor(slaveID, functionCode);
+        ModbusPduProcessor mspp = modbusPalProject.getSlavePduProcessor(slaveID, functionCode);
         if( mspp == null )
         {
             int length = makeExceptionResponse(functionCode,XC_ILLEGAL_FUNCTION, buffer, offset);

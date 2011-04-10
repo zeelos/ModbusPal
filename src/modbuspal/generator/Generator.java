@@ -11,10 +11,13 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import modbuspal.instanciator.Instantiable;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -27,6 +30,7 @@ import org.w3c.dom.NodeList;
  * @author nnovic
  */
 public abstract class Generator
+implements Instantiable<Generator>
 {   
     private ImageIcon icon;
     private double duration = 10;
@@ -265,4 +269,12 @@ public abstract class Generator
         tag.append(">\r\n");
         return tag.toString();
     }
+
+    @Override
+    public Generator newInstance() 
+    throws InstantiationException, IllegalAccessException {
+        return getClass().newInstance();
+    }
+
+    
 }

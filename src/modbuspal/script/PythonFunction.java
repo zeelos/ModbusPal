@@ -5,21 +5,22 @@
 
 package modbuspal.script;
 
-import modbuspal.slave.ModbusSlavePduProcessor;
+import modbuspal.slave.ModbusPduProcessor;
 
 /**
  *
- * @author nnovic
+ * @author avincon
  */
 public class PythonFunction
-implements ModbusSlavePduProcessor, PythonInstanciatorInterface
+implements ModbusPduProcessor
 {
-    private PythonRunner instanciator;
 
-    
-    public void install(PythonRunner inst)
-    {
-        instanciator = inst;
+    public int processPDU(byte functionCode, int slaveID, byte[] buffer, int offset, boolean createIfNotExist) {
+        return -1;
+    }
+
+    public String getClassName() {
+        return getClass().getSimpleName();
     }
 
     /**
@@ -28,25 +29,15 @@ implements ModbusSlavePduProcessor, PythonInstanciatorInterface
      */
     public void init()
     {
-        return;
+
     }
 
-
-
-    public String getClassName()
+    public ModbusPduProcessor newInstance()
+    throws InstantiationException, IllegalAccessException
     {
-        if(instanciator!=null)
-        {
-            return instanciator.getClassName();
-        }
-        else
-        {
-            return getClass().getSimpleName();
-        }
+        PythonFunction pf = getClass().newInstance();
+        pf.init();
+        return pf;
     }
 
-
-    public int processPDU(byte functionCode, int slaveID, byte[] buffer, int offset, boolean createIfNotExist) {
-        return -1;
-    }
 }

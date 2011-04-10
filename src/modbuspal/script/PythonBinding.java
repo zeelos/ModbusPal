@@ -13,26 +13,7 @@ import modbuspal.binding.Binding;
  */
 public class PythonBinding
 extends Binding
-implements PythonInstanciatorInterface
 {
-    private PythonRunner instanciator;
-
-    
-    public void install(PythonRunner inst)
-    {
-        instanciator = inst;
-    }
-
-    /**
-     * the script should override this method and put
-     * its initialization commands in here.
-     */
-    public void init()
-    {
-        return;
-    }
-
-
     @Override
     public int getSize()
     {
@@ -45,15 +26,23 @@ implements PythonInstanciatorInterface
         return 0;
     }
 
-    @Override
-    public boolean getCoil(int rank, double value)
+    /**
+     * the script should override this method and put
+     * its initialization commands in here.
+     */
+    public void init()
     {
-        return super.getCoil(rank,value);
+        return;
     }
 
     @Override
-    public String getClassName()
+    public Binding newInstance()
+    throws InstantiationException, IllegalAccessException
     {
-        return instanciator.getClassName();
+        PythonBinding pb = (PythonBinding)super.newInstance();
+        pb.init();
+        return pb;
     }
+
+
 }

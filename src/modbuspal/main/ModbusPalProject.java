@@ -17,17 +17,14 @@ import javax.xml.parsers.ParserConfigurationException;
 import modbuspal.automation.Automation;
 import modbuspal.automation.NullAutomation;
 import modbuspal.binding.Binding;
-import modbuspal.binding.BindingFactory;
 import modbuspal.generator.Generator;
-import modbuspal.generator.GeneratorFactory;
+import modbuspal.instanciator.InstantiableManager;
 import modbuspal.link.ModbusSerialLink;
 import modbuspal.script.ScriptListener;
 import modbuspal.script.ScriptRunner;
-import modbuspal.slave.FunctionFactory;
 import modbuspal.slave.ModbusSlave;
-import modbuspal.slave.ModbusSlavePduProcessor;
+import modbuspal.slave.ModbusPduProcessor;
 import modbuspal.toolkit.FileTools;
-import modbuspal.toolkit.GUITools;
 import modbuspal.toolkit.XMLTools;
 import org.w3c.dom.Document;
 import org.w3c.dom.NamedNodeMap;
@@ -39,22 +36,22 @@ import org.xml.sax.SAXException;
  *
  * @author nnovic
  */
-public class ModbusPalProject
+public final class ModbusPalProject
 extends ModbusPalProject2
+implements ModbusPalXML
 {
 
     final IdGenerator idGenerator = new IdGenerator();
     File projectFile = null;
     private final ArrayList<ModbusPalListener> listeners = new ArrayList<ModbusPalListener>(); // synchronized
     private final ArrayList<Automation> automations = new ArrayList<Automation>();
-    private final ArrayList<ScriptRunner> startupScripts = new ArrayList<ScriptRunner>();
     private final ArrayList<ScriptListener> scriptListeners = new ArrayList<ScriptListener>(); // synchronized
-    private final ArrayList<ScriptRunner> ondemandScripts = new ArrayList<ScriptRunner>();
+    private final ArrayList<ScriptRunner> scripts = new ArrayList<ScriptRunner>();
     private boolean learnModeEnabled = false;
 
-    final GeneratorFactory generatorFactory = new GeneratorFactory();
-    final BindingFactory bindingFactory = new BindingFactory();
-    final FunctionFactory functionFactory = new FunctionFactory();
+    final InstantiableManager<Generator> generatorFactory = new InstantiableManager<Generator>();
+    final InstantiableManager<Binding> bindingFactory = new InstantiableManager<Binding>();
+    final InstantiableManager<ModbusPduProcessor> functionFactory = new InstantiableManager<ModbusPduProcessor>();
     
     String selectedLink = "none";
     String linkTcpipPort = "502";
@@ -93,28 +90,62 @@ extends ModbusPalProject2
 
     ModbusPalProject()
     {
+        bindingFactory.add( new modbuspal.binding.Binding_SINT32() );
+        bindingFactory.add( new modbuspal.binding.Binding_FLOAT32() );
+        generatorFactory.add( new modbuspal.generator.linear.LinearGenerator() );
+        generatorFactory.add( new modbuspal.generator.random.RandomGenerator() );
+        generatorFactory.add( new modbuspal.generator.sine.SineGenerator() );
+
+
     }
 
     private ModbusPalProject(Document doc, File source)
     throws InstantiationException, IllegalAccessException
     {
+        this();
+
         // get the root node
         String name = doc.getDocumentElement().getNodeName();
         System.out.println("load "+name);
         projectFile = source;
 
-        loadParameters(doc);
-        generatorFactory.load(doc, source);
-        bindingFactory.load(doc, source);
-        loadAutomations(doc);
-        loadSlaves(doc);
-        loadBindings(doc,null);
+        // scan the content of the xml file
+        // and load the script files (ScriptRunner objects are created)
         loadScripts(doc, projectFile);
 
         // execute startup scripts
-        for( ScriptRunner runner:startupScripts )
-        {
-            runner.execute();
+        for( ScriptRunner runner:scripts ) {
+            if( runner.getType()==ScriptRunner.SCRIPT_TYPE_BEFORE_INIT ) {
+                runner.execute();
+            }
+        }
+
+        loadParameters(doc);
+
+        // load old fashioned "bindings" instantiators
+        for( ScriptRunner runner:scripts ) {
+            if( runner.getType()==ScriptRunner.SCRIPT_TYPE_OLD_BINDINGS ) {
+                importOldBindings(runner);
+            }
+        }
+
+        // load old fashioned "generators" isntanciators
+        // load old fashioned "bindings" instantiators
+        for( ScriptRunner runner:scripts ) {
+            if( runner.getType()==ScriptRunner.SCRIPT_TYPE_OLD_GENERATORS ) {
+                importOldGenerators(runner);
+            }
+        }
+        
+        loadAutomations(doc);
+        loadSlaves(doc);
+        loadBindings(doc,null);
+        
+        // execute startup scripts
+        for( ScriptRunner runner:scripts ) {
+            if( runner.getType()==ScriptRunner.SCRIPT_TYPE_AFTER_INIT ) {
+                runner.execute();
+            }
         }
     }
     
@@ -393,7 +424,7 @@ extends ModbusPalProject2
         int registerAddress = Integer.parseInt( parentAddress );
 
         // Instanciate the binding:
-        Binding binding = bindingFactory.newBinding(className);
+        Binding binding = bindingFactory.newInstance(className);
         binding.setup(automation, wordOrder);
 
 
@@ -421,22 +452,52 @@ extends ModbusPalProject2
      */
     private void loadScripts(Document doc, File projectFile)
     {
+        //-----------------------------
+        // OLD PROJECT FILE FORMAT
+        //-----------------------------
+
         // look for "startup" scripts section
         NodeList startup = doc.getElementsByTagName("startup");
         for( int i=0; i<startup.getLength(); i++ )
         {
-            loadStartupScripts( startup.item(i), projectFile );
+            loadScripts( startup.item(i), projectFile, ScriptRunner.SCRIPT_TYPE_AFTER_INIT );
         }
 
         // look for "ondemand" scripts section
         NodeList ondemand = doc.getElementsByTagName("ondemand");
         for( int i=0; i<ondemand.getLength(); i++ )
         {
-            loadOndemandScripts( ondemand.item(i), projectFile );
+            loadScripts( ondemand.item(i), projectFile, ScriptRunner.SCRIPT_TYPE_ON_DEMAND );
         }
+
+        // loof for "bindings" script section
+        NodeList bindings = doc.getElementsByTagName("bindings");
+        for( int i=0; i<bindings.getLength(); i++ )
+        {
+            loadScripts( bindings.item(i), projectFile, ScriptRunner.SCRIPT_TYPE_OLD_BINDINGS );
+        }
+
+        // loof for "generators" script section
+        NodeList generators = doc.getElementsByTagName("generators");
+        for( int i=0; i<generators.getLength(); i++ )
+        {
+            loadScripts( generators.item(i), projectFile, ScriptRunner.SCRIPT_TYPE_OLD_GENERATORS );
+        }
+
+        //-----------------------------
+        // NEW PROJECT FILE FORMAT
+        //-----------------------------
+
+        NodeList scriptsList = doc.getElementsByTagName("scripts");
+        for( int i=0; i<scriptsList.getLength(); i++ )
+        {
+            loadScripts( scriptsList.item(i), projectFile, ScriptRunner.SCRIPT_TYPE_ON_DEMAND );
+        }
+
     }
 
-    private void loadStartupScripts(Node node, File projectFile)
+
+    private void loadScripts(Node node, File projectFile, int assumedType)
     {
         // get list of sub nodes
         NodeList nodes = node.getChildNodes();
@@ -446,82 +507,14 @@ extends ModbusPalProject2
             Node scriptNode = nodes.item(i);
             if( scriptNode.getNodeName().compareTo("script")==0 )
             {
-                File scriptFile = loadScript(scriptNode, projectFile, true);
-                if( scriptFile!=null )
+                ScriptRunner runner = ScriptRunner.create(scriptNode, this, projectFile, true, assumedType);
+                if( runner!=null )
                 {
-                    addStartupScript(scriptFile);
+                    addScript(runner);
                 }
             }
         }
     }
-
-    private void loadOndemandScripts(Node node, File projectFile)
-    {
-        // get list of sub nodes
-        NodeList nodes = node.getChildNodes();
-
-        for(int i=0; i<nodes.getLength(); i++ )
-        {
-            Node scriptNode = nodes.item(i);
-            if( scriptNode.getNodeName().compareTo("script")==0 )
-            {
-                File scriptFile = loadScript(scriptNode, projectFile, true);
-                if( scriptFile!=null )
-                {
-                    addScript(scriptFile);
-                }
-            }
-        }
-    }
-  
-    private static File loadScript(Node node, File projectFile, boolean promptUser)
-    {
-        // find "rel"
-        Node rel = XMLTools.findChild(node, "rel");
-        if( rel != null )
-        {
-            // try to load file from relative path
-            String relativePath = rel.getTextContent();
-            String absolutePath = FileTools.makeAbsolute(projectFile, relativePath);
-            File file = new File(absolutePath);
-            if( file.exists()==true )
-            {
-                return file;
-            }
-        }
-
-        // find "abs"
-        Node abs = XMLTools.findChild(node, "abs");
-        if( abs == null )
-        {
-            throw new RuntimeException("malformed input");
-        }
-
-        String path = abs.getTextContent();
-        File file = new File(path);
-        if( file.exists()==true )
-        {
-            return file;
-        }
-
-        // Print error
-        System.out.println("No file found for script "+file.getPath());
-
-        // IF NO FILE FOUND, PROMPT USER:
-        if(promptUser==true)
-        {
-            // create error message box with 2 buttons:
-            return GUITools.promptUserFileNotFound(null, file);
-        }
-
-        return null;
-    }
-
-
-
-
-
-
 
 
 
@@ -555,8 +548,6 @@ extends ModbusPalProject2
         out.write( openTag.getBytes() );
 
         saveParameters(out);
-        generatorFactory.save(out, projectFile);
-        bindingFactory.save(out, projectFile);
         saveAutomations(out);
         saveSlaves(out);
         saveScripts(out, projectFile);
@@ -698,49 +689,23 @@ extends ModbusPalProject2
     private void saveScripts(OutputStream out, File projectFile)
     throws IOException
     {
-        saveStartupScripts(out,projectFile);
-        saveOndemandScripts(out,projectFile);
-    }
-
-    private void saveStartupScripts(OutputStream out, File projectFile)
-    throws IOException
-    {
-        if( startupScripts.isEmpty() )
+        if( scripts.isEmpty() )
         {
             return;
         }
 
-        String openTag = "<startup>\r\n";
+        String openTag = "<scripts>\r\n";
         out.write( openTag.getBytes() );
 
-        for(ScriptRunner runner:startupScripts)
+        for(ScriptRunner runner:scripts)
         {
             runner.save(out,projectFile);
         }
 
-        String closeTag = "</startup>\r\n";
+        String closeTag = "</scripts>\r\n";
         out.write(closeTag.getBytes());
     }
 
-    private void saveOndemandScripts(OutputStream out, File projectFile)
-    throws IOException
-    {
-        if( ondemandScripts.isEmpty() )
-        {
-            return;
-        }
-
-        String openTag = "<ondemand>\r\n";
-        out.write( openTag.getBytes() );
-
-        for(ScriptRunner runner:ondemandScripts)
-        {
-            runner.save(out,projectFile);
-        }
-
-        String closeTag = "</ondemand>\r\n";
-        out.write(closeTag.getBytes());
-    }
 
 
 
@@ -986,49 +951,34 @@ extends ModbusPalProject2
         }
     }
 
-    public void removeGeneratorScript(ScriptRunner runner)
-    {
-        removeAllGenerators(runner.getClassName());
-        generatorFactory.remove( runner );
-    }
-
+    @Deprecated
     public void addGeneratorInstanciator(Generator g)
     {
-        addGeneratorInstanciator(g.getClass());
+        addGeneratorInstantiator(g);
     }
 
-    public void addGeneratorInstanciator(Class<? extends Generator> clazz )
+
+    public void addGeneratorInstantiator(String name, Generator g)
     {
-        bindingFactory.add(clazz);
+        generatorFactory.add(name, g);
     }
 
-    public void addGeneratorInstanciator(File scriptFile)
+    public void addGeneratorInstantiator(Generator g)
     {
-        // newInstance a scripted generator handler
-        ScriptRunner sr = ScriptRunner.create(this, scriptFile);
-
-        // test if newInstance would work:
-        if( sr.newGenerator() != null )
-        {
-            // add the handler to the factory:
-            generatorFactory.add(sr);
-        }
-        else
-        {
-            ErrorMessage dialog = new ErrorMessage("Close");
-            dialog.setTitle("Script error");
-            dialog.append("The script probably contains errors and cannot be executed properly.");
-            dialog.setVisible(true);
-        }
+        generatorFactory.add(g);
     }
 
-    public GeneratorFactory getGeneratorFactory()
+    public InstantiableManager<Generator> getGeneratorFactory()
     {
         return generatorFactory;
     }
 
 
-
+    private void importOldGenerators(ScriptRunner runner)
+    {
+        runner.updateForOldGenerators();
+        runner.execute();
+    }
 
 
 
@@ -1057,52 +1007,38 @@ extends ModbusPalProject2
         }
     }
 
-    public void removeBindingScript(ScriptRunner runner)
-    {
-        removeAllBindings(runner.getClassName());
-        bindingFactory.remove( runner );
-    }
 
+    @Deprecated
     public void addBindingInstanciator(Binding b)
     {
-        addBindingInstanciator(b.getClass());
+        addBindingInstantiator(b);
     }
 
-    public void addBindingInstanciator(Class<? extends Binding> clazz )
+    public void addBindingInstantiator(Binding b)
     {
-        bindingFactory.add(clazz);
+        bindingFactory.add(b);
     }
 
-    public void addBindingInstanciator(File scriptFile)
+    public void addBindingInstantiator(String name, Binding b)
     {
-        // newInstance a scripted generator handler
-        ScriptRunner sr = ScriptRunner.create(this, scriptFile);
-
-        // test if newInstance would work:
-        if( sr.newBinding() != null )
-        {
-            // add the handler to the factory:
-            bindingFactory.add(sr);
-        }
-        else
-        {
-            ErrorMessage dialog = new ErrorMessage("Close");
-            dialog.setTitle("Script error");
-            dialog.append("The script probably contains errors and cannot be executed properly.");
-            dialog.setVisible(true);
-        }
+        bindingFactory.add(name, b);
     }
 
-    public BindingFactory getBindingFactory()
+
+    public InstantiableManager<Binding> getBindingFactory()
     {
         return bindingFactory;
     }
 
-
+    private void importOldBindings(ScriptRunner runner)
+    {
+        runner.updateForOldBindings();
+        runner.execute();
+    }
 
     //==========================================================================
     //
-    // BINDINGS
+    // FUNTIONS
     //
     //==========================================================================
 
@@ -1125,48 +1061,27 @@ extends ModbusPalProject2
         }
     }
 
-    public void removeFunctionScript(ScriptRunner runner)
+
+
+    @Deprecated
+    public void addFunctionInstanciator(ModbusPduProcessor mspp)
     {
-        removeAllFunctions(runner.getClassName());
-        functionFactory.remove( runner );
+        addFunctionInstantiator(mspp);
     }
 
 
-    public void addFunctionInstanciator(ModbusSlavePduProcessor mspp)
+    public void addFunctionInstantiator(String name, ModbusPduProcessor pi)
     {
-        addFunctionInstanciator(mspp.getClass(),mspp.getClassName());
+        functionFactory.add(name, pi);
     }
 
-    public void addFunctionInstanciator(Class<? extends ModbusSlavePduProcessor> clazz, String name )
+
+    public void addFunctionInstantiator(ModbusPduProcessor pi)
     {
-        functionFactory.add(clazz,name);
-    }
-    public void addFunctionInstanciator(Class<? extends ModbusSlavePduProcessor> clazz )
-    {
-        functionFactory.add(clazz);
+        functionFactory.add(pi);
     }
 
-    public void addFunctionInstanciator(File scriptFile)
-    {
-        // newInstance a scripted generator handler
-        ScriptRunner sr = ScriptRunner.create(this, scriptFile);
-
-        // test if newInstance would work:
-        if( sr.newFunction() != null )
-        {
-            // add the handler to the factory:
-            functionFactory.add(sr);
-        }
-        else
-        {
-            ErrorMessage dialog = new ErrorMessage("Close");
-            dialog.setTitle("Script error");
-            dialog.append("The script probably contains errors and cannot be executed properly.");
-            dialog.setVisible(true);
-        }
-    }
-
-    public FunctionFactory getFunctionFactory()
+    public InstantiableManager<ModbusPduProcessor> getFunctionFactory()
     {
         return functionFactory;
     }
@@ -1471,7 +1386,7 @@ extends ModbusPalProject2
     //==========================================================================
 
 
-    public ModbusSlavePduProcessor getSlavePduProcessor(int slaveID, byte functionCode)
+    public ModbusPduProcessor getSlavePduProcessor(int slaveID, byte functionCode)
     {
         ModbusSlave ms = getModbusSlave(slaveID, learnModeEnabled);
         if( ms != null )
@@ -1521,46 +1436,24 @@ extends ModbusPalProject2
     //
     //==========================================================================
 
-    public void addStartupScript(File scriptFile)
-    {
-        // create a new script handler
-        ScriptRunner runner = ScriptRunner.create(this, scriptFile);
-        startupScripts.add(runner);
-        notifyStartupScriptAdded(runner);
-    }
-
-    public void removeStartupScript(ScriptRunner script)
-    {
-        if( startupScripts.contains(script) )
-        {
-            startupScripts.remove(script);
-            notifyStartupScriptRemoved(script);
-        }
-    }
 
     public void addScript(File scriptFile)
     {
-        ScriptRunner runner = ScriptRunner.create(this, scriptFile);
-        ondemandScripts.add(runner);
+        ScriptRunner runner = ScriptRunner.create(this, scriptFile, ScriptRunner.SCRIPT_TYPE_ON_DEMAND);
+        addScript(runner);
+    }
+
+    public void addScript(ScriptRunner runner)
+    {
+        scripts.add(runner);
         notifyScriptAdded(runner);
     }
 
     public void removeScript(ScriptRunner runner)
     {
-        if( ondemandScripts.remove(runner)==true )
+        if( scripts.remove(runner)==true )
         {
             notifyScriptRemoved(runner);
-        }
-    }
-
-    private void notifyStartupScriptAdded(ScriptRunner runner)
-    {
-        synchronized(scriptListeners)
-        {
-            for(ScriptListener l:scriptListeners)
-            {
-                l.startupScriptAdded(runner);
-            }
         }
     }
 
@@ -1586,25 +1479,17 @@ extends ModbusPalProject2
         }
     }
 
-    private void notifyStartupScriptRemoved(ScriptRunner runner)
+    public Iterable<ScriptRunner> getScripts(int type)
     {
-        synchronized(scriptListeners)
+        ArrayList<ScriptRunner> output = new ArrayList<ScriptRunner>();
+        for(ScriptRunner sr:scripts )
         {
-            for(ScriptListener l:scriptListeners)
+            if( (sr.getType()==ScriptRunner.SCRIPT_TYPE_ANY) || (sr.getType()==type) )
             {
-                l.startupScriptRemoved(runner);
+                output.add(sr);
             }
         }
-    }
-
-    public Iterable<ScriptRunner> getStartupScripts()
-    {
-        return startupScripts;
-    }
-
-    public Iterable<ScriptRunner> getScripts()
-    {
-        return ondemandScripts;
+        return output;
     }
 
     //==========================================================================

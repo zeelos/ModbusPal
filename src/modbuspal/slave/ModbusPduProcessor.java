@@ -5,13 +5,14 @@
 
 package modbuspal.slave;
 
+import modbuspal.instanciator.Instantiable;
+
 /**
  *
  * @author nnovic
  */
-public interface ModbusSlavePduProcessor
+public interface ModbusPduProcessor
+extends Instantiable<ModbusPduProcessor>
 {
-
     public int processPDU(byte functionCode, int slaveID, byte[] buffer, int offset, boolean createIfNotExist);
-    public String getClassName();
 }

@@ -5,13 +5,13 @@
 package modbuspal.automation;
 
 import modbuspal.generator.Generator;
-import modbuspal.generator.GeneratorFactory;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import modbuspal.generator.GeneratorListener;
+import modbuspal.instanciator.InstantiableManager;
 import modbuspal.toolkit.XMLTools;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -238,12 +238,13 @@ implements Runnable
 
     /**
      * This method is used to add generators into the automation, by
-     * using the content of the node list.
+     * using the content of the node list. The generators are instantiated
+     * by using the provided InstantiableManager object.
      * @param nodes
      * @throws java.lang.InstantiationException
      * @throws java.lang.IllegalAccessException
      */
-    public void loadGenerators(NodeList nodes, GeneratorFactory gf)
+    public void loadGenerators(NodeList nodes, InstantiableManager<Generator> gf)
     throws InstantiationException, IllegalAccessException
     {
         for(int i=0; i<nodes.getLength(); i++)
@@ -252,7 +253,7 @@ implements Runnable
             if( node.getNodeName().compareTo("generator")==0 )
             {
                 String className = XMLTools.getAttribute("class", node);
-                Generator gen = gf.newGenerator( className );
+                Generator gen = gf.newInstance( className );
 
                 if( gen==null )
                 {

@@ -10,7 +10,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import modbuspal.binding.Binding;
 import modbuspal.generator.Generator;
-import modbuspal.slave.ModbusSlavePduProcessor;
+import modbuspal.slave.ModbusPduProcessor;
 
 /**
  * A Instanciator is an object that is able to create object instances of a given class.
@@ -18,7 +18,7 @@ import modbuspal.slave.ModbusSlavePduProcessor;
  * instanciate objects.
  * @author nnovic
  */
-public interface Instanciator
+public interface Instantiable<T>
 {
     /**
      * Get the classname of the instanciated object. This function
@@ -29,34 +29,9 @@ public interface Instanciator
     public String getClassName();
 
     /**
-     * writes the instanciator's description into the output stream, making
-     * all paths relative to projectFile whenever possible.
-     * @param out
-     * @param projectFile
-     */
-    public void save(OutputStream out, File projectFile) throws IOException;
-
-    /**
      * Creates a new object instance.
      * @return an instance of the object as defined by this instanciator.
      */
-    public Generator newGenerator();
+    public T newInstance() throws InstantiationException, IllegalAccessException;
 
-    /**
-     * Creates a new object instance.
-     * @return an instance of the object as defined by this instanciator.
-     */
-    public Binding newBinding();
-
-    /**
-     * Creates a new object instance.
-     * @return an instance of the object as defined by this instanciator.
-     */
-    public ModbusSlavePduProcessor newFunction();
-
-    /**
-     * Returns the complete path of the script file.
-     * @return complete path of the script file.
-     */
-    public String getPath();
 }

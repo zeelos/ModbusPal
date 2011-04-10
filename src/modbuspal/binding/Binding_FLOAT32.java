@@ -5,8 +5,6 @@
 
 package modbuspal.binding;
 
-import modbuspal.automation.Automation;
-
 /**
  *
  * @author nnovic
@@ -28,7 +26,7 @@ extends Binding
     }
 
     @Override
-    protected int getRegister(int rank, double value)
+    public int getRegister(int rank, double value)
     {
         // get current value and cast it as an int
         float conv = (float)value;

@@ -10,7 +10,11 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
@@ -29,7 +33,7 @@ import org.w3c.dom.NodeList;
  * @author nnovic
  */
 public class ModbusRegisters
-implements ModbusSlavePduProcessor, TableModel, ModbusPalXML, ModbusConst
+implements ModbusPduProcessor, TableModel, ModbusPalXML, ModbusConst
 {
 
     class RegisterCopy
@@ -60,9 +64,9 @@ implements ModbusSlavePduProcessor, TableModel, ModbusPalXML, ModbusConst
     //private Vector<Integer> registers = new Vector<Integer>(65536);
     //private Hashtable<Integer,Integer> values = new Hashtable<Integer,Integer>(65536);
     private ModbusValuesMap values = new ModbusValuesMap();
-    private Hashtable<Integer,String> names = new Hashtable<Integer,String>(65536);
+    private HashMap<Integer,String> names = new HashMap<Integer,String>(65536);
     private ArrayList<TableModelListener> tableModelListeners = new ArrayList<TableModelListener>();
-    private Hashtable<Integer,Binding> bindings = new Hashtable<Integer,Binding>(65536);
+    private HashMap<Integer,Binding> bindings = new HashMap<Integer,Binding>(65536);
     private int addressOffset = 1;
 
     //==========================================================================
@@ -71,7 +75,7 @@ implements ModbusSlavePduProcessor, TableModel, ModbusPalXML, ModbusConst
     //
     //==========================================================================
 
-
+    @Override
     public int processPDU(byte functionCode, int slaveID, byte[] buffer, int offset, boolean createIfNotExist)
     {
         switch( functionCode )
@@ -84,10 +88,20 @@ implements ModbusSlavePduProcessor, TableModel, ModbusPalXML, ModbusConst
         return -1;
     }
 
+    @Override
     public String getClassName()
     {
         return getClass().getSimpleName();
     }
+
+    @Override
+    public ModbusPduProcessor newInstance()
+    throws InstantiationException, IllegalAccessException
+    {
+        return getClass().newInstance();
+    }
+
+
 
     private int readWriteMultipleRegisters(byte functionCode, byte[] buffer, int offset, boolean createIfNotExist)
     {
@@ -603,10 +617,12 @@ implements ModbusSlavePduProcessor, TableModel, ModbusPalXML, ModbusConst
 
     public void removeAllBindings(String classname)
     {
-        Enumeration<Integer> addresses = bindings.keys();
-        while( addresses.hasMoreElements() )
+        Set<Integer> addressesSet = bindings.keySet();
+        Integer addressesArray[] = new Integer[0];
+        addressesArray = addressesSet.toArray(addressesArray);
+        for(int i=0; i<addressesArray.length; i++)
         {
-            Integer address = addresses.nextElement();
+            Integer address = addressesArray[i];
             Binding b = bindings.get(address);
             if( b.getClassName().compareTo(classname)==0 )
             {
@@ -779,10 +795,9 @@ implements ModbusSlavePduProcessor, TableModel, ModbusPalXML, ModbusConst
     Collection<String> getRequiredAutomations()
     {
         ArrayList<String> automationNames = new ArrayList<String>();
-        Enumeration<Binding> en = bindings.elements();
-        while( en.hasMoreElements() )
+        Collection<Binding> en = bindings.values();
+        for(Binding b:en)
         {
-            Binding b = en.nextElement();
             String n = b.getAutomationName();
             if( automationNames.contains(n)==false )
             {

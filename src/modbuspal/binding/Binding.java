@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import modbuspal.automation.Automation;
 import modbuspal.automation.AutomationExecutionListener;
+import modbuspal.instanciator.Instantiable;
 import modbuspal.slave.ModbusRegisters;
 
 /**
@@ -16,7 +17,7 @@ import modbuspal.slave.ModbusRegisters;
  * @author nnovic
  */
 public abstract class Binding
-implements AutomationExecutionListener, Cloneable
+implements AutomationExecutionListener, Cloneable, Instantiable<Binding>
 {
 
     @Override
@@ -99,7 +100,7 @@ implements AutomationExecutionListener, Cloneable
     }
 
 
-    protected abstract int getRegister(int rank, double value);
+    public abstract int getRegister(int rank, double value);
 
 
     public final boolean getCoil()
@@ -128,8 +129,18 @@ implements AutomationExecutionListener, Cloneable
         return automation.getName();
     }
 
+    @Override
     public String getClassName()
     {
         return getClass().getSimpleName();
     }
+
+    @Override
+    public Binding newInstance()
+    throws InstantiationException, IllegalAccessException
+    {
+        return getClass().newInstance();
+    }
+
+
 }

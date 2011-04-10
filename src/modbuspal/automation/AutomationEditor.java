@@ -16,9 +16,8 @@
 package modbuspal.automation;
 
 import modbuspal.generator.Generator;
-import modbuspal.generator.GeneratorFactory;
-import modbuspal.instanciator.Instanciator;
-import modbuspal.instanciator.InstanciatorListener;
+import modbuspal.instanciator.Instantiable;
+import modbuspal.instanciator.InstantiableManagerListener;
 import modbuspal.generator.GeneratorRenderer;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -34,7 +33,7 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JTextField;
 import javax.xml.parsers.ParserConfigurationException;
-import modbuspal.instanciator.InstanciatorManager;
+import modbuspal.instanciator.InstantiableManager;
 import modbuspal.main.ListLayout;
 import modbuspal.main.ModbusPalPane;
 import modbuspal.script.ScriptManagerDialog;
@@ -52,11 +51,11 @@ import org.xml.sax.SAXException;
  */
 public class AutomationEditor
 extends javax.swing.JDialog
-implements AutomationEditionListener, AutomationExecutionListener, InstanciatorListener
+implements AutomationEditionListener, AutomationExecutionListener, InstantiableManagerListener
 {
     private final Automation automation;
     private final ListLayout listLayout;
-    private final GeneratorFactory generatorFactory;
+    private final InstantiableManager<Generator> generatorFactory;
     private final ModbusPalPane modbusPalPane;
 
     /** Creates new form AutomationEditor */
@@ -86,7 +85,7 @@ implements AutomationEditionListener, AutomationExecutionListener, InstanciatorL
             {
                 try 
                 {
-                    Generator gen = generatorFactory.newGenerator(className);
+                    Generator gen = generatorFactory.newInstance(className);
                     automation.addGenerator(gen);
                 }
                 catch (InstantiationException ex)
@@ -742,18 +741,18 @@ implements AutomationEditionListener, AutomationExecutionListener, InstanciatorL
     }
 
     @Override
-    public void instanciatorAdded(InstanciatorManager factory, Instanciator def)
+    public void instanciatorAdded(InstantiableManager factory, Instantiable def)
     {
-        if( factory instanceof GeneratorFactory )
+        if( def instanceof Generator )
         {
             addGeneratorButton(def.getClassName());
         }
     }
 
     @Override
-    public void instanciatorRemoved(InstanciatorManager factory, Instanciator def)
+    public void instanciatorRemoved(InstantiableManager factory, Instantiable def)
     {
-        if( factory instanceof GeneratorFactory )
+        if( def instanceof Generator )
         {
             removeGeneratorButton(def.getClassName());
         }

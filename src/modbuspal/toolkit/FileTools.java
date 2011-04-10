@@ -5,7 +5,12 @@
 
 package modbuspal.toolkit;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.URI;
 
 /**
@@ -105,5 +110,33 @@ public class FileTools
         }
 
         return result.getPath();
+    }
+
+    public static void append(File file, String s)
+    throws IOException
+    {
+        FileWriter fw = new FileWriter(file);
+        fw.append(s);
+        fw.close();
+    }
+
+    public static boolean containsLine(File file, String line)
+    throws FileNotFoundException, IOException
+    {
+        FileReader fr = new FileReader(file);
+        BufferedReader br = new BufferedReader(fr);
+        boolean rc = false;
+        
+        String l = br.readLine();
+        while( l!=null )
+        {
+            if( l.contains(line)==true )
+            {
+                rc = true;
+            }
+            l = br.readLine();
+        }
+        fr.close();
+        return rc;
     }
 }

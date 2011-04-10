@@ -297,7 +297,7 @@ extends javax.swing.JDialog
         {
             try
             {
-                b = modbusPalProject.getBindingFactory().newBinding(bindingname);
+                b = modbusPalProject.getBindingFactory().newInstance(bindingname);
             }
             catch(InstantiationException ex)
             {

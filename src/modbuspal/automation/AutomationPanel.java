@@ -17,7 +17,8 @@ import modbuspal.main.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import javax.swing.event.AncestorListener;
-import modbuspal.generator.GeneratorFactory;
+import modbuspal.generator.Generator;
+import modbuspal.instanciator.InstantiableManager;
 
 /**
  *
@@ -31,7 +32,7 @@ implements WindowListener, AutomationExecutionListener, AncestorListener
     private final Automation automation;
     private final AutomationEditor automationEditor;
     private final ModbusPalProject modbusPalProject;
-    private final GeneratorFactory generatorFactory;
+    private final InstantiableManager<Generator> generatorFactory;
     private final ModbusPalPane modbusPalPane;
 
     /** Creates new form listOfSlavesCellRenderer */

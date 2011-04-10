@@ -5,10 +5,7 @@
 
 package modbuspal.script;
 
-import java.io.IOException;
-import java.io.OutputStream;
 import modbuspal.generator.Generator;
-import org.w3c.dom.NodeList;
 
 /**
  * If you create a generator with Python, you have to subclass PythonGenerator
@@ -24,10 +21,7 @@ import org.w3c.dom.NodeList;
  */
 public class PythonGenerator
 extends Generator
-implements PythonInstanciatorInterface
 {
-    private PythonRunner instanciator;
-    
     /**
      * If your Python generator needs to make some initialization, you have to
      * override this method and put your initialization code into it. Because of the
@@ -39,19 +33,6 @@ implements PythonInstanciatorInterface
     {
         return;
     }
-
-    /**
-     * Returns the "human readable" class name for this Python generator.
-     * The Java class resulting from the interpretation of the Python generator
-     * script would not have a comprehensive class name.
-     * @return the "human readable" class name of this generator.
-     */
-    @Override
-    public String getClassName()
-    {
-        return instanciator.getClassName();
-    }
-
 
 
     /**
@@ -75,56 +56,28 @@ implements PythonInstanciatorInterface
      * because Jython doesn't handle protected methods.
      * @param iconUrl
      */
-    @Override
+    /*@Override
     public boolean setIcon(String iconUrl)
     {
         // try the standard method:
         if( super.setIcon(iconUrl)==false )
         {
             // if standard method failed, try this
-            String fullpath = instanciator.scriptFile.getAbsolutePath();
-            String filename = instanciator.scriptFile.getName();
+            String fullpath = instanciator.getScriptFile().getAbsolutePath();
+            String filename = instanciator.getScriptFile().getName();
             iconUrl = fullpath.replace(filename, iconUrl);
             return super.setIcon(iconUrl);
         }
         return false;
-    }
+    }*/
 
 
-    public void install(PythonRunner inst)
-    {
-        instanciator = inst;
-    }
-
-
-    /**
-     * If the generator should save parameters, for example when a project file
-     * is saved, you have to override this method in order to write those
-     * parameters into the provided output stream, formatted in XML.
-     * This method is overriden in order to make it public, because Python doesn't
-     * handle protected methods. It doesn't do anything.
-     * @param out the output stream to write into.
-     */
     @Override
-    public void saveSettings(OutputStream out)
-    throws IOException
+    public Generator newInstance()
+    throws InstantiationException, IllegalAccessException
     {
-        return;
-    }
-
-
-    /**
-     * If the generator should load parameters, for example when a project file
-     * is loaded, you have to override this method in order to process those
-     * parameters. Each item in the provided node list is a node that defines the
-     * parameters of this generator.
-     * This method is overriden in order to make it public, because Python doesn't
-     * handle protected methods. It doesn't do anything.
-     * @param childNodes list of nodes describing the parameters of this generator.
-     */
-    @Override
-    public void loadSettings(NodeList childNodes)
-    {
-        return;
+        PythonGenerator pg = (PythonGenerator)super.newInstance();
+        pg.init();
+        return pg;
     }
 }

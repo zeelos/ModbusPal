@@ -37,6 +37,12 @@ public class ModbusTools
             return rc;
     }
 
+    public static void setUint8(byte[] buffer, int offset, int value)
+    {
+        int rc = value & 0xFF;
+        buffer[offset] = (byte)rc;
+    }
+
     public static void setBit(byte[] buffer, int offset, int value)
     {
         // get byte

@@ -32,7 +32,7 @@ implements ModbusPalXML, ModbusConst
     private String customName;
     private ArrayList<ModbusSlaveListener> listeners = new ArrayList<ModbusSlaveListener>();
     private int modbusImplementation = IMPLEMENTATION_MODBUS;
-    private ModbusSlavePduProcessor pduProcessors[] = new ModbusSlavePduProcessor[128];
+    private ModbusPduProcessor pduProcessors[] = new ModbusPduProcessor[128];
 
     private ModbusSlave()
     {
@@ -78,7 +78,7 @@ implements ModbusPalXML, ModbusConst
     }
 
 
-    public ModbusSlavePduProcessor getPduProcessor(byte functionCode)
+    public ModbusPduProcessor getPduProcessor(byte functionCode)
     {
         if( functionCode>=0x80)
         {
@@ -87,9 +87,9 @@ implements ModbusPalXML, ModbusConst
         return pduProcessors[functionCode];
     }
 
-    public ModbusSlavePduProcessor[] getPduProcessorInstances()
+    public ModbusPduProcessor[] getPduProcessorInstances()
     {
-        ArrayList<ModbusSlavePduProcessor> instances = new ArrayList<ModbusSlavePduProcessor>();
+        ArrayList<ModbusPduProcessor> instances = new ArrayList<ModbusPduProcessor>();
         for(int i=0; i<pduProcessors.length;i++)
         {
             if(pduProcessors[i]!=null)
@@ -101,17 +101,17 @@ implements ModbusPalXML, ModbusConst
             }
         }
         
-        ModbusSlavePduProcessor output[] = new ModbusSlavePduProcessor[0];
+        ModbusPduProcessor output[] = new ModbusPduProcessor[0];
         return instances.toArray(output);
     }
 
-    public ModbusSlavePduProcessor setPduProcessor(byte functionCode, ModbusSlavePduProcessor mspp)
+    public ModbusPduProcessor setPduProcessor(byte functionCode, ModbusPduProcessor mspp)
     {
         if( functionCode>=0x80)
         {
             throw new ArrayIndexOutOfBoundsException(functionCode);
         }
-        ModbusSlavePduProcessor old = pduProcessors[functionCode];
+        ModbusPduProcessor old = pduProcessors[functionCode];
         pduProcessors[functionCode]=mspp;
         return old;
     }
@@ -422,64 +422,6 @@ implements ModbusPalXML, ModbusConst
     }
 
 
-/*    public void exportSlave(File exportFile, boolean withBindings, boolean withAutomations)
-    throws FileNotFoundException, IOException
-    {
-        OutputStream out = new FileOutputStream(exportFile);
-
-        String xmlTag = "<?xml version=\"1.0\"?>\r\n";
-        out.write( xmlTag.getBytes() );
-
-        String docTag = "<!DOCTYPE modbuspal_slave SYSTEM \"modbuspal.dtd\">\r\n";
-        out.write( docTag.getBytes() );
-
-        String openTag = "<modbuspal_slave>\r\n";
-        out.write( openTag.getBytes() );
-
-        // if needed, first exportSlave automations (they need to be imported first!)
-        if( withAutomations == true )
-        {
-            String names[] = getRequiredAutomations();
-            for(int i=0; i<names.length; i++)
-            {
-                Automation automation = ModbusPal.getAutomation( names[i] );
-                automation.save(out);
-            }
-        }
-        save(out,withBindings);
-
-        String closeTag = "</modbuspal_slave>\r\n";
-        out.write( closeTag.getBytes() );
-        out.close();
-    }
-
-
-    public void importSlave(File importFile, int index, ModbusPalProject modbusPalProject, boolean withBindings, boolean withAutomations)
-    throws ParserConfigurationException, SAXException, IOException, InstantiationException, IllegalAccessException
-    {
-        Document doc = XMLTools.ParseXML(importFile);
-
-        // normalize text representation
-        doc.getDocumentElement().normalize();
-
-        // how many slaves in the file?
-        NodeList slaves = doc.getElementsByTagName("slave");
-
-        Node slaveNode = slaves.item(index);
-
-        if( withAutomations==true )
-        {
-            modbusPalProject.loadAutomations(doc);
-        }
-
-        load(slaveNode,true);
-
-        if( withBindings==true )
-        {
-            modbusPalProject.loadBindings(doc, this);
-        }
-    }
-*/
 
 
 

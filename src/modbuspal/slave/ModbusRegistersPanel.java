@@ -16,7 +16,6 @@ import java.util.logging.Logger;
 import modbuspal.automation.Automation;
 import modbuspal.binding.Binding;
 import modbuspal.binding.BindingEditor;
-import modbuspal.binding.BindingFactory;
 import modbuspal.toolkit.GUITools;
 import modbuspal.main.ModbusConst;
 
@@ -191,7 +190,7 @@ implements ModbusConst
                 try
                 {
                     // instanciate the binding:
-                    Binding binding = slaveDialog.modbusPalProject.getBindingFactory().newBinding(selectedClass);
+                    Binding binding = slaveDialog.modbusPalProject.getBindingFactory().newInstance(selectedClass);
                     //Binding binding = BindingFactory.newBinding(selectedClass);
                     binding.setup(source, selectedOrder);
                     // do the binding:

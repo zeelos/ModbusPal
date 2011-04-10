@@ -15,6 +15,7 @@ import java.awt.Frame;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
+import modbuspal.instanciator.InstantiableManager;
 
 /**
  *
@@ -39,7 +40,7 @@ extends javax.swing.JDialog
 
         @Override
         public Object getElementAt(int index) {
-            return FunctionFactory.makeInstanceName( (ModbusSlavePduProcessor)super.getElementAt(index) );
+            return InstantiableManager.makeInstanceName( (ModbusPduProcessor)super.getElementAt(index) );
         }
 
     }
@@ -47,26 +48,27 @@ extends javax.swing.JDialog
     class ListOfFunctions
     extends DefaultComboBoxModel
     {
-        private final FunctionFactory ffactory;
-        ListOfFunctions(FunctionFactory ff) {
+        private final InstantiableManager<ModbusPduProcessor> ffactory;
+        ListOfFunctions(InstantiableManager<ModbusPduProcessor> ff) {
             super(ff.getList());
             ffactory = ff;
         }
-        ModbusSlavePduProcessor createFuncion()
+        ModbusPduProcessor createFuncion()
         throws InstantiationException, IllegalAccessException
         {
             String sel = (String)getSelectedItem();
-            return ffactory.newFunction(sel);
+            return ffactory.newInstance(sel);
         }
     }
 
     /** Creates new form AddFunctionsDialog */
-    public AddFunctionsDialog(Frame parent, FunctionFactory ff, ModbusSlave slave)
+    public AddFunctionsDialog(Frame parent, InstantiableManager<ModbusPduProcessor> ff, ModbusSlave slave)
     {
         super(parent, true);
         listOfFunctions = new ListOfFunctions(ff);
         listOfInstances = new ListOfInstances(slave);
         initComponents();
+        newRadioButton.requestFocus();
     }
 
     /** This method is called from within the constructor to
@@ -177,7 +179,7 @@ extends javax.swing.JDialog
         return existingRadioButton.isSelected();
     }
 
-    ModbusSlavePduProcessor getInstance()
+    ModbusPduProcessor getInstance()
     {
         if( isOK == false )
         {
@@ -199,7 +201,7 @@ extends javax.swing.JDialog
         }
         else if( isExistingInstance() )
         {
-            return (ModbusSlavePduProcessor)listOfInstances.getSelectedItem();
+            return (ModbusPduProcessor)listOfInstances.getSelectedItem();
         }
         return null;
     }

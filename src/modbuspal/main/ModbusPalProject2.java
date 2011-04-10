@@ -42,7 +42,7 @@ public abstract class ModbusPalProject2
         }
         else if(old!=null)
         {
-            notifySlaveRemoved(null);
+            notifySlaveRemoved(old);
         }
 
         return old;

@@ -15,6 +15,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
+import modbuspal.instanciator.InstantiableManager;
 import modbuspal.main.ModbusConst;
 import modbuspal.toolkit.GUITools;
 
@@ -29,7 +30,7 @@ implements ModbusConst
     private final ModbusSlaveDialog slaveDialog;
     private final ModbusSlave modbusSlave;
     private final FunctionTable functionTableModel;
-    private final FunctionFactory ffactory;
+    private final InstantiableManager<ModbusPduProcessor> ffactory;
 
     class FunctionTable
     extends AbstractTableModel
@@ -101,10 +102,10 @@ implements ModbusConst
                 case 2:
                 {
                     byte fc = USER_DEFINED_FUNCTION_CODES[rowIndex];
-                    ModbusSlavePduProcessor mspp = slave.getPduProcessor(fc);
+                    ModbusPduProcessor mspp = slave.getPduProcessor(fc);
                     if(mspp!=null)
                     {
-                        return FunctionFactory.makeInstanceName(mspp); // mspp.getClassName();
+                       return InstantiableManager.makeInstanceName(mspp); // mspp.getClassName();
                     }
                 }
                 default: return null;
@@ -119,7 +120,7 @@ implements ModbusConst
     }
 
     /** Creates new form ModbusRegistersPanel */
-    public ModbusFunctionsPanel(ModbusSlaveDialog parent, FunctionFactory ff)
+    public ModbusFunctionsPanel(ModbusSlaveDialog parent , InstantiableManager<ModbusPduProcessor> ff)
     {
         slaveDialog = parent;
         modbusSlave = parent.getModbusSlave();
@@ -190,20 +191,14 @@ implements ModbusConst
             dialog.setVisible(true);
 
             // retrieve the selected function
-            ModbusSlavePduProcessor source = dialog.getInstance();
+            ModbusPduProcessor source = dialog.getInstance();
             if( source == null )
             {
                 slaveDialog.setStatus("Function selected cancelled by user.");
                 return;
             }
-/*
-            // get the selected binding order
-            int selectedOrder = dialog.getSelectedOrder();
-            
-            // get the selected binding class
-            String selectedClass = dialog.getSelectedClass();
-*/
-            // get the selected rows
+
+             // get the selected rows
             //int selectedAddresses[] = ((ModbusRegistersTable)functionsTable).getSelectedAddresses();
             int selectedRows[] = functionsTable.getSelectedRows();
 

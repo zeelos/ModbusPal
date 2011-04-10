@@ -18,26 +18,26 @@ import java.util.logging.Logger;
 import javax.swing.JPanel;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
+import modbuspal.main.ModbusPalProject;
 
 /**
  *
  * @author nnovic
  */
-public abstract class ScriptRunnerPanel
+public class ScriptRunnerPanel
 extends JPanel
 implements AncestorListener
 {
-    private ScriptRunner runner;
+    private final ScriptRunner runner;
+    private final ModbusPalProject project;
 
     /** Creates new form ScriptRunnerPanel */
-    public ScriptRunnerPanel(ScriptRunner def, boolean canExecute)
+    public ScriptRunnerPanel(ModbusPalProject mpp, ScriptRunner def)
     {
         runner = def;
+        project = mpp;
         initComponents();
-        if( !canExecute )
-        {
-            remove(executeButton);
-        }
+        typeComboBox.setSelectedIndex( runner.getType() );
     }
 
 
@@ -46,9 +46,13 @@ implements AncestorListener
         return runner;
     }
     
-    protected abstract void deleteScript();
-    
+    public void deleteScript()
+    {
+        System.out.println("Deleting script " + runner.getName() + "..." );
+        project.removeScript( runner );
 
+    }
+    
     boolean contains(ScriptRunner sr)
     {
         return (sr==runner);
@@ -64,6 +68,7 @@ implements AncestorListener
     private void initComponents() {
 
         classnameLabel = new javax.swing.JLabel();
+        typeComboBox = new javax.swing.JComboBox();
         executeButton = new javax.swing.JButton();
         deleteButton = new javax.swing.JButton();
         openButton = new javax.swing.JButton();
@@ -71,9 +76,17 @@ implements AncestorListener
         setBorder(javax.swing.BorderFactory.createEtchedBorder());
         setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
-        classnameLabel.setText(runner.getClassName());
+        classnameLabel.setText(runner.getName());
         classnameLabel.setToolTipText(runner.getPath());
         add(classnameLabel);
+
+        typeComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "On demand", "After init", "Before init" }));
+        typeComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                typeComboBoxActionPerformed(evt);
+            }
+        });
+        add(typeComboBox);
 
         executeButton.setText("Execute");
         executeButton.addActionListener(new java.awt.event.ActionListener() {
@@ -102,9 +115,7 @@ implements AncestorListener
     }// </editor-fold>//GEN-END:initComponents
 
     private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
-
         deleteScript();
-
     }//GEN-LAST:event_deleteButtonActionPerformed
 
     private void executeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_executeButtonActionPerformed
@@ -112,17 +123,16 @@ implements AncestorListener
     }//GEN-LAST:event_executeButtonActionPerformed
 
     private void openButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_openButtonActionPerformed
-
-        try
-        {
-            Desktop.getDesktop().open( runner.scriptFile );
-        }
-        catch (IOException ex)
-        {
+        try {
+            Desktop.getDesktop().open( runner.getScriptFile() );
+        } catch (IOException ex) {
             Logger.getLogger(ScriptRunnerPanel.class.getName()).log(Level.SEVERE, null, ex);
         }
-
     }//GEN-LAST:event_openButtonActionPerformed
+
+    private void typeComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_typeComboBoxActionPerformed
+        runner.setType( typeComboBox.getSelectedIndex() );
+    }//GEN-LAST:event_typeComboBoxActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -130,6 +140,7 @@ implements AncestorListener
     private javax.swing.JButton deleteButton;
     private javax.swing.JButton executeButton;
     private javax.swing.JButton openButton;
+    private javax.swing.JComboBox typeComboBox;
     // End of variables declaration//GEN-END:variables
 
     @Override
