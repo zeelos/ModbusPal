@@ -276,5 +276,13 @@ implements Instantiable<Generator>
         return getClass().newInstance();
     }
 
-    
+    @Override
+    public void init()
+    {
+    }
+
+    @Override
+    public void reset()
+    {
+    }
 }

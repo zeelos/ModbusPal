@@ -34,6 +34,16 @@ implements AutomationExecutionListener, Cloneable, Instantiable<Binding>
     {
     }
 
+    @Override
+    public void init()
+    {
+    }
+
+    @Override
+    public void reset()
+    {
+    }
+
     public void attach(ModbusRegisters l, int address)
     {
         registers = l;

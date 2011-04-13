@@ -22,18 +22,6 @@ import modbuspal.generator.Generator;
 public class PythonGenerator
 extends Generator
 {
-    /**
-     * If your Python generator needs to make some initialization, you have to
-     * override this method and put your initialization code into it. Because of the
-     * complexity of Java/Python integration, the Java constructor nor the __init__()
-     * function are garanteed to work.
-     * The default implementation does nothing.
-     */
-    public void init()
-    {
-        return;
-    }
-
 
     /**
      * Subclasses have to override this method in order to generate a dynamic

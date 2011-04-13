@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import modbuspal.generator.GeneratorListener;
 import modbuspal.instanciator.InstantiableManager;
+import modbuspal.toolkit.InstanceCounter;
 import modbuspal.toolkit.XMLTools;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -33,7 +34,7 @@ implements Runnable
     private boolean suspended = false;
     private boolean quit = false;
     private ArrayList<AutomationEditionListener> automationEditionListeners = new ArrayList<AutomationEditionListener>();
-    private ArrayList<AutomationExecutionListener> automationExecutionListeners = new ArrayList<AutomationExecutionListener>();
+    private InstanceCounter<AutomationExecutionListener> automationExecutionListeners = new InstanceCounter<AutomationExecutionListener>();
     private ArrayList<GeneratorListener> generatorListeners = new ArrayList<GeneratorListener>();
     private double currentValue = 0.0;
     private double initialValue = 0.0;
@@ -557,8 +558,7 @@ implements Runnable
 
     public boolean addAutomationExecutionListener(AutomationExecutionListener l)
     {
-        assert( automationExecutionListeners.contains(l) == false );
-        if( automationExecutionListeners.add(l)==true )
+        if( automationExecutionListeners.addInstance(l)==true )
         {
             System.out.println("AutomationExecutionListener added: "+l.hashCode());
             return true;
@@ -569,7 +569,7 @@ implements Runnable
     public boolean removeAutomationExecutionListener(AutomationExecutionListener l)
     {
 
-        if( automationExecutionListeners.remove(l)==true )
+        if( automationExecutionListeners.removeInstance(l)==true )
         {
             System.out.println("AutomationExecutionListener removed: "+l.hashCode());
             return true;
@@ -614,11 +614,11 @@ implements Runnable
 
     private String createOpenTag()
     {
-        StringBuffer tag = new StringBuffer("<automation");
-        tag.append(" name=\""+ uniqueName +"\"");
-        tag.append(" step=\""+ String.valueOf(stepDelay) +"\"");
-        tag.append(" loop=\""+ Boolean.toString(loop) +"\"");
-        tag.append(" init=\""+ Double.toString(initialValue) +"\"");
+        StringBuilder tag = new StringBuilder("<automation");
+        tag.append(" name=\"").append(uniqueName).append("\"");
+        tag.append(" step=\"").append(String.valueOf(stepDelay)).append("\"");
+        tag.append(" loop=\"").append(Boolean.toString(loop)).append("\"");
+        tag.append(" init=\"").append(Double.toString(initialValue)).append("\"");
         tag.append(">\r\n");
         return tag.toString();
     }

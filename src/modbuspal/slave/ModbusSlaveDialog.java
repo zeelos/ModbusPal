@@ -21,7 +21,9 @@ import java.util.Collection;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
+import javax.swing.JPanel;
 import javax.xml.parsers.ParserConfigurationException;
+import modbuspal.instanciator.InstantiableManager;
 import modbuspal.toolkit.XFileChooser;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -361,5 +363,52 @@ implements ModbusConst, ModbusSlaveListener
                 break;
         }
     }
+
+    @Override
+    public void modbusSlavePduProcessorChanged(ModbusSlave slave, byte functionCode, ModbusPduProcessor old, ModbusPduProcessor mspp)
+    {
+        // check if old instance's panel must be removed
+        if(old!=null)
+        {
+            if( modbusSlave.containsPduProcessorInstance(old)==false )
+            {
+                removePane(old);
+            }
+        }
+
+        // check if new instance's panel must be added
+        if(mspp!=null)
+        {
+            if( modbusSlave.containsPduProcessorInstance(mspp)==false )
+            {
+                addPane(mspp);
+            }
+        }
+    }
+
+    private void addPane(ModbusPduProcessor mspp)
+    {
+        if(mspp!=null)
+        {
+            JPanel jp = mspp.getPduPane();
+            if( jp!=null )
+            {
+                jTabbedPane1.add( InstantiableManager.makeInstanceName(mspp), jp);
+            }
+        }
+    }
+
+    private void removePane(ModbusPduProcessor mspp)
+    {
+        if(mspp!=null)
+        {
+            JPanel jp = mspp.getPduPane();
+            if( jp!=null )
+            {
+                jTabbedPane1.remove(jp);
+            }
+        }
+    }
+
 
 }

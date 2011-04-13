@@ -5,13 +5,6 @@
 
 package modbuspal.instanciator;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.OutputStream;
-import modbuspal.binding.Binding;
-import modbuspal.generator.Generator;
-import modbuspal.slave.ModbusPduProcessor;
-
 /**
  * A Instanciator is an object that is able to create object instances of a given class.
  * This interface defines the methods that a class must implement in order to
@@ -34,4 +27,21 @@ public interface Instantiable<T>
      */
     public T newInstance() throws InstantiationException, IllegalAccessException;
 
+    /**
+     * This function will be called by ModbusPal after the instantiation,
+     * so that the subclasses can initialize themselves without relying on
+     * the constructor. For some subclasses, like the one written in Python
+     * for example, cannot rely on the calling of the constructor in order
+     * to initialize their members.
+     */
+    public void init();
+
+    /**
+     * This function will be called by ModbusPal when the instance is no longer
+     * needed, so that the subclasses can perform the necessary operation to
+     * terminate cleanly. The subclasses cannot rely on the calling of the
+     * Java destructor, because there no garantee as to if and when it will
+     * be called.
+     */
+    public void reset();
 }

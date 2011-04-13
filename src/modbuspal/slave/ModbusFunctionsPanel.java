@@ -228,24 +228,37 @@ implements ModbusConst
 }//GEN-LAST:event_setFunctionsButtonActionPerformed
 
     private void resetFunctoinsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetFunctoinsButtonActionPerformed
-/*
-        // get the selected rows
-        int addresses[] = ((ModbusRegistersTable)functionsTable).getSelectedAddresses();
+        // check the validty of current selection:
+        int rowCount = functionsTable.getSelectedRowCount();
 
-        if( addresses.length<=0 )
+        if( rowCount <= 0 )
         {
             return;
         }
 
-        // delete bindings
-        for( int i=0; i<addresses.length; i++ )
+        else
         {
-            registers.unbind(addresses[i]);
+             // get the selected rows
+            //int selectedAddresses[] = ((ModbusRegistersTable)functionsTable).getSelectedAddresses();
+            int selectedRows[] = functionsTable.getSelectedRows();
+
+            // bind all selected registers
+            for(int i=0;i<selectedRows.length;i++)
+            {
+                try
+                {
+                    byte functionCode = (Byte)functionsTable.getValueAt(selectedRows[i], FunctionTable.COL_FCODE);
+                    modbusSlave.setPduProcessor(functionCode, null);
+                }
+                catch(Exception ex)
+                {
+                    Logger.getLogger(ModbusSlaveDialog.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+            // refresh display
+            functionsTable.validate(); functionsTable.repaint();
+            slaveDialog.setStatus("Function completed.");
         }
-
-        slaveDialog.setStatus("Registers unbound.");
-        */
-
     }//GEN-LAST:event_resetFunctoinsButtonActionPerformed
 
 

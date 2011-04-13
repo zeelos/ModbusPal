@@ -11,10 +11,6 @@
 
 package modbuspal.slave;
 
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.event.HierarchyEvent;
-import java.awt.event.HierarchyListener;
 import javax.swing.event.AncestorEvent;
 import modbuspal.toolkit.GUITools;
 import modbuspal.main.*;
@@ -279,6 +275,11 @@ implements WindowListener, ModbusSlaveListener,AncestorListener
     public void modbusSlaveNameChanged(ModbusSlave slave, String newName)
     {
         nameTextField.setText(newName);
+    }
+
+    @Override
+    public void modbusSlavePduProcessorChanged(ModbusSlave slave, byte functionCode, ModbusPduProcessor old, ModbusPduProcessor mspp)
+    {
     }
 
     @Override

@@ -138,6 +138,13 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         scriptManagerDialog.setProject(modbusPalProject);
 
         System.out.printf("[%s] Project set\r\n", modbusPalProject.getName());
+
+        //- - - - - - - - - - -
+        // Refresh Display
+        //- - - - - - - - - - -
+
+        validate();
+        repaint();
     }
 
 
@@ -1539,12 +1546,17 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         // close all windows
     }
 
+    @Deprecated
     public void showScriptManagerDialog(int tabIndex)
+    {
+        showScriptManagerDialog();
+    }
+
+    public void showScriptManagerDialog()
     {
         scriptManagerDialog.setModalExclusionType(ModalExclusionType.APPLICATION_EXCLUDE);
         scriptManagerDialog.setVisible(true);
         scriptsToggleButton.setSelected(true);
-        scriptManagerDialog.setSelectedTab(tabIndex);
     }
 
     public ModbusPalProject getProject()

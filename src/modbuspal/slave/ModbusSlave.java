@@ -9,10 +9,12 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Set;
 import modbuspal.automation.NullAutomation;
 import modbuspal.main.ModbusConst;
 import modbuspal.main.ModbusPalProject;
 import modbuspal.main.ModbusPalXML;
+import modbuspal.toolkit.InstanceCounter;
 import modbuspal.toolkit.XMLTools;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
@@ -32,7 +34,9 @@ implements ModbusPalXML, ModbusConst
     private String customName;
     private ArrayList<ModbusSlaveListener> listeners = new ArrayList<ModbusSlaveListener>();
     private int modbusImplementation = IMPLEMENTATION_MODBUS;
+    
     private ModbusPduProcessor pduProcessors[] = new ModbusPduProcessor[128];
+    private InstanceCounter<ModbusPduProcessor> pduProcessorInstances = new InstanceCounter<ModbusPduProcessor>();
 
     private ModbusSlave()
     {
@@ -87,32 +91,86 @@ implements ModbusPalXML, ModbusConst
         return pduProcessors[functionCode];
     }
 
+    public boolean containsPduProcessorInstance(ModbusPduProcessor mpp)
+    {
+        return pduProcessorInstances.contains(mpp);
+    }
+
+
+    /**
+     * return an array with all the instances of ModbusPduProcessor that are
+     * use by this slave. Note that an instance of ModubsPduProcessor may be
+     * used for more than one MODBUS function code, but this list returns no
+     * duplicates.
+     * @return
+     */
     public ModbusPduProcessor[] getPduProcessorInstances()
     {
-        ArrayList<ModbusPduProcessor> instances = new ArrayList<ModbusPduProcessor>();
-        for(int i=0; i<pduProcessors.length;i++)
-        {
-            if(pduProcessors[i]!=null)
-            {
-                if( instances.contains(pduProcessors[i])==false )
-                {
-                    instances.add(pduProcessors[i]);
-                }
-            }
-        }
-        
+        Set<ModbusPduProcessor> instances = pduProcessorInstances.getInstanceSet();
         ModbusPduProcessor output[] = new ModbusPduProcessor[0];
         return instances.toArray(output);
     }
 
     public ModbusPduProcessor setPduProcessor(byte functionCode, ModbusPduProcessor mspp)
     {
+        // reject if function code is is the range reserverd for exception codes
         if( functionCode>=0x80)
         {
             throw new ArrayIndexOutOfBoundsException(functionCode);
         }
+
+        //
+        // clear the old reference for the specified functionCode:
+        //
+
         ModbusPduProcessor old = pduProcessors[functionCode];
+        if( old!=null )
+        {
+            // remove reference for the given function code
+            pduProcessors[functionCode]=null;
+            pduProcessorInstances.removeInstance(old);
+
+            // if there is no more instances of the old processor
+            // being used, its "reset" method must be called:
+            if( pduProcessorInstances.getInstanceCount(old)==0 )
+            {
+                old.reset();
+            }
+        }
+
+        // if the new processor is not null, and there is no known
+        // instance of this processor yet, then it is important to
+        // initialize the instance now.
+        // the main reason for that is when notifyPduProcessorChanged() is
+        // triggered, the ModbusSlaveDialog will call the getPduPane() function,
+        // but the panel is most likely to be created in the init() function.
+        if( mspp!=null )
+        {
+            if( pduProcessorInstances.getInstanceCount(mspp)==0 )
+            {
+                mspp.init();
+            }
+        }
+
+        // notify the listeners of the modification. It is important
+        // to do it now, when the old processor has been removed and
+        // the new one has not been set yet, so thath listeners that
+        // rely on counting the references are not misguided.
+        notifyPduProcessorChanged(functionCode, old, mspp);
+
+        //
+        // set the new processor for the specified function code
+        //
+        
         pduProcessors[functionCode]=mspp;
+
+        // if the new processor is not null, and if the new processor
+        // is a new instance, then its 'init' method must be called.
+        if( mspp!=null )
+        {
+            pduProcessorInstances.addInstance(mspp);
+        }
+        
         return old;
     }
 
@@ -265,6 +323,14 @@ implements ModbusPalXML, ModbusConst
        for(ModbusSlaveListener l:listeners )
        {
            l.modbusSlaveNameChanged(this,customName);
+       }
+    }
+
+    private void notifyPduProcessorChanged(byte functionCode, ModbusPduProcessor old, ModbusPduProcessor mspp)
+    {
+         for(ModbusSlaveListener l:listeners )
+       {
+           l.modbusSlavePduProcessorChanged(this,functionCode,old,mspp);
        }
     }
 

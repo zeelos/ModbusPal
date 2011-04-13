@@ -26,15 +26,6 @@ extends Binding
         return 0;
     }
 
-    /**
-     * the script should override this method and put
-     * its initialization commands in here.
-     */
-    public void init()
-    {
-        return;
-    }
-
     @Override
     public Binding newInstance()
     throws InstantiationException, IllegalAccessException

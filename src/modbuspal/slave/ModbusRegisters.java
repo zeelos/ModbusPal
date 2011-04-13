@@ -9,12 +9,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import javax.swing.JPanel;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
@@ -89,6 +86,12 @@ implements ModbusPduProcessor, TableModel, ModbusPalXML, ModbusConst
     }
 
     @Override
+    public JPanel getPduPane()
+    {
+        return null;
+    }
+
+    @Override
     public String getClassName()
     {
         return getClass().getSimpleName();
@@ -101,6 +104,16 @@ implements ModbusPduProcessor, TableModel, ModbusPalXML, ModbusConst
         return getClass().newInstance();
     }
 
+
+    @Override
+    public void init()
+    {
+    }
+
+    @Override
+    public void reset()
+    {
+    }
 
 
     private int readWriteMultipleRegisters(byte functionCode, byte[] buffer, int offset, boolean createIfNotExist)

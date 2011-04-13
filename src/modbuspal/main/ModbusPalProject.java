@@ -90,6 +90,7 @@ implements ModbusPalXML
 
     ModbusPalProject()
     {
+        bindingFactory.add( new modbuspal.binding.Binding_SINT16() );
         bindingFactory.add( new modbuspal.binding.Binding_SINT32() );
         bindingFactory.add( new modbuspal.binding.Binding_FLOAT32() );
         generatorFactory.add( new modbuspal.generator.linear.LinearGenerator() );
@@ -1484,7 +1485,7 @@ implements ModbusPalXML
         ArrayList<ScriptRunner> output = new ArrayList<ScriptRunner>();
         for(ScriptRunner sr:scripts )
         {
-            if( (sr.getType()==ScriptRunner.SCRIPT_TYPE_ANY) || (sr.getType()==type) )
+            if( (type==ScriptRunner.SCRIPT_TYPE_ANY) || (sr.getType()==type) )
             {
                 output.add(sr);
             }

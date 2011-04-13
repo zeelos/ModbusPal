@@ -32,52 +32,6 @@ import modbuspal.script.ScriptManagerDialog;
 public class BindingEditor
 extends javax.swing.JDialog
 {
-    class AutomationList
-    implements ListModel
-    {
-        private Automation[] automations;
-
-        AutomationList( Automation[] list ) {
-            automations = list;
-        }
-
-        public Automation getAutomation(int index) 
-        {
-            if( index==0 )
-            {
-                return NullAutomation.getInstance();
-            }
-            else
-            {
-                return automations[index-1];
-            }
-        }
-
-        public int getSize() {
-            return 1+automations.length;
-        }
-
-        public Object getElementAt(int index) 
-        {
-            if( index==0 )
-            {
-                return NullAutomation.NAME;
-            }
-            else
-            {
-                return automations[index-1].getName();
-            }
-        }
-
-        public void addListDataListener(ListDataListener l) {
-            return;
-        }
-
-        public void removeListDataListener(ListDataListener l) {
-            return;
-        }
-    }
-
     class BindingList
     implements ListModel
     {
@@ -148,7 +102,7 @@ extends javax.swing.JDialog
 
     private final ModbusPalPane modbusPalPane;
     private final ModbusPalProject modbusPalProject;
-    private final AutomationList automations;
+    private final AutomationListModel automations;
     private final BindingList bindings;
     private final HashMap<String,Binding> bindingCache = new HashMap<String,Binding>();
     private final OrderList orderList = new OrderList();
@@ -159,7 +113,7 @@ extends javax.swing.JDialog
         modbusPalPane = p;
         modbusPalProject = modbusPalPane.getProject();
         setModalityType(ModalityType.APPLICATION_MODAL);
-        automations = new AutomationList( modbusPalProject.getAutomations() );
+        automations = new AutomationListModel( modbusPalProject.getAutomations() );
         bindings = new BindingList( modbusPalProject.getBindingFactory().getList() );
         initComponents();
     }

@@ -49,10 +49,6 @@ implements ScriptListener, FileTransferHandler.FileTransferTarget
         scriptsList.setDropTarget( new DropTarget(this, new FileTransferHandler(this) ) );
     }
 
-    public void setSelectedTab(int tabIndex)
-    {
-        jTabbedPane1.setSelectedIndex(tabIndex);
-    }
 
     /** This method is called from within the constructor to
      * initialize the form.

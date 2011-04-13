@@ -18,4 +18,6 @@ public interface ModbusSlaveListener
 
     public void modbusSlaveNameChanged(ModbusSlave slave, String newName);
 
+    public void modbusSlavePduProcessorChanged(ModbusSlave slave, byte functionCode, ModbusPduProcessor old, ModbusPduProcessor mspp);
+
 }

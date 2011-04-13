@@ -68,7 +68,16 @@ extends javax.swing.JDialog
         listOfFunctions = new ListOfFunctions(ff);
         listOfInstances = new ListOfInstances(slave);
         initComponents();
-        newRadioButton.requestFocus();
+        if( listOfFunctions.getSize()>0 )
+        {
+            newRadioButton.requestFocus();
+        }
+        else
+        {
+            newRadioButton.setEnabled(false);
+            newComboBox.setEnabled(false);
+            existingRadioButton.requestFocus();
+        }
     }
 
     /** This method is called from within the constructor to

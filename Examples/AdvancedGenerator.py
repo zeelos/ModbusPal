@@ -11,7 +11,7 @@ class AdvancedGenerator(PythonGenerator):
   # - create the control panel
   def init(self):
   
-    self.setIcon("./CustomGenerator.png");
+    self.setIcon(mbp_script_directory+"/CustomGenerator.png");
     self.createCtrlPane();
     
     
@@ -60,4 +60,6 @@ class AdvancedGenerator(PythonGenerator):
     if not (node is None) :
       value = XMLTools.getAttribute("value",node);
       self.aTextField.setText(value);
-  
+
+genInstance = AdvancedGenerator();
+ModbusPal.addGeneratorInstantiator("AdvancedGenerator",genInstance);
