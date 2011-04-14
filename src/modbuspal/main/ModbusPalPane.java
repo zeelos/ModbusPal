@@ -23,6 +23,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.*;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
@@ -48,7 +49,8 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
 {
     public static final String APP_STRING = "ModbusPal 1.6";
     public static final String BASE_REGISTRY_KEY = "modbuspal";
-    
+
+    private ArrayList<ModbusPalProjectListener> listeners = new ArrayList<ModbusPalProjectListener>();
         
     private ModbusMaster modbusMaster = new ModbusMaster();
     private ModbusMasterDialog modbusMasterDialog = null;
@@ -57,6 +59,23 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
     private AppConsole console = null;
     ModbusPalProject modbusPalProject;
 
+
+
+    public void addModbusPalProjectListener(ModbusPalProjectListener l)
+    {
+        if(listeners.contains(l)==false)
+        {
+            listeners.add(l);
+        }
+    }
+
+    public void removeModbusPalProjectListener(ModbusPalProjectListener l)
+    {
+        if(listeners.contains(l)==true)
+        {
+            listeners.remove(l);
+        }
+    }
 
 
 
@@ -78,6 +97,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         // Register new project
         //- - - - - - - - - - - - - -
 
+        ModbusPalProject old = modbusPalProject;
         modbusPalProject = project;
         modbusPalProject.addModbusPalListener(this);
 
@@ -139,6 +159,8 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
 
         System.out.printf("[%s] Project set\r\n", modbusPalProject.getName());
 
+        notifyModbusPalProjectChanged(old, modbusPalProject);
+
         //- - - - - - - - - - -
         // Refresh Display
         //- - - - - - - - - - -
@@ -148,6 +170,14 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
     }
 
 
+
+    private void notifyModbusPalProjectChanged(ModbusPalProject oldProject, ModbusPalProject newProject)
+    {
+        for(ModbusPalProjectListener l:listeners)
+        {
+            l.modbusPalProjectChanged(oldProject, newProject);
+        }
+    }
 
 
     void saveProject() throws FileNotFoundException, IOException
@@ -280,7 +310,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         if( verifyPython() == false )
         {
             // remove the serial settings panel
-            linksTabbedPane.remove(scriptsToggleButton);
+            scriptsToggleButton.setEnabled(false);
             // create warning dialog
             ErrorMessage dialog = new ErrorMessage("Close");
             dialog.setTitle("Scripts disabled");
@@ -403,7 +433,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         helpButton = new javax.swing.JButton();
         consoleToggleButton = new javax.swing.JToggleButton();
         jSplitPane1 = new javax.swing.JSplitPane();
-        jPanel1 = new javax.swing.JPanel();
+        slavesListView = new javax.swing.JPanel();
         jPanel2 = new javax.swing.JPanel();
         addModbusSlaveButton = new javax.swing.JButton();
         enableAllSlavesButton = new javax.swing.JButton();
@@ -701,8 +731,8 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
 
         jSplitPane1.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
 
-        jPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Modbus slaves"));
-        jPanel1.setLayout(new java.awt.BorderLayout());
+        slavesListView.setBorder(javax.swing.BorderFactory.createTitledBorder("Modbus slaves"));
+        slavesListView.setLayout(new java.awt.BorderLayout());
 
         jPanel2.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
@@ -730,7 +760,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         });
         jPanel2.add(disableAllSlavesButton);
 
-        jPanel1.add(jPanel2, java.awt.BorderLayout.NORTH);
+        slavesListView.add(jPanel2, java.awt.BorderLayout.NORTH);
 
         slaveListScrollPane.setPreferredSize(new java.awt.Dimension(300, 150));
 
@@ -739,9 +769,9 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         slavesListPanel.setLayout( new ListLayout() );
         slaveListScrollPane.setViewportView(slavesListPanel);
 
-        jPanel1.add(slaveListScrollPane, java.awt.BorderLayout.CENTER);
+        slavesListView.add(slaveListScrollPane, java.awt.BorderLayout.CENTER);
 
-        jSplitPane1.setLeftComponent(jPanel1);
+        jSplitPane1.setLeftComponent(slavesListView);
 
         jPanel3.setBorder(javax.swing.BorderFactory.createTitledBorder("Automation"));
         jPanel3.setLayout(new java.awt.BorderLayout());
@@ -1345,7 +1375,6 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
     private javax.swing.JButton helpButton;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
@@ -1371,6 +1400,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
     private javax.swing.JPanel settingsPanel;
     private javax.swing.JScrollPane slaveListScrollPane;
     private javax.swing.JPanel slavesListPanel;
+    private javax.swing.JPanel slavesListView;
     private javax.swing.JButton startAllAutomationsButton;
     private javax.swing.JButton stopAllAutomationsButton;
     private javax.swing.JPanel tcpIpSettingsPanel;
@@ -1562,6 +1592,10 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
     public ModbusPalProject getProject()
     {
         return modbusPalProject;
+    }
+
+    public void setSlavesListVisible(boolean b) {
+        slavesListView.setVisible(b);
     }
 
 

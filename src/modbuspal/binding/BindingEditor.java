@@ -236,7 +236,7 @@ extends javax.swing.JDialog
     private void scriptedBindingsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_scriptedBindingsButtonActionPerformed
 
         // ask script manager to appear, with the "generators" tab selected
-        modbusPalPane.showScriptManagerDialog(ScriptManagerDialog.TAB_BINDINGS);
+        modbusPalPane.showScriptManagerDialog();
 
 }//GEN-LAST:event_scriptedBindingsButtonActionPerformed
 

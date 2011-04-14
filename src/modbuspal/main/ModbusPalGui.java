@@ -143,6 +143,12 @@ public class ModbusPalGui
         return frame;
     }
 
+    public static ModbusPalPane newInstance()
+    {
+        return new ModbusPalPane(false);
+    }
+
+
     public static ModbusPalPane getInstance(Object key)
     {
         if( key==null )

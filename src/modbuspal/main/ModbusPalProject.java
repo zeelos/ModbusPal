@@ -730,6 +730,11 @@ implements ModbusPalXML
      */
     public Automation getAutomation(String name)
     {
+        if(name == null )
+        {
+            return null;
+        }
+        
         if( NullAutomation.NAME.compareTo(name)==0 )
         {
             return NullAutomation.getInstance();

@@ -406,7 +406,10 @@ implements ModbusPduProcessor, TableModel, ModbusPalXML, ModbusConst
     public byte setValue(int address, int val)
     {
         byte retval = setValueSilent(address,val);
-        notifyTableChanged(rowIndexOf(address), VALUE_COLUMN_INDEX);
+        if( retval==XC_SUCCESSFUL )
+        {
+            notifyTableChanged(rowIndexOf(address), VALUE_COLUMN_INDEX);
+        }
         return retval;
     }
 

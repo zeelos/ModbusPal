@@ -584,7 +584,7 @@ implements AutomationEditionListener, AutomationExecutionListener, InstantiableM
     private void removeInstanciatorButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeInstanciatorButtonActionPerformed
 
         // ask script manager to appear, with the "generators" tab selected
-        modbusPalPane.showScriptManagerDialog(ScriptManagerDialog.TAB_GENERATORS);
+        modbusPalPane.showScriptManagerDialog();
 
     }//GEN-LAST:event_removeInstanciatorButtonActionPerformed
 
