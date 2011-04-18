@@ -11,6 +11,7 @@
 
 package modbuspal.slave;
 
+import java.awt.event.KeyEvent;
 import javax.swing.event.AncestorEvent;
 import modbuspal.toolkit.GUITools;
 import modbuspal.main.*;
@@ -98,6 +99,11 @@ implements WindowListener, ModbusSlaveListener,AncestorListener
                 nameTextFieldFocusLost(evt);
             }
         });
+        nameTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                nameTextFieldKeyPressed(evt);
+            }
+        });
         add(nameTextField);
 
         enableToggleButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/modbuspal/slave/img/disabled.png"))); // NOI18N
@@ -168,9 +174,14 @@ implements WindowListener, ModbusSlaveListener,AncestorListener
      * @param evt
      */
     private void nameTextFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_nameTextFieldFocusLost
+        nameTextFieldValidate();
+    }//GEN-LAST:event_nameTextFieldFocusLost
+
+    private void nameTextFieldValidate()
+    {
         String name = nameTextField.getText();
         modbusSlave.setName(name);
-    }//GEN-LAST:event_nameTextFieldFocusLost
+    }
 
     private void nameTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nameTextFieldActionPerformed
         // TODO add your handling code here:
@@ -194,6 +205,17 @@ implements WindowListener, ModbusSlaveListener,AncestorListener
 
         
     }//GEN-LAST:event_duplicateButtonActionPerformed
+
+    private void nameTextFieldKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_nameTextFieldKeyPressed
+        if(evt.getKeyCode()==KeyEvent.VK_ENTER)
+        {
+            // make the text field of the panel loose the focus,
+            // so that the "focus lost" event is triggered,
+            // which is intercepted by the listener and will
+            // call nameTextFieldValidate().
+            requestFocusInWindow(true);
+        }
+    }//GEN-LAST:event_nameTextFieldKeyPressed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -298,6 +320,9 @@ implements WindowListener, ModbusSlaveListener,AncestorListener
     public void ancestorMoved(AncestorEvent event) {
     }
 
+    @Override
+    public void modbusSlaveReplyDelayChanged(ModbusSlave slave, long min, long max) {
+    }
 
 
 }

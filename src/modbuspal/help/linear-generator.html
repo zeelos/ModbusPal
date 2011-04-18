@@ -1,0 +1,35 @@
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    Linear generator
+The Linear generator acts like a mathematical linear function of the “f(x)=ax+b” kind. The first and the final values must be specified so that the “a” and “b” parameters are computed automatically.
+
+A large variety of results can be obtained by enabling or disabling the “relative” options:
+	When “relative” is enabled for the “Start” value, the actual start value is the sum of the automations’ value at the moment of the starting of the generator and the value in the “Start value” input box.
+	When “relative” is enabled for the “End” value, the actual end value is the sum of the generator’s start value and the value in the “End value” input box.
+Refer to the following examples in order to get a better understanding of the “relative” option.
+Example #1: absolute values
+Create an automation with a single “Linear” generator inside. Use the same settings as in the example below, and the resulting dynamic value is a segment repeating itself over and over again.
+
+Create repeated data segment with Linear generator
+Example #2: relative values (continuous)
+Create an automation with a single “Linear” generator, and use relative starting and ending values in order to create an ever-increasing dynamic value.
+
+
+Create an ever-increasing value with the Linear generator
+In this example, the initial value of the automation has been set to -2. Also, the “step” has been changed to 2, which means that the value is updated every 2 seconds (instead of 1 second by default).
+Example #3: relative values (segmented)
+By changing the relative start value and using 5 instead of 0, a mix of the two above examples is obtained.
+
+A mix of the two previous examples.
+
+  </body>
+</html>

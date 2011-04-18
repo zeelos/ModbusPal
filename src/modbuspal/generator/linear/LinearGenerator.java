@@ -51,24 +51,24 @@ extends Generator
     }
 
     @Override
-    protected void saveSettings(OutputStream out)
+    public void saveGeneratorSettings(OutputStream out)
     throws IOException
     {
-        StringBuffer start = new StringBuffer("<start");
-        start.append(" value=\""+String.valueOf(startValue)+"\"");
-        start.append(" relative=\""+Boolean.toString(relativeStart)+"\"");
+        StringBuilder start = new StringBuilder("<start");
+        start.append(" value=\"").append(String.valueOf(startValue)).append("\"");
+        start.append(" relative=\"").append(Boolean.toString(relativeStart)).append("\"");
         start.append("/>\r\n");
         out.write( start.toString().getBytes() );
 
-        StringBuffer end = new StringBuffer("<end");
-        end.append(" value=\""+String.valueOf(endValue)+"\"");
-        end.append(" relative=\""+Boolean.toString(relativeEnd)+"\"");
+        StringBuilder end = new StringBuilder("<end");
+        end.append(" value=\"").append(String.valueOf(endValue)).append("\"");
+        end.append(" relative=\"").append(Boolean.toString(relativeEnd)).append("\"");
         end.append("/>\r\n");
         out.write( end.toString().getBytes() );
     }
 
     @Override
-    protected void loadSettings(NodeList childNodes)
+    public void loadGeneratorSettings(NodeList childNodes)
     {
         Node startNode = XMLTools.getNode(childNodes, "start");
         loadStart(startNode);

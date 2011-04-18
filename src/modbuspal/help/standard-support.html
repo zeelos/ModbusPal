@@ -1,0 +1,73 @@
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>ModbusPal</title>
+    <link rel="stylesheet" type="text/css" href="styles.css" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+
+    <h1>Support of the MODBUS standard</h1>
+
+      <p>ModbusPal currently doesn’t support all MODBUS functionalities.
+      The following tables track the current status of MODBUS support in
+      ModbusPal.</p>
+
+      <h2>Supported media</h2>
+
+        <table>
+            <tr><th>Medium</th><th>Supported</th></tr>
+            <tr><td>TCP/IP</td><td>YES</td></tr>
+            <tr><td>Serial</td><td>YES</td></tr>
+            <tr><td>Recorded session</td><td>YES</td></tr>
+        </table>
+
+      <h2>Supported formats</h2>
+
+      <table>
+        <tr><th>Data format</th><th>Supported</th></tr>
+        <tr><td>RTU</td><td>YES</td></tr>
+        <tr><td>ASCII</td><td>No</td></tr>
+      </table>
+
+      <h2>Supported implementations</h2>
+
+        <table>
+            <tr><th>Implementation</th><th>Supported</th></tr>
+            <tr><td>MODBUS</td><td>YES</td></tr>
+            <tr><td>J-BUS</td><td>YES</td></tr>
+        </table>
+
+      <h2>Supported functions</h2>
+
+        <table>
+            <tr><th>Functions</th><th>Supported</th></tr>
+            <tr><td>0x01 Read coils</td><td>YES</td></tr>
+            <tr><td>0x02 Read discrete inputs</td><td>no</td></tr>
+            <tr><td>0x03 Read holding registers</td><td>YES</td></tr>
+            <tr><td>0x04 Read input registers</td><td>no</td></tr>
+            <tr><td>0x05 Write single coil</td><td>YES</td></tr>
+            <tr><td>0x06 Write single register</td><td>YES</td></tr>
+            <tr><td>0x07 Read exception status</td><td>no</td></tr>
+            <tr><td>0x08 Diagnostics</td><td>no</td></tr>
+            <tr><td>0x0B Get comm. Event counter</td><td>no</td></tr>
+            <tr><td>0x0C Get comm. Event log</td><td>no</td></tr>
+            <tr><td>0x0F Write multiple coils</td><td>YES</td></tr>
+            <tr><td>0x10 Write multiple registers</td><td>YES</td></tr>
+            <tr><td>0x11 Report slave ID</td><td>no</td></tr>
+            <tr><td>0x14 Read file record</td><td>no</td></tr>
+            <tr><td>0x15 Write file record</td><td>no</td></tr>
+            <tr><td>0x16 Mask write register</td><td>no</td></tr>
+            <tr><td>0x17 Read/write multiple registers</td><td>YES</td></tr>
+            <tr><td>0x18 Read FIFO queue</td><td>no</td></tr>
+            <tr><td>0x2B Encapsulated interface transport</td><td>no</td></tr>
+            <tr><td>User-defined functions</td><td>YES (require scripts)</td></tr>
+
+        </table>
+
+  </body>
+</html>

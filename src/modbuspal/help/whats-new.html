@@ -1,0 +1,68 @@
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>ModbusPal</title>
+    <link rel="stylesheet" type="text/css" href="styles.css" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+
+    <h1>What's new in ModbusPal?</h1>
+
+    <h2>What’s new in v1.6?</h2>
+
+    <ul>
+        <li>Add SINT16 binding
+        <li>Simplification of script support. Only one "kind" of script is offered
+        <li>The user can define scripted PDU processors for the "user-defined" MODBUS functions
+        <li>Add "stay on top" checkbox in some dialogs
+        <li>ModbusPal can executed without a GUI.
+        <li>ModbusPal can be embedded into another java application
+        <li>Add a sine generator
+        <li>Change name of slave address selectio dialog when duplicating
+    </ul>
+
+    <h2>What’s new in v1.5?</h2>
+
+    <ul>
+        <li>The LED-like icon in the main window will blink yellow when a exception response is returned instead of a normal reply.
+        <li>The copy/paste mechanism in the registers table has been fixed. It would fail if the copied register had binding.
+        <li>Add "write single register" and "read/write multiple registers" functions.
+        <li>Add a "clear" button in the console to remove its content.
+        <li>Add Jythools class for easier dynamic import of Python modules into Jython scripts.
+        <li>Add startAllAutomations() and stopAllAutomations() methods in ModbusPal class.
+        <li>Add drop targets for script manager dialog. The user now can drag&drop script files.
+        <li>Add "mbp_script_path", "mbp_script_directory" and "mbp_script_file" pre-defined variables in Jython execution environment.
+        <li>Add a dialog during loading of a project when script files are not found. The user can choose a replacement file.
+        <li>Modify AutomationValueListener so that elapsed time is provided to listeners (needed for charts).
+        <li>Fix bugs preventing the user from deleting scripts in the script manager dialog.
+        <li>Duration is now a double (instead of int).
+        <li>Add ClassPathHacker class, containing methods to force new jar into the classpath.
+        <li>Add a recorder for saving sessions of Modbus requests/replies.
+        <li>Create new link to replay recorded files.
+        <li>Add "save as" button.
+        <li>Add support for coils (read/write multiple coils, write single coil)
+        <li>Modify behavior of the “Bind” button for increased productivity
+        <li>Add full script file name as a tooltip for script's name in script panel
+        <li>Add NullAutomation for use with self-sufficient scripted bindings.
+        <li>Add ModbusPal.setSlaveEnabled() method + protect isSlaveEnabled() against out-of-range slaveID.
+        <li>Add ModbusRegister getRegisterImpl + setRegisterImpl methods for accessing registers and coils with regards to the implementation offset (Modbus/Jbus)
+        <li>Fix listener problem between AutomationPanel and AutomationEditor
+        <li>Fix some xml troubles in project and export files.
+        <li>Fix arrayindexoutofbounds exception when saving project
+        <li>Optimize code of AppConsole (was consuming too much CPU)
+        <li>Stop tcp connections when server stops
+        <li>Remember directory of automation file
+        <li>Allow multiple creation of modbus slaves ("add" and "duplicate")
+        <li>Remember directories of project files and slave export files
+        <li>Add a "duplicate slave" button in the main gui and change the modbus slave panel (use icons so that the panel is a bit more compact)
+        <li>Add a sine generator in automations
+    </ul>
+
+
+  </body>
+</html>

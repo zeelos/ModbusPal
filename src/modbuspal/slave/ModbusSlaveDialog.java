@@ -24,6 +24,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.xml.parsers.ParserConfigurationException;
 import modbuspal.instanciator.InstantiableManager;
+import modbuspal.toolkit.NumericTextField;
 import modbuspal.toolkit.XFileChooser;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -56,6 +57,20 @@ implements ModbusConst, ModbusSlaveListener
         holdingRegistersPanel.add(new ModbusRegistersPanel(this, modbusSlave.getHoldingRegisters()),BorderLayout.CENTER);
         coilsPanel.add(new ModbusCoilsPanel(this, modbusSlave.getCoils()),BorderLayout.CENTER);
         functionsPanel.add( new ModbusFunctionsPanel(this,modbusPalProject.getFunctionFactory()),BorderLayout.CENTER);
+
+        // add function tabs for user defined functions
+        // that may have been added by scripts prior to
+        // adding the slave to the project, in which case
+        // the modbusSlavePduProcessorChanged event has
+        // not been triggered.
+        ModbusPduProcessor mpps[]= s.getPduProcessorInstances();
+        for(int i=0; i<mpps.length; i++)
+        {
+            addPane(mpps[i]);
+        }
+
+        // set tuning values.
+        modbusSlaveReplyDelayChanged(s, s.getMinReplyDelay(), s.getMaxReplyDelay());
     }
 
     ModbusSlave getModbusSlave()
@@ -106,7 +121,7 @@ implements ModbusConst, ModbusSlaveListener
             // if no bindings, then make a simle call to "load"
             if( bindings.isEmpty() )
             {
-                modbusSlave.load(uniqNode,true);
+                modbusSlave.load(modbusPalProject, uniqNode, true);
                 return;
             }
         }
@@ -146,11 +161,25 @@ implements ModbusConst, ModbusSlaveListener
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
 
         jTabbedPane1 = new javax.swing.JTabbedPane();
         holdingRegistersPanel = new javax.swing.JPanel();
         coilsPanel = new javax.swing.JPanel();
         functionsPanel = new javax.swing.JPanel();
+        tuningPanel = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        jPanel2 = new javax.swing.JPanel();
+        jPanel4 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        minReplyDelayTextField = new NumericTextField();
+        jLabel2 = new javax.swing.JLabel();
+        jLabel3 = new javax.swing.JLabel();
+        maxReplyDelayTextField = new NumericTextField();
+        jLabel4 = new javax.swing.JLabel();
+        jPanel5 = new javax.swing.JPanel();
+        jLabel5 = new javax.swing.JLabel();
+        noReplyRateSlider = new javax.swing.JSlider();
         jPanel1 = new javax.swing.JPanel();
         importButton = new javax.swing.JButton();
         exportButton = new javax.swing.JButton();
@@ -171,6 +200,75 @@ implements ModbusConst, ModbusSlaveListener
         functionsPanel.setPreferredSize(new java.awt.Dimension(400, 300));
         functionsPanel.setLayout(new java.awt.BorderLayout());
         jTabbedPane1.addTab("Functions", functionsPanel);
+
+        tuningPanel.setLayout(new java.awt.BorderLayout());
+
+        jPanel2.setLayout(new java.awt.GridBagLayout());
+
+        jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("Reply delay"));
+        jPanel4.setLayout(new java.awt.GridBagLayout());
+
+        jLabel1.setText("Min:");
+        jPanel4.add(jLabel1, new java.awt.GridBagConstraints());
+
+        minReplyDelayTextField.setColumns(5);
+        minReplyDelayTextField.setText("0");
+        minReplyDelayTextField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                minReplyDelayTextFieldFocusLost(evt);
+            }
+        });
+        jPanel4.add(minReplyDelayTextField, new java.awt.GridBagConstraints());
+
+        jLabel2.setText("ms");
+        jPanel4.add(jLabel2, new java.awt.GridBagConstraints());
+
+        jLabel3.setText("Max:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        jPanel4.add(jLabel3, gridBagConstraints);
+
+        maxReplyDelayTextField.setColumns(5);
+        maxReplyDelayTextField.setText("0");
+        maxReplyDelayTextField.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusLost(java.awt.event.FocusEvent evt) {
+                maxReplyDelayTextFieldFocusLost(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        jPanel4.add(maxReplyDelayTextField, gridBagConstraints);
+
+        jLabel4.setText("ms");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 1;
+        jPanel4.add(jLabel4, gridBagConstraints);
+
+        jPanel2.add(jPanel4, new java.awt.GridBagConstraints());
+
+        jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder("Error rates"));
+        jPanel5.setLayout(new java.awt.GridBagLayout());
+
+        jLabel5.setText("No reply:");
+        jPanel5.add(jLabel5, new java.awt.GridBagConstraints());
+
+        noReplyRateSlider.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                noReplyRateSliderStateChanged(evt);
+            }
+        });
+        jPanel5.add(noReplyRateSlider, new java.awt.GridBagConstraints());
+
+        jPanel2.add(jPanel5, new java.awt.GridBagConstraints());
+
+        jScrollPane1.setViewportView(jPanel2);
+
+        tuningPanel.add(jScrollPane1, java.awt.BorderLayout.CENTER);
+
+        jTabbedPane1.addTab("Tuning", tuningPanel);
 
         getContentPane().add(jTabbedPane1, java.awt.BorderLayout.CENTER);
 
@@ -319,6 +417,18 @@ implements ModbusConst, ModbusSlaveListener
         setAlwaysOnTop( stayOnTopCheckBox.isSelected() );
     }//GEN-LAST:event_stayOnTopCheckBoxActionPerformed
 
+    private void minReplyDelayTextFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_minReplyDelayTextFieldFocusLost
+        replyDelayValidate();
+    }//GEN-LAST:event_minReplyDelayTextFieldFocusLost
+
+    private void maxReplyDelayTextFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_maxReplyDelayTextFieldFocusLost
+        replyDelayValidate();
+    }//GEN-LAST:event_maxReplyDelayTextFieldFocusLost
+
+    private void noReplyRateSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_noReplyRateSliderStateChanged
+        noReplyRateValidate();
+    }//GEN-LAST:event_noReplyRateSliderStateChanged
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel coilsPanel;
@@ -327,11 +437,24 @@ implements ModbusConst, ModbusSlaveListener
     private javax.swing.JPanel holdingRegistersPanel;
     private javax.swing.JComboBox implementationComboBox;
     private javax.swing.JButton importButton;
+    private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
+    private javax.swing.JPanel jPanel5;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTabbedPane jTabbedPane1;
+    private javax.swing.JTextField maxReplyDelayTextField;
+    private javax.swing.JTextField minReplyDelayTextField;
+    private javax.swing.JSlider noReplyRateSlider;
     private javax.swing.JLabel statusLabel;
     private javax.swing.JCheckBox stayOnTopCheckBox;
+    private javax.swing.JPanel tuningPanel;
     // End of variables declaration//GEN-END:variables
 
     void setStatus(String text)
@@ -408,6 +531,22 @@ implements ModbusConst, ModbusSlaveListener
                 jTabbedPane1.remove(jp);
             }
         }
+    }
+
+    private void replyDelayValidate() {
+        long min = ((NumericTextField)minReplyDelayTextField).getLong();
+        long max = ((NumericTextField)maxReplyDelayTextField).getLong();
+        modbusSlave.setReplyDelay(min, max);
+
+    }
+
+    private void noReplyRateValidate() {
+        throw new UnsupportedOperationException("Not yet implemented");
+    }
+
+    public void modbusSlaveReplyDelayChanged(ModbusSlave slave, long min, long max) {
+        ((NumericTextField)minReplyDelayTextField).setValue( min );
+        ((NumericTextField)maxReplyDelayTextField).setValue( max );
     }
 
 

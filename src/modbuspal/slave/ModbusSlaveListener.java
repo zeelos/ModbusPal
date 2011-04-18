@@ -20,4 +20,6 @@ public interface ModbusSlaveListener
 
     public void modbusSlavePduProcessorChanged(ModbusSlave slave, byte functionCode, ModbusPduProcessor old, ModbusPduProcessor mspp);
 
+    public void modbusSlaveReplyDelayChanged(ModbusSlave slave, long min, long max);
+
 }

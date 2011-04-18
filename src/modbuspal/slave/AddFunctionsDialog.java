@@ -12,8 +12,11 @@
 package modbuspal.slave;
 
 import java.awt.Frame;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.AbstractListModel;
+import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import modbuspal.instanciator.InstantiableManager;
 
@@ -29,18 +32,42 @@ extends javax.swing.JDialog
     private boolean isOK = false;
 
     class ListOfInstances
-    extends DefaultComboBoxModel
+    extends AbstractListModel
+    implements ComboBoxModel
     {
-        private final ModbusSlave mslave;
-        ListOfInstances(ModbusSlave ms)
+        private final HashMap<String,ModbusPduProcessor> instances = new HashMap<String,ModbusPduProcessor>();
+        private final String[] names;
+        private String selectedInstance;
+
+        ListOfInstances(ModbusPduProcessor tab[])
         {
-            super(ms.getPduProcessorInstances());
-            mslave = ms;
+            names = new String[tab.length];
+            for(int i=0; i<tab.length; i++)
+            {
+                names[i] = InstantiableManager.makeInstanceName( tab[i] );
+                instances.put(names[i],tab[i]);
+            }
         }
 
-        @Override
+        public int getSize() {
+            return names.length;
+        }
+
         public Object getElementAt(int index) {
-            return InstantiableManager.makeInstanceName( (ModbusPduProcessor)super.getElementAt(index) );
+            return names[index];
+        }
+
+        public void setSelectedItem(Object anItem) {
+            selectedInstance = (String)anItem;
+        }
+
+        public Object getSelectedItem() {
+            return selectedInstance;
+        }
+
+        public ModbusPduProcessor getSelectedInstance()
+        {
+            return instances.get( selectedInstance );
         }
 
     }
@@ -53,7 +80,7 @@ extends javax.swing.JDialog
             super(ff.getList());
             ffactory = ff;
         }
-        ModbusPduProcessor createFuncion()
+        ModbusPduProcessor createFunction()
         throws InstantiationException, IllegalAccessException
         {
             String sel = (String)getSelectedItem();
@@ -66,7 +93,7 @@ extends javax.swing.JDialog
     {
         super(parent, true);
         listOfFunctions = new ListOfFunctions(ff);
-        listOfInstances = new ListOfInstances(slave);
+        listOfInstances = new ListOfInstances(slave.getPduProcessorInstances());
         initComponents();
         if( listOfFunctions.getSize()>0 )
         {
@@ -198,7 +225,7 @@ extends javax.swing.JDialog
         if( isNewInstance() )
         {
             try {
-                return listOfFunctions.createFuncion();
+                return listOfFunctions.createFunction();
             } catch (InstantiationException ex) {
                 Logger.getLogger(AddFunctionsDialog.class.getName()).log(Level.SEVERE, null, ex);
                 return null;
@@ -210,7 +237,7 @@ extends javax.swing.JDialog
         }
         else if( isExistingInstance() )
         {
-            return (ModbusPduProcessor)listOfInstances.getSelectedItem();
+            return listOfInstances.getSelectedInstance();
         }
         return null;
     }

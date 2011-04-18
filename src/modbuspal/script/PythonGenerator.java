@@ -5,7 +5,10 @@
 
 package modbuspal.script;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import modbuspal.generator.Generator;
+import org.w3c.dom.NodeList;
 
 /**
  * If you create a generator with Python, you have to subclass PythonGenerator
@@ -67,5 +70,23 @@ extends Generator
         PythonGenerator pg = (PythonGenerator)super.newInstance();
         pg.init();
         return pg;
+    }
+
+    @Override
+    public void saveGeneratorSettings(OutputStream out) throws IOException {
+        saveSettings(out);
+    }
+
+    @Deprecated
+    public void saveSettings(OutputStream out) throws IOException {
+    }
+
+    @Override
+    public void loadGeneratorSettings(NodeList list) {
+        loadSettings(list);
+    }
+
+    @Deprecated
+    public void loadSettings(NodeList list) {
     }
 }

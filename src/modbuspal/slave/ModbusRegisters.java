@@ -945,6 +945,18 @@ implements ModbusPduProcessor, TableModel, ModbusPalXML, ModbusConst
 
 
 
+    @Override
+    public void savePduProcessorSettings(OutputStream out)
+    throws IOException
+    {
+        throw new UnsupportedOperationException("not implemented");
+    }
+
+    @Override
+    public void loadPduProcessorSettings(NodeList list)
+    {
+        throw new UnsupportedOperationException("not implemented");
+    }
 
 
     //==========================================================================

@@ -1376,7 +1376,7 @@ implements ModbusPalXML
             loadAutomations(doc);
         }
 
-        target.load(slaveNode,true);
+        target.load(this, slaveNode, true);
 
         if( withBindings==true )
         {

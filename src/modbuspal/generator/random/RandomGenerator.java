@@ -52,24 +52,24 @@ extends Generator
     }
 
     @Override
-    protected void saveSettings(OutputStream out)
+    public void saveGeneratorSettings(OutputStream out)
     throws IOException
     {
-        StringBuffer start = new StringBuffer("<min");
-        start.append(" value=\""+String.valueOf(minValue)+"\"");
-        start.append(" relative=\""+Boolean.toString(relativeMin)+"\"");
+        StringBuilder start = new StringBuilder("<min");
+        start.append(" value=\"").append(String.valueOf(minValue)).append("\"");
+        start.append(" relative=\"").append(Boolean.toString(relativeMin)).append("\"");
         start.append("/>\r\n");
         out.write( start.toString().getBytes() );
 
-        StringBuffer end = new StringBuffer("<max");
-        end.append(" value=\""+String.valueOf(maxValue)+"\"");
-        end.append(" relative=\""+Boolean.toString(relativeMax)+"\"");
+        StringBuilder end = new StringBuilder("<max");
+        end.append(" value=\"").append(String.valueOf(maxValue)).append("\"");
+        end.append(" relative=\"").append(Boolean.toString(relativeMax)).append("\"");
         end.append("/>\r\n");
         out.write( end.toString().getBytes() );
     }
 
     @Override
-    protected void loadSettings(NodeList childNodes)
+    public void loadGeneratorSettings(NodeList childNodes)
     {
         Node minNode = XMLTools.getNode(childNodes, "min");
         loadMin(minNode);

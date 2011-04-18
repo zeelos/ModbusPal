@@ -11,8 +11,6 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -188,20 +186,12 @@ implements Instantiable<Generator>
         String durVal= durNode.getNodeValue();
         duration = Double.parseDouble(durVal);
 
-        loadSettings( genNode.getChildNodes() );
+        loadGeneratorSettings( genNode.getChildNodes() );
     }
 
-    /**
-     * If the generator should load parameters, for example when a project file
-     * is loaded, you have to override this method in order to process those
-     * parameters. Each item in the provided node list is a node that defines the
-     * parameters of this generator.
-     * @param childNodes
-     */
-    protected void loadSettings(NodeList childNodes)
-    {
-        return;
-    }
+    public abstract void loadGeneratorSettings(NodeList list);
+
+    public abstract void saveGeneratorSettings(OutputStream out) throws IOException;
 
 
     /**
@@ -230,22 +220,10 @@ implements Instantiable<Generator>
         String openTag = createOpenTag();
         out.write(openTag.getBytes());
 
-        saveSettings(out);
+        saveGeneratorSettings(out);
 
         String closeTag = "</generator>\r\n";
         out.write(closeTag.getBytes());
-    }
-
-    /**
-     * If the generator should save parameters, for example when a project file
-     * is saved, you have to override this method in order to write those
-     * parameters into the provided output stream, formatted in XML.
-     * @param out the output stream to write into.
-     */
-    protected void saveSettings(OutputStream out)
-    throws IOException
-    {
-        return;
     }
 
     /**
@@ -263,9 +241,9 @@ implements Instantiable<Generator>
     
     private String createOpenTag()
     {
-        StringBuffer tag = new StringBuffer("<generator");
-        tag.append(" class=\""+ getClassName() +"\"");
-        tag.append(" duration=\""+ String.valueOf(duration) +"\"");
+        StringBuilder tag = new StringBuilder("<generator");
+        tag.append(" class=\"").append(getClassName()).append("\"");
+        tag.append(" duration=\"").append(String.valueOf(duration)).append("\"");
         tag.append(">\r\n");
         return tag.toString();
     }

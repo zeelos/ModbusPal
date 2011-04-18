@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -76,6 +77,20 @@ public class XMLTools
         return null;
     }
 
+    public static List<Node> getNodes(NodeList nodes,String nodeName)
+    {
+        ArrayList<Node> list = new ArrayList<Node>();
+
+        for(int i=0; i<nodes.getLength(); i++ )
+        {
+            Node node = nodes.item(i);
+            if( node.getNodeName().compareToIgnoreCase(nodeName) == 0 )
+            {
+                list.add(node);
+            }
+        }
+        return list;
+    }
     public static Node findChild(Node root,String nodeName)
     {
         return getNode( root.getChildNodes(), nodeName );

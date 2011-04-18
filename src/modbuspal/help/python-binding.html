@@ -1,0 +1,151 @@
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title></title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+    10.6	Custom bindings
+Customized bindings can be created by writing a Python script and adding it to the list of scripted bindings.
+When the “binding dialog” appears, click on “…” to summon the script manager.
+
+Click on “…” to add scripted bindings
+Refer to §13, “Scripted bindings” for details on how to write scripted bindings.
+
+13	Scripted bindings
+13.1	Overview
+Writing a scripted binding consists of subclassing the PythonBinding Java class in a Python class. The magic of interpreting the Python class is made by the Jython interpreter.
+Important: Make sure that the name of the Python class matches the name of the file containing the script. For example, the script that defines the “CustomBinding” class must be named “CustomBinding.py”.
+A scripted binding should only contain a class definition, this class being a subclass of PythonBinding.
+13.2	Requirements
+When writing a scripted binding, there are a few requirements that must be followed.
+13.2.1	getSize()
+The “getSize()” method must be overridden, otherwise the scripted binding won’t work.
+The “getSize()” method returns, in bits, the total length of the formatted data created by the binding. For example, the built-in “SINT32” binding has a size of 32 bits, thus its “getSize()” method returns 32.
+With this information, ModbusPal is able to determine how many coils or registers this binding can hold. The “SINT32” binding can hold 32 coils and 2 registers (a register being a 16-bit integer).
+13.2.2	getRegister()
+The “getRegister()” method must be overridden, otherwise the scripted binding will always return 0.
+The “getRegister()” method returns a 16-bit unsigned integer value which depends on the data format of the binding and the specified order.
+For example, the built-in “SINT32” binding is implemented as follow:
+-	if “order” is equal to 0, it returns the least significant 16-bit word of the 32-bit signed integer.
+-	If “order” is equal to 1, it returns the most significant 16-bit word of the same 32-bit signed integer.
+The “getRegister()” method has two input arguments:
+-	“order” is an integer value defining the order of the register to return. Its interpretation depends on how the binding is implemented. The granularity of the order is 16 bits.
+-	“value” is a double precision floating point value, which is the current value of the automation. I must be cast into the data format that the binding represents, then the correct 16-bit part of this data must be extracted (depending on the value of “order”).
+13.2.3	getCoil()
+This method can be overridden, but in most cases its default implementation should suffice.
+The default implementation of “getCoil()” is as follow:
+-	Retrieve the 16-bit register in which the desired coil is located. This is done by dividing the provided rank by 16. For example, the coil of rank 25 will be located in register of rank 25/16=1 (Euclidian division). The “getRegister()” method is used to retrieve it.
+-	Extract the correct bit in that register. The rank of the coil within the register is obtained by the remainder of the above division. For example, the coil of rank 25 will be located in the bit number 25%16=9 of the register of rank 1.
+The “getCoil()” method has two input arguments:
+-	“order” is an integer value defining the order of the coil to return. The granularity of the order is 1 bit.
+-	“value” is a double precision floating point value, which is the current value of the automation. The data must be cast into the format that the binding represents, then the correct bit of this data is extracted (depending on the value of “order”).
+13.3	SINT32 binding script
+The SINT32 binding already exists as a built-in binding. This script is just an example of what a simple binding script looks like.
+
+Content of “BasicBinding.py”
+
+from modbuspal.script import PythonBinding
+
+class BasicBinding(PythonBinding):
+
+  # This binding uses a 32-bit signed integer formatting,
+  # then the size is 32 bits.
+  def getSize(self):
+    return 32;
+
+  # Override the getRegister() method so that it returns either
+  # the least or the most significant 16-bit word of the
+  # 32-bit integer.
+  def getRegister(self,rank,value):
+
+    # Cast value as an int
+    value_as_a_32bit_int = int(value);
+
+    # If rank is 0, extract the least significant 16-bit word
+    if rank==0:
+      value = value_as_a_32bit_int & 0xFFFF;
+      return value;
+
+    # If rank is 1, extract the most significant 16-bit word.
+    elif rank==1:
+      value = (value_as_a_32bit_int>>16) & 0xFFFF;
+      return value;
+
+    # It should never happen but, just in case,
+    # treat the higher ranks.
+    else:
+
+      # If the 32-bit value is positive, then higher 16-bit words are 0x0000
+      if value_as_a_32bit_int >= 0:
+        return 0x0000;
+
+      # If the 32-bit value is negative, then higher 16-bit words are 0xFFFF
+      else:
+        return 0xFFFF;
+
+
+13.4	Advanced binding script
+The following example is real-case binding script. It may help you understand why creating your own binding script can be so important for your project.
+Imagine you want to simulate some MODBUS device. The manufacturer provides the following description of its “date/time” registers:
+Register	High byte	Low byte
+24	Minute	Second
+25	Day	Hour
+26	Year	Month
+
+How do you simulate those registers with ModbusPal? We propose the following solution.
+You can very easily generate your date and time in the POSIX time format. The POSIX time is a 32-bit unsigned integer which counts the number of seconds elapsed since 1st January 1970. This is a very common way of representing dates in the world of computers. All it takes to simulate it is an automation with a Linear generator.
+Then, you can create a scripted binding in order to associate registers 24 to 26 with the desired information.
+The binding will have a size of 3*16 = 48 bits, and the “getRegister()” method will behave as follow:
+-	For rank==0, return reg = minute x 256 + second
+-	For rank==1, return reg = day x 256 + hour
+-	For rank==2, return reg = year x 256 + month
+
+Content of “AdvancedBinding.py”
+
+from modbuspal.script import PythonBinding
+from java.util import Calendar
+
+class AdvancedBinding(PythonBinding):
+
+  def getSize(self):
+    return 3*16;
+
+  # Assuming that the provided "value" is a Unix timestamp (32-bit integer
+  # value representing the number of seconds since 1st January 1970),
+  # this binding will transfom that timestamp to the following formatting:
+  # - register #0 will contain minutes in the high byte, and seconds in the low byte
+  # - register #1 will contain days in the high byte, and hours in the low byte
+  # - register #2 will contain years in the high byte, and months in the low byte
+  def getRegister(self,rank,value):
+
+    unix_timestamp = long(value);
+    cal = Calendar.getInstance();
+    cal.setTimeInMillis( unix_timestamp * 1000 );
+
+    if rank==0 :
+      second = cal.get( Calendar.SECOND );
+      minute = cal.get( Calendar.MINUTE );
+      return minute * 256 + second;
+
+    elif rank==1 :
+      hour = cal.get( Calendar.HOUR_OF_DAY );
+      day = cal.get( Calendar.DAY_OF_MONTH ) ;
+      return day * 256 + hour;
+
+    elif rank==2 :
+      month = cal.get( Calendar.MONTH ) ;
+      year = cal.get( Calendar.YEAR) % 100;
+      return year * 256 + month;
+
+    else:
+      return 0;
+
+
+
+  </body>
+</html>

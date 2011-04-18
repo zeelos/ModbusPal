@@ -12,6 +12,7 @@
 
 package modbuspal.automation;
 
+import java.awt.event.KeyEvent;
 import javax.swing.event.AncestorEvent;
 import modbuspal.main.*;
 import java.awt.event.WindowEvent;
@@ -74,6 +75,12 @@ implements WindowListener, AutomationExecutionListener, AncestorListener
         setBackground( automation.isRunning() );
     }
 
+    public void focus()
+    {
+        nameTextField.selectAll();
+        nameTextField.requestFocusInWindow();
+    }
+
     private void setBackground(boolean running)
     {
         if( running )
@@ -108,6 +115,11 @@ implements WindowListener, AutomationExecutionListener, AncestorListener
         nameTextField.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusLost(java.awt.event.FocusEvent evt) {
                 nameTextFieldFocusLost(evt);
+            }
+        });
+        nameTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                nameTextFieldKeyPressed(evt);
             }
         });
         add(nameTextField);
@@ -170,15 +182,31 @@ implements WindowListener, AutomationExecutionListener, AncestorListener
     }//GEN-LAST:event_playToggleButtonActionPerformed
 
     private void nameTextFieldFocusLost(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_nameTextFieldFocusLost
-        String newName = nameTextField.getText().trim();
-        newName = modbusPalProject.checkAutomationNewName(automation, newName);
-        nameTextField.setText(newName);
-        automation.setName(newName);
+        nameTextFieldValidate();
     }//GEN-LAST:event_nameTextFieldFocusLost
 
     private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
         modbusPalProject.removeAutomation(automation);
     }//GEN-LAST:event_deleteButtonActionPerformed
+
+    private void nameTextFieldValidate()
+    {
+        String newName = nameTextField.getText().trim();
+        newName = modbusPalProject.checkAutomationNewName(automation, newName);
+        nameTextField.setText(newName);
+        automation.setName(newName);
+    }
+
+    private void nameTextFieldKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_nameTextFieldKeyPressed
+        if( evt.getKeyCode()==KeyEvent.VK_ENTER )
+        {
+            // make the text field of the panel loose the focus,
+            // so that the "focus lost" event is triggered,
+            // which is intercepted by the listener and will
+            // call nameTextFieldValidate().
+            requestFocusInWindow(true);
+        }
+    }//GEN-LAST:event_nameTextFieldKeyPressed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

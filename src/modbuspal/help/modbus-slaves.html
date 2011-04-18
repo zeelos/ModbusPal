@@ -1,0 +1,114 @@
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>ModbusPal</title>
+    <link rel="stylesheet" type="text/css" href="styles.css" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+      
+      <h1>Defining MODBUS slaves</h1>
+
+      <h2>Foreword</h2>
+      
+      <p>The main characteristic of a MODBUS slave is its identifier, which is
+      used to address the requests to the desired device. That is the reason
+      why it is the first parameter to define when adding a MODBUS slave in a
+      ModbusPal project.</p>
+
+      <p>But it is not sufficient. A MODBUS slave exchanges information with
+      the MODBUS master. This information is organized in registers and coils.
+      Then, once the slave is created with an identifier, its content must
+      be defined.</p>
+
+      <p>This section covers the basics of creating a MODBUS slave in
+      ModbusPal.</p>
+
+      <h2>The MODBUS Slaves panel</h2>
+
+      <p><img src="img/view_of_modbus_slaves_panel_2.jpg" class="img-stand-alone" alt="View of the empty MODBUS Slaves panel."/></p>
+
+      <ul>
+          <li>The <q>Add</q> button lets the user create new MODBUS slaves
+          <li>The <q>Enable all</q> button selects all the MODBUS slaves and enables them
+          <li>The <q>Disable all</q> button disables all the MODBUS slaves
+      </ul>
+
+      <h2 id="adding-new-slaves">Adding new slaves</h2>
+
+      <p>Click on the <q>Add</q> button in the MODBUS Slaves panel in order to
+      add new MODBUS slaves.<p>
+          
+      <p>A dialog appears. Select the MODBUS slave address of each new MODBUS
+      slave to create. Multiple addresses can be selected from the  list by
+      holding the <abbr>SHIFT</abbr> key and/or the <abbr>CTRL</abbr> keys.</p>
+
+      <p><img src="img/view_of_addslavedialog.jpg" class="img-stand-alone" alt="View of the AddSlaveDialog" /></p>
+
+      <p>The name of the new MODBUS slave(s) can also be edited before actually
+      creating them. ModbusPal doesn't care if several MODBUS slaves have the
+      same name. Specifying a name can help to explicit the role of the new
+      slave in the project.</p>
+
+      <p>Finally, click on the <q>Add</q> from the dialog in order to validate.
+      The MODBUS slave(s) is(are) inserted into the list of the MODBUS Slaves
+      panel.</p>
+
+      <p>When added to the list, a MODBUS slave looks like this:
+      <img src="img/view_of_modbus_slave_pane.jpg" class="img-stand-alone" title="Modbus Slave" alt="View of a MODBUS slave" />
+      </p>
+
+      <h3 class="notes">Notes</h3>
+      <ol class="notes">
+          <li>Only the Modbus addresses that are not assigned yet are shown in the list.
+          <li>Modbus slaves created simultaneously will all have the same name. This is not an issue because they all have different Modbus addresses.
+          <li>The name of the Modbus slaves can be modified afterward.
+      </ol>
+
+      <h2>Enabling/Disabling a MODBUS slave</h2>
+
+      <p>While the project is running, it can be useful to disable MODBUS
+      slaves for testing purpose. Once a slave has been disabled, any incoming
+      request addressed to that slave will end up in a MODBUS exception
+      response.</p>
+
+      <p>A MODBUS slave is disabled by toggling the
+      <q><img src="../slave/img/enabled.png" class="img-inline" title="Enable/Disable button" alt="Enable/Disable button of the MODBUS salve" /></q>
+      button.</p>
+      
+      <h2>Configuring the MODBUS slave</h2>
+      
+      <p>A freshly created MODBUS slave contains no data. Registers, coils
+      and so on can be defined in the slave’s configuration dialog, which
+      becomes visible when the 
+      <q><img src="../slave/img/show.png" class="img-inline" title="Show/hide button" alt="Button that shows or hide the slave's configuration dialog"/></q>
+      button is toggled.</p>
+
+      <p>The instructions for configuring the MODBUS slave can be found in
+      <a href="configure-slave.html">this page</a>.</p>
+
+      <h2>Cloning a MODBUS slave</h2>
+      
+      <p>After spending a lot of time configuring one MODBUS slave,
+      new MODBUS slaves can be created on the same model simply by clicking
+      on the
+      <q><img src="../slave/img/duplicate.png" class="img-inline" title="Clone button" alt="The Clone button of the MODBUS slave"/></q>
+      button.</p>
+
+      <p>A dialog appears, very similar to the <a href="#adding-new-slaves">
+      <q>Add</q> dialog described above</a>. One or multiple slaves can
+      be created; each of them will be an exact copy of the original slave.</p>
+
+      <h2>Removing a slave</h2>
+
+      <p>Click on the 
+      <q><img src="../slave/img/delete.png" class="img-inline" title="Delete button" alt="Delete button of the MODBUS Slave" /></q>
+      button of one MODBUS slave in MODBUS Slaves panel to remove it from the
+      current project.</p>
+
+  </body>
+</html>

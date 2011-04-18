@@ -5,8 +5,11 @@
 
 package modbuspal.script;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import javax.swing.JPanel;
 import modbuspal.slave.ModbusPduProcessor;
+import org.w3c.dom.NodeList;
 
 /**
  *
@@ -53,6 +56,25 @@ implements ModbusPduProcessor
     {
         PythonFunction pf = getClass().newInstance();
         return pf;
+    }
+
+    @Override
+    public void savePduProcessorSettings(OutputStream out) throws IOException {
+        saveSettings(out);
+    }
+
+    @Deprecated
+    public void saveSettings(OutputStream out) throws IOException {
+    }
+
+    @Override
+    public void loadPduProcessorSettings(NodeList list) {
+        loadSettings(list);
+    }
+
+
+    @Deprecated
+    public void loadSettings(NodeList list) {
     }
 
 

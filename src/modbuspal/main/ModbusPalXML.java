@@ -13,8 +13,14 @@ public interface ModbusPalXML
 {
     /* SLAVE */
     public static final String XML_SLAVE_ID_ATTRIBUTE = "id";
+    public static final String XML_SLAVE_ENABLED_ATTRIBUTE = "enabled";
+    public static final String XML_SLAVE_NAME_ATTRIBUTE = "name";
+    public static final String XML_SLAVE_IMPLEMENTATION_ATTRIBUTE = "implementation";
+    public static final String XML_SLAVE_IMPLEMENTATION_MODBUS_VALUE = "modbus";
+    public static final String XML_SLAVE_IMPLEMENTATION_JBUS_VALUE = "j-bus";
 
     /* REGISTER */
+    public static final String XML_HOLDING_REGISTERS_TAG = "holding_registers";
     public static final String XML_ADDRESS_ATTRIBUTE = "address";
 
     /* COILS */
@@ -29,4 +35,17 @@ public interface ModbusPalXML
     public static final String XML_SCRIPT_TYPE_ONDEMAND = "ondemand";
     public static final String XML_SCRIPT_TYPE_AFTERINIT = "afterinit";
     public static final String XML_SCRIPT_TYPE_BEFOREINIT = "beforeinit";
+
+    /* FUNCTIONS */
+    public static final String XML_FUNCTIONS_TAG = "functions";
+    public static final String XML_FUNCTION_INSTANCE_TAG = "instance";
+    public static final String XML_FUNCTION_TAG = "function";
+    public static final String XML_FUNCTION_CODE_ATTRIBUTE = "code";
+    public static final String XML_FUNCTION_SETTINGS_TAG = "settings";
+
+    /* TUNING */
+    public static final String XML_TUNING_TAG = "tuning";
+    public static final String XML_REPLYDELAY_TAG = "reply_delay";
+    public static final String XML_REPLYDELAY_MIN_ATTRIBUTE = "min";
+    public static final String XML_REPLYDELAY_MAX_ATTRIBUTE = "max";
 }

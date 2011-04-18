@@ -22,13 +22,15 @@ import java.awt.Dialog.ModalExclusionType;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.*;
-import java.net.URI;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import modbuspal.automation.Automation;
+import modbuspal.help.HelpViewer;
 import modbuspal.link.*;
 import modbuspal.master.ModbusMaster;
 import modbuspal.master.ModbusMasterDialog;
@@ -58,7 +60,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
     private ModbusLink currentLink = null;
     private AppConsole console = null;
     ModbusPalProject modbusPalProject;
-
+    private HelpViewer helpViewer = null;
 
 
     public void addModbusPalProjectListener(ModbusPalProjectListener l)
@@ -1264,11 +1266,22 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
     }//GEN-LAST:event_learnToggleButtonActionPerformed
 
     private void helpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpButtonActionPerformed
-        if( Desktop.isDesktopSupported()==true )
+
+        if( helpViewer==null )
+        {
+            helpViewer = new HelpViewer();
+            helpViewer.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+            helpViewer.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        }
+
+        helpViewer.setVisible(true);
+        helpViewer.toFront();
+        /*if( Desktop.isDesktopSupported()==true )
         {
             try
             {
-                Desktop.getDesktop().browse(new URI("http://modbuspal.wiki.sourceforge.net/"));
+                URL url = getClass().getResource("../help/index.html");
+                Desktop.getDesktop().browse( url.toURI() );
             }
 
             catch (URISyntaxException ex)
@@ -1278,7 +1291,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
             {
                 Logger.getLogger(ModbusPalPane.class.getName()).log(Level.SEVERE, null, ex);
             }
-        }
+        }*/
     }//GEN-LAST:event_helpButtonActionPerformed
 
     private void clearProjectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearProjectButtonActionPerformed
@@ -1459,7 +1472,6 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         slavesListPanel.add( panel, new Integer(slave.getSlaveId()) );
         slave.addModbusSlaveListener(panel);
         slaveListScrollPane.validate();
-        //slavesListPanel.repaint();
     }
 
 
@@ -1509,8 +1521,10 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
     {
         // add slave panel into the gui and refresh gui
         AutomationPanel panel = new AutomationPanel(automation, this );
+        //panel.requestFocus();
         automationsListPanel.add( panel, new Integer(index) );
         automationListScrollPane.validate();
+        panel.focus();
     }
 
 

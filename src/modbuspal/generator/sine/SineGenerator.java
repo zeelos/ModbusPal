@@ -60,7 +60,7 @@ extends Generator
     }
 
     @Override
-    protected void saveSettings(OutputStream out)
+    public void saveGeneratorSettings(OutputStream out)
     throws IOException
     {
         StringBuilder amp = new StringBuilder("<amplitude");
@@ -83,7 +83,7 @@ extends Generator
 
     
     @Override
-    protected void loadSettings(NodeList childNodes)
+    public void loadGeneratorSettings(NodeList childNodes)
     {
         Node ampNode = XMLTools.getNode(childNodes, "amplitude");
         if( ampNode!=null )

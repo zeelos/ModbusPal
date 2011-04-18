@@ -11,6 +11,7 @@ import modbuspal.automation.Automation;
 import modbuspal.automation.AutomationExecutionListener;
 import modbuspal.instanciator.Instantiable;
 import modbuspal.slave.ModbusRegisters;
+import org.w3c.dom.NodeList;
 
 /**
  *
@@ -85,10 +86,10 @@ implements AutomationExecutionListener, Cloneable, Instantiable<Binding>
     public void save(OutputStream out)
     throws IOException
     {
-        StringBuffer tag = new StringBuffer("<binding");
-        tag.append(" automation=\""+ automation.getName() +"\"");
-        tag.append(" class=\""+ getClassName() +"\"");
-        tag.append(" order=\""+ String.valueOf(order) +"\"");
+        StringBuilder tag = new StringBuilder("<binding");
+        tag.append(" automation=\"").append(automation.getName()).append("\"");
+        tag.append(" class=\"").append(getClassName()).append("\"");
+        tag.append(" order=\"").append(String.valueOf(order)).append("\"");
         tag.append("/>\r\n");
         out.write( tag.toString().getBytes() );
     }

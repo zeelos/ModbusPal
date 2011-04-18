@@ -5,10 +5,13 @@
 
 package modbuspal.link;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import modbuspal.main.*;
 import modbuspal.main.ModbusConst;
 import modbuspal.recorder.ModbusPalRecorder;
 import modbuspal.slave.ModbusPduProcessor;
+import modbuspal.slave.ModbusSlave;
 
 
 /**
@@ -39,8 +42,11 @@ implements ModbusConst
             return 0;
         }
 
+        // get the slave:
+        ModbusSlave slave = modbusPalProject.getModbusSlave(slaveID);
+
         byte functionCode = buffer[offset+0];
-        ModbusPduProcessor mspp = modbusPalProject.getSlavePduProcessor(slaveID, functionCode);
+        ModbusPduProcessor mspp = slave.getPduProcessor(functionCode);
         if( mspp == null )
         {
             int length = makeExceptionResponse(functionCode,XC_ILLEGAL_FUNCTION, buffer, offset);
@@ -63,6 +69,13 @@ implements ModbusConst
         else
         {
             modbusPalProject.notifyPDUprocessed();
+        }
+
+        // delay the reply
+        try {
+            Thread.sleep(slave.getReplyDelay());
+        } catch (InterruptedException ex) {
+            Logger.getLogger(ModbusSlaveProcessor.class.getName()).log(Level.SEVERE, null, ex);
         }
 
         ModbusPalRecorder.recordOutgoing(slaveID,buffer,offset,length);

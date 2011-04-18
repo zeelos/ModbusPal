@@ -9,14 +9,17 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import modbuspal.automation.NullAutomation;
+import modbuspal.instanciator.InstantiableManager;
 import modbuspal.main.ModbusConst;
 import modbuspal.main.ModbusPalProject;
 import modbuspal.main.ModbusPalXML;
 import modbuspal.toolkit.InstanceCounter;
 import modbuspal.toolkit.XMLTools;
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
@@ -34,7 +37,8 @@ implements ModbusPalXML, ModbusConst
     private String customName;
     private ArrayList<ModbusSlaveListener> listeners = new ArrayList<ModbusSlaveListener>();
     private int modbusImplementation = IMPLEMENTATION_MODBUS;
-    
+    private long minReplyDelay = 0L;
+    private long maxReplyDelay = 0L;
     private ModbusPduProcessor pduProcessors[] = new ModbusPduProcessor[128];
     private InstanceCounter<ModbusPduProcessor> pduProcessorInstances = new InstanceCounter<ModbusPduProcessor>();
 
@@ -62,7 +66,7 @@ implements ModbusPalXML, ModbusConst
     public ModbusSlave(ModbusPalProject mpp, Node slaveNode)
     {
         this();
-        load(slaveNode, false);
+        load(mpp, slaveNode, false);
     }
 
     public void clear()
@@ -73,6 +77,8 @@ implements ModbusPalXML, ModbusConst
         // propage clear
         holdingRegisters.clear();
         coils.clear();
+        clearFunctions();
+        clearTuning();
     }
 
 
@@ -101,7 +107,9 @@ implements ModbusPalXML, ModbusConst
      * return an array with all the instances of ModbusPduProcessor that are
      * use by this slave. Note that an instance of ModubsPduProcessor may be
      * used for more than one MODBUS function code, but this list returns no
-     * duplicates.
+     * duplicates. Also, note that the instances returned are only those modified
+     * by the user, by means of scripts. It won't return the predefined standard
+     * functions, such holding registers and coils.
      * @return
      */
     public ModbusPduProcessor[] getPduProcessorInstances()
@@ -110,6 +118,15 @@ implements ModbusPalXML, ModbusConst
         ModbusPduProcessor output[] = new ModbusPduProcessor[0];
         return instances.toArray(output);
     }
+
+    void clearFunctions()
+    {
+        for(int i=0; i<pduProcessors.length; i++)
+        {
+            setPduProcessor( (byte)i,null);
+        }
+    }
+
 
     public ModbusPduProcessor setPduProcessor(byte functionCode, ModbusPduProcessor mspp)
     {
@@ -274,30 +291,48 @@ implements ModbusPalXML, ModbusConst
         coils.removeAllBindings(classname);
     }
 
-    private void loadHoldingRegisters(NodeList nodes)
+    private void loadHoldingRegisters(Node node)
     {
-        Node node = XMLTools.getNode(nodes,"holding_registers");
         if( node == null )
         {
             return;
         }
-        else
-        {
-            holdingRegisters.load(node);
-        }
+        holdingRegisters.load(node);
     }
 
 
-    private void loadCoils(NodeList nodes)
+    private void loadCoils(Node node)
     {
-        Node node = XMLTools.getNode(nodes,XML_COILS_TAG);
         if( node == null )
         {
             return;
         }
-        else
+        coils.load(node);
+    }
+
+    private void loadFunctions(
+            InstantiableManager<ModbusPduProcessor> ffactory,
+            Node node)
+    {
+        if(node==null)
         {
-            coils.load(node);
+            return;
+        }
+        
+        NodeList list = node.getChildNodes();
+        for(int i=0; i<list.getLength(); i++)
+        {
+            Node fNode = list.item(i);
+            if( fNode.getNodeName().compareToIgnoreCase(XML_FUNCTION_INSTANCE_TAG)==0 )
+            {
+                try {
+                    loadFunctionInstance(ffactory, fNode);
+                } catch (InstantiationException ex) {
+                    Logger.getLogger(ModbusSlave.class.getName()).log(Level.SEVERE, null, ex);
+                } catch (IllegalAccessException ex) {
+                    Logger.getLogger(ModbusSlave.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
         }
     }
 
@@ -337,12 +372,12 @@ implements ModbusPalXML, ModbusConst
     private void saveHoldingRegisters(OutputStream out, boolean withBindings)
     throws IOException
     {
-        String openTag = "<holding_registers>\r\n";
+        String openTag = "<"+XML_HOLDING_REGISTERS_TAG+">\r\n";
         out.write( openTag.getBytes() );
 
         holdingRegisters.save(out, withBindings);
 
-        String closeTag = "</holding_registers>\r\n";
+        String closeTag = "</"+XML_HOLDING_REGISTERS_TAG+">\r\n";
         out.write( closeTag.getBytes() );
     }
 
@@ -359,6 +394,51 @@ implements ModbusPalXML, ModbusConst
         out.write( closeTag.getBytes() );
     }
 
+    private void saveFunctions(OutputStream out)
+    throws IOException
+    {
+        ModbusPduProcessor instances[] = getPduProcessorInstances();
+
+        if( instances!=null )
+        {
+            if( instances.length>0)
+            {
+                String openTag = "<"+XML_FUNCTIONS_TAG+">\r\n";
+                out.write( openTag.getBytes() );
+
+                for(int i=0; i<instances.length; i++)
+                {
+                    StringBuilder tag = new StringBuilder("<instance");
+                    tag.append(" class=\"").append(instances[i].getClassName()).append("\"");
+                    tag.append(">\r\n");
+                    out.write( tag.toString().getBytes() );
+
+                    for(int j=0; j<pduProcessors.length;j++)
+                    {
+                        if( pduProcessors[j]==instances[i])
+                        {
+                            tag = new StringBuilder("<function ");
+                            tag.append("code=\"").append( String.valueOf(j) ).append("\" />\r\n");
+                            out.write( tag.toString().getBytes() );
+                        }
+                    }
+
+                    tag = new StringBuilder("<settings>\r\n");
+                    out.write( tag.toString().getBytes() );
+                    instances[i].savePduProcessorSettings(out);
+                    tag = new StringBuilder("</settings>\r\n");
+                    out.write( tag.toString().getBytes() );
+
+                    tag = new StringBuilder("</instance>\r\n");
+                    out.write( tag.toString().getBytes() );
+                }
+
+                String closeTag = "</"+XML_FUNCTIONS_TAG+">\r\n";
+                out.write( closeTag.getBytes() );
+            }
+        }
+    }
+
 
     //=========================================================================
 
@@ -367,53 +447,107 @@ implements ModbusPalXML, ModbusConst
         return enabled;
     }
 
-    private void loadAttributes(NamedNodeMap attributes, boolean importMode)
+    @Deprecated
+    public void load(Node node)
     {
-        if( importMode!=true )
+        load(null,node);
+    }
+
+    @Deprecated
+    public void load(Node node, boolean importMode)
+    {
+        load(null,node,importMode);
+    }
+
+    /**
+     * Loads the parameters of a ModbusSlave object by reading the content
+     * of the given DOM.
+     * @param node
+     */
+    public void load(ModbusPalProject mpp, Node node)
+    {
+        load(mpp, node,true);
+    }
+
+    /**
+     *
+     * @param slave
+     * @param node
+     * @param importMode if true, the loading from the DOM will take care not to
+     * overwrite the existing values of: slave id, enabled status, name.
+     */
+    public void load(ModbusPalProject mpp, Node node, boolean importMode)
+    {
+        // in case the slave contains old data, clear it:
+        clear();
+
+        //
+        // load the attributes of the slave
+        //
+
+        if( importMode==false )
         {
-            Node idNode = attributes.getNamedItem(XML_SLAVE_ID_ATTRIBUTE);
-            String id = idNode.getNodeValue();
+            String id = XMLTools.getAttribute(XML_SLAVE_ID_ATTRIBUTE, node);
             slaveId = Integer.valueOf(id);
 
-            Node enNode = attributes.getNamedItem("enabled");
-            String en = enNode.getNodeValue();
+            String en = XMLTools.getAttribute(XML_SLAVE_ENABLED_ATTRIBUTE, node);
             enabled = Boolean.parseBoolean(en);
 
-            Node namNode = attributes.getNamedItem("name");
-            String nam = namNode.getNodeValue();
+            String nam = XMLTools.getAttribute(XML_SLAVE_NAME_ATTRIBUTE, node);
             setName(nam);
         }
-        
-        Node imNode = attributes.getNamedItem("implementation");
-        if( imNode != null )
+
+        String impl = XMLTools.getAttribute(XML_SLAVE_IMPLEMENTATION_ATTRIBUTE, node);
+        if( impl != null )
         {
-            String impl = imNode.getNodeValue();
-            if( impl.compareTo("modbus")==0 )
+            
+            if( impl.compareToIgnoreCase(XML_SLAVE_IMPLEMENTATION_MODBUS_VALUE)==0 )
             {
                 setImplementation(IMPLEMENTATION_MODBUS);
             }
-            else if( impl.compareTo("j-bus")==0 )
+            else if( impl.compareToIgnoreCase(XML_SLAVE_IMPLEMENTATION_JBUS_VALUE)==0 )
             {
                 setImplementation(IMPLEMENTATION_JBUS);
             }
-            notifyModbusImplChanged();
         }
-    }
 
-
-    public void load(Node node)
-    {
-        load(node,true);
-    }
-
-    public void load(Node node, boolean importMode)
-    {
-        clear();
-        loadAttributes( node.getAttributes(), importMode );
         NodeList nodes = node.getChildNodes();
-        loadHoldingRegisters(nodes);
-        loadCoils(nodes);
-        
+
+        //
+        // load holding registers
+        //
+
+        Node holdingRegistersNode = XMLTools.getNode(nodes, XML_HOLDING_REGISTERS_TAG);
+        loadHoldingRegisters(holdingRegistersNode);
+
+        //
+        // load coils
+        //
+
+        Node coilsNode = XMLTools.getNode(nodes, XML_COILS_TAG);
+        loadCoils(coilsNode);
+
+        //
+        // ensure compatibility with old format:
+        //
+
+        if(mpp==null) {
+            return;
+        }
+
+        //
+        // load functions
+        //
+
+        Node functionsNode = XMLTools.getNode(nodes, XML_FUNCTIONS_TAG);
+        loadFunctions(mpp.getFunctionFactory(), functionsNode);
+
+        //
+        // load tuning
+        //
+
+        Node tuningNode = XMLTools.getNode(nodes, XML_TUNING_TAG);
+        loadTuning(tuningNode);
     }
 
 
@@ -463,7 +597,7 @@ implements ModbusPalXML, ModbusConst
     }
 
 
-    public void save(OutputStream out, boolean withBindings)
+    public final void save(OutputStream out, boolean withBindings)
     throws IOException
     {
         String openTag = xmlOpenTag();
@@ -471,7 +605,9 @@ implements ModbusPalXML, ModbusConst
 
         saveHoldingRegisters(out, withBindings);
         saveCoils(out,withBindings);
-
+        saveFunctions(out);
+        saveTuning(out);
+        
         String closeTag = "</slave>\r\n";
         out.write( closeTag.getBytes() );
     }
@@ -524,7 +660,134 @@ implements ModbusPalXML, ModbusConst
                 coils.setOffset(0);
                 break;
         }
+        notifyModbusImplChanged();
+    }
+
+    private void loadFunctionInstance(
+            InstantiableManager<ModbusPduProcessor> ffactory,
+            Node node)
+    throws InstantiationException, IllegalAccessException
+    {
+        //
+        // load attributes
+        //
+
+        String clazz = XMLTools.getAttribute("class", node);
+
+        //
+        // instanciate
+        //
+
+        ModbusPduProcessor mpp = ffactory.newInstance(clazz);
+
+        //
+        // look for all associations
+        //
+
+        List<Node> list = XMLTools.getNodes(node.getChildNodes(), XML_FUNCTION_TAG);
+        for(Node iNode:list)
+        {
+            String code = XMLTools.getAttribute(XML_FUNCTION_CODE_ATTRIBUTE, iNode);
+            setPduProcessor(Byte.valueOf(code), mpp);
+        }
+
+        // load settings
+        Node settings = XMLTools.getNode(node.getChildNodes(), XML_FUNCTION_SETTINGS_TAG);
+        mpp.loadPduProcessorSettings(settings.getChildNodes());
     }
 
 
+    //==========================================================================
+    //
+    // TUNING
+    //
+    //==========================================================================
+
+    public long getReplyDelay() 
+    {
+        double range = maxReplyDelay-minReplyDelay;
+        if(range<0)
+        {
+            return minReplyDelay;
+        }
+        return minReplyDelay + (long)(Math.random()*range);
+    }
+
+    private void saveTuning(OutputStream out)
+    throws IOException
+    {
+        StringBuilder tag = new StringBuilder();
+        tag.append("<").append(XML_TUNING_TAG).append(">\r\n");
+        out.write( tag.toString().getBytes() );
+
+        tag = new StringBuilder();
+        tag.append("<").append(XML_REPLYDELAY_TAG).append(" min=\"").append(String.valueOf(minReplyDelay)).append("\" max=\"").append( String.valueOf(maxReplyDelay) ).append("\" />\r\n");
+        out.write( tag.toString().getBytes() );
+
+        tag = new StringBuilder();
+        tag.append("</").append(XML_TUNING_TAG).append(">\r\n");
+        out.write( tag.toString().getBytes() );
+    }
+
+    private void loadTuning(Node node)
+    {
+        NodeList list = node.getChildNodes();
+
+        // look for "reply delay"
+        Node rdNode = XMLTools.getNode(list, XML_REPLYDELAY_TAG);
+        if(rdNode!=null)
+        {
+            // look for min
+            long min = 0;
+            String minValue = XMLTools.getAttribute(XML_REPLYDELAY_MIN_ATTRIBUTE, rdNode);
+            if(minValue!=null)
+            {
+                min = Long.parseLong(minValue);
+            }
+
+            // look for max
+            long max = 0;
+            String maxValue = XMLTools.getAttribute(XML_REPLYDELAY_MAX_ATTRIBUTE, rdNode);
+            if(maxValue!=null)
+            {
+                max = Long.parseLong(maxValue);
+            }
+            setReplyDelay(min, max);
+        }
+    }
+
+    private void clearTuning()
+    {
+        setReplyDelay(0,0);
+    }
+
+    public void setReplyDelay(long min, long max)
+    throws IllegalArgumentException
+    {
+        if( (min<0) || (max<min) )
+        {
+            throw new IllegalArgumentException();
+        }
+        minReplyDelay = min;
+        maxReplyDelay = max;
+        notifyReplyDelayChanged();
+    }
+
+    private void notifyReplyDelayChanged()
+    {
+         for(ModbusSlaveListener l:listeners )
+       {
+           l.modbusSlaveReplyDelayChanged(this,minReplyDelay,maxReplyDelay);
+       }
+    }
+
+    public long getMaxReplyDelay()
+    {
+        return maxReplyDelay;
+    }
+
+    public long getMinReplyDelay()
+    {
+        return minReplyDelay;
+    }
 }
