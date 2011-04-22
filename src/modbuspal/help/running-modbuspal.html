@@ -5,80 +5,122 @@ and open the template in the editor.
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
   <head>
-    <title></title>
+    <title>ModbusPal</title>
+    <link rel="stylesheet" type="text/css" href="styles.css" />
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   </head>
   <body>
 
-Part 3: Running the project
-7	Running the project
-When the MODBUS slaves have been defined, the project has to be run. When the project is running, it waits for incoming MODBUS requests, processes them and reply to the master.
-As the MODBUS protocol supports serial communication and TCP/IP, so does ModbusPal. Running the project is only a matter of configuring the appropriate COM port or TCP/IP connection.
-This section will also present the Learn mode, which can very efficiently create a complex project from scratch.
-7.1	Live links
-As MobusPal is a MODBUS slaves simulator, it usually is connected to a real MODBUS master device. The physical connection is either TCP/IP communication or serial link.
-Note: serial communication requires that RxTx is installed on the computer.
-The desired communication medium is selected by clicking on the corresponding tab in the “Link settings” panel of the main window:
+      <h1>Running the project</h1>
 
-Select “TCP/IP” or “Serial” in order to select the communication medium
-Each link has its own specific parameters, with standard default values. When the parameters are set to match those of the real master device, clicking on the “Run” button will make ModbusPal waiting for incoming MODBUS requests.
-Each time a MODBUS request is received, the LED-like icon flickers.
-To stop the project from running, click on the “Run” button again.
-7.1.1	TCP/IP link
-Select the « TCP/IP » tab to use TCP/IP communication. The only parameter to set is the TCP port number on which incoming connections will be made. The standard MODBUS port is selected by default (502).
-7.1.2	Serial link
-Select the “Serial” tab in order to use serial communication. All usual COM settings can be modified, but the standard MODBUS configuration is selected by default.
-Note: serial communication requires that RxTx is installed on the computer.
-7.1.2.1	RxTx
-ModbusPal requires that RxTx is installed on the computer in order to use the serial ports.
-Website: http://www.rxtx.org/
-“RXTX is a Java library, using a native implementation (via JNI), providing serial and parallel communication for the Java Development Toolkit (JDK). All deliverables are under the GNU LGPL license. It is based on the specification for Sun's Java Communications API, though while many of the class descriptions are the same the package used it not, since gnu.io is used instead. A certain amount of compatibility is intended with API, though this project should be considered as a fork and therefore compatible in spirit, but not in implementation.”
-(quoted from RxTx website)
-Refer to §17.1 (“RxTx”) for download and installation instructions.
-7.1.2.2	Settings
+      <p>When the MODBUS slaves have been defined, the project has to be run.
+      Once the project is running, it waits for incoming MODBUS requests,
+      processes them and reply to the master.</p>
 
-The settings of the serial communication
-•	A COM port must be selected from the list of available ports. This selected port will be used to receive MODBUS requests and to send the replies.
-•	A baudrate can be selected from the list of standard baudrates, but any custom value can be entered by editing the text field. 19200 is the default MODBUS baudrate.
-•	The parity can be modified. “Even parity” is the default MODBUS parity.
-•	Additionally, XON/XOFF and RTS/CTS flow control methods can be enabled.
-7.2	Record and replay
-ModbusPal offers the possibility to record a live session of MODBUS requests and replies. The goal of this functionality is to let the user record real MODBUS master requests and the replies from ModbusPal slaves.
-Then, the recorded session can be replayed: the physical MODBUS master is replaced by the recorded requests, issued with the same timing as during the live session.
-The funny thing is, while a recorded session is replayed, it can be recorded again at the same time. Doing this, the user has the possibility to compare the behavior of the MODBUS slaves and detect differences between two sessions. This possibility as a big step toward non-regression testing.
-7.2.1	Recording a session
-The recorder is activated by clicking on the « Record » button. The user is immediately prompted for choosing the output file. Please note that the recording actually starts only after the output file has been selected.
+      <p>Running the project is only a matter of configuring the appropriate
+      COM port or TCP/IP connection. This section will also present the
+      <q>Learn</q> mode, which can very efficiently create a complex project
+      from scratch.</p>
 
-Click on “Record” in order to start recording a session.
-7.2.2	Replaying a recorded session
-A recorded session can be replayed by using the « Replay » link instead of “TCP/IP” or “Serial”. Select the “Replay” tab:
+      <h2>Communication medium selection</h2>
 
-The settings of the serial communication
-Then click on the “Choose…” button. A dialog appears for selecting the recorded session file to replay.
-When the recorded session file is selected, the session is replayed by clicking on the “Run” button. Only the MODBUS master requests are replayed; the replies are generated in real-time by the simulated MODBUS slaves in the current project.
-Note: The session can be recorded while being replayed!
-7.3	Learn mode
-The Learn mode is one of the key differentiators of ModbusPal. The statement is that creating a complete project including many MODBUS slaves is very time consuming (and boring!).
-When the Learn mode is activated, ModbusPal will take care of creating any resources that the project is missing.
-7.3.1	Example
-Imagine that you just start a new project. You only have configured the TCP/IP or serial settings, your MODBUS master is connected to your PC and ModbusPal is running.
-At this point, any request of your MODBUS master will end up in errors, because you haven’t defined any MODBUS slave yet.
-If you activate the Learn mode, each time that ModbusPal receives a request it will:
--	Create the appropriate MODBUS slave if it doesn’t exist
--	Create the required registers/coils if they don’t exist
--	Reply without error.
-It just means that your entire project is automatically created “on-the-fly” by the MODBUS master’s requests.
-When you’re satisfied with the result, you should disable the learn mode.
-7.3.2	Notes
--	Each register/coil created by the Learn mode gets “0” as a default value, unless the MODBUS request is a “Write…” request. In that case, the register/coil takes the value that is defined in the request.
-7.4	The status LED
-When the project is running, the status LED indicates that incoming MODBUS requests are received and processed.
+      <p>ModbusPal currently supports TCP/IP and SERIAL communication. 
+      The system running ModbusPal will usually be connected to a real MODBUS
+      master device.</p>
 
-The status LED reflects MODBUS activity
--	Green flash: a MODBUS request has been received and processed successfully
--	Orange flash: a MODBUS request has been received but it resulted in a MODBUS exception response
--	Red flash: data has been received, but was not a correct MODBUS request
+      <p>The desired communication medium is selected by clicking on the
+      corresponding tab in the <q>Link settings</q> pane of the main window.
+      <img src="img/view_of_the_link_tabs.jpg" class="img-stand-alone" alt="View of the link tabs" title="the link tabs" />
+      </p>
 
+      <p class="notes">
+      Note: serial communication requires that RxTx is installed on the computer.
+      </p>
+
+      <p>Each medium has its own set of parameters, with standard default values.
+      When the parameters are set to match those of the real master device,
+      clicking on the <q>Run</q> button will make ModbusPal waiting for
+      incoming MODBUS requests.</p>
+
+      <p>Each time a MODBUS request is received, the LED-like icon flickers:</p>
+      <dl>
+          <dt><img src="../main/img/greenTilt.png" alt="Green"/></dt><dd>The request has been serviced with a valid reply</dd>
+          <dt><img src="../main/img/yellowTilt.png" alt="Yellow"/></dt><dd>The request has received an exception message as a reply</dd>
+          <dt><img src="../main/img/redTilt.png" alt="Red" /></dt><dd>The request was malformed and discarded</dd>
+          <dt><img src="../main/img/grayTilt.png" alt="Gray" /></dt><dd>The link is idle</dd>
+      </dl>
+
+      <p>To stop the project from running, click on the <q>Run</q> button again.</p>
+
+      <h2>TCP/IP link</h2>
+
+      <p>
+      <img src="img/view_of_tcpip_link_settings.jpg" class="img-stand-alone" title="TCP/IP link options" alt="View of the TCP/IP link options pane" />
+      Select the <q>TCP/IP</q> tab to use TCP/IP communication. The only
+      parameter to set is the TCP port number on which incoming connections
+      will be made. The standard MODBUS port is selected by default (502).</p>
+      
+      <h2>Serial link</h2>
+
+      <p>
+      <img src="img/view_of_serial_link_settings.jpg" class="img-stand-alone" title="Serial link settings" alt="View of the serial link settings pane" />
+       Select the <q>Serial</q> tab in order to use serial communication.
+      All usual COM settings can be modified, but the standard MODBUS
+      configuration is selected by default.</p>
+
+      <p class="notes">Note: serial communication requires that RxTx is
+      installed on the computer. Check related information on
+      <a href="install-run.html#rxtx">this page</a>.</p>
+
+      <ul>
+          <li>A COM port must be selected from the list of available ports. This selected port will be used to receive MODBUS requests and to send the replies.
+          <li>A baudrate can be selected from the list of standard baudrates, but any custom value can be entered by editing the text field. 19200 is the default MODBUS baudrate.
+          <li>The parity can be modified. “Even parity” is the default MODBUS parity.
+          <li>Additionally, XON/XOFF and RTS/CTS flow control methods can be enabled.
+      </ul>
+
+      <h2>Replay</h2>
+
+      <p>Information of the <q>Replay</q>, part of the <q>Record and replay</q>
+      functionality,can be found in 
+      <a href="record-replay.html">this page</a>.</p>
+
+      <h2>Learn mode</h2>
+
+      <p>The Learn mode is one of the key differentiators of ModbusPal.
+      The statement is that creating a complete project including many MODBUS
+      slaves is very time consuming (and boring!). When the Learn mode is
+      activated, ModbusPal will take care of creating any resources that the
+      project is missing.</p>
+
+      <p>The Learn mode is toggled ON and OFF by clicking of the <q>Learn</q> button.</p>
+
+      <h3>Example</h3>
+
+      <p>Imagine that you just start a new project. You only have configured
+      the TCP/IP or serial settings, your MODBUS master is connected to your
+      PC and ModbusPal is running.</p>
+
+      <p>At this point, any request of your MODBUS master will end up in
+      errors, because you haven’t defined any MODBUS slave yet. If you activate
+      the Learn mode, each time that ModbusPal receives a request it will:</p>
+
+      <ul>
+          <li>Create the appropriate MODBUS slave if it doesn’t exist
+          <li>Create the required registers/coils if they don’t exist
+          <li>Reply without error.
+      </ul>
+
+      <p>It means that your entire project is automatically created
+      “on-the-fly” by the MODBUS master’s requests. When you’re satisfied with
+      the result, you should disable the Learn mode.</p>
+
+      <div class="notes">
+          <h3>Notes</h3>
+          <ul>
+              <li>Each register/coil created by the Learn mode gets “0” as a default value, unless the MODBUS request is a “Write…” request. In that case, the register/coil takes the value that is defined in the request.
+          </ul>
+      </div>
 
   </body>
 </html>

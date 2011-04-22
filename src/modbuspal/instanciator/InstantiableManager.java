@@ -7,14 +7,13 @@ package modbuspal.instanciator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import modbuspal.slave.ModbusPduProcessor;
 
 
 /**
  *
  * @author nnovic
  */
-public class InstantiableManager<T extends Instantiable>
+public class InstantiableManager<T extends Instantiable<T>>
 {
     /**
      * List of listeners that are interested in receiving events from this

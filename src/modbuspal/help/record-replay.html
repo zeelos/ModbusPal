@@ -1,0 +1,67 @@
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>ModbusPal</title>
+    <link rel="stylesheet" type="text/css" href="styles.css" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+
+      <h1>Record and Replay</h1>
+
+      <p>ModbusPal offers the possibility to record a live session of
+      MODBUS requests and replies. The goal of this functionality is to:</p>
+
+      <ul>
+          <li>Let the user record real MODBUS master requests, so that the same requests
+          can be replayed later on in the exact same manner.
+          <li>Track the replies from ModbusPal slaves, for debugging purpose and
+          for comparison with another recorded session.
+      </ul>
+
+      <p>When the recorded session is replayed, the physical MODBUS master
+      is replaced by the recorded requests, issued with the same timing as
+      during the live session.</p>
+
+      <p>The funny thing is, while a recorded session is replayed, it can be
+      recorded again at the same time. Doing this, the user has the possibility
+      to compare the behavior of the MODBUS slaves and detect differences
+      between two sessions. This possibility can serve as non-regression test.</p>
+      
+      <h2>Recording a session</h2>
+
+      <p>The recorder is activated by clicking on the <q>Record</q> button. 
+      The user is immediately prompted for choosing the output file.
+      Please note that the recording actually starts only after the output file
+      has been selected.</p>
+
+
+      <h2>Replaying a recorded session</h2>
+
+      <p>
+      <img src="img/view_of_replay_link_settings.jpg" class="img-stand-alone" title="Settings of the Replay link" alt="View of the Replay link panel" />
+      A recorded session can be replayed by using the <q>Replay</q> link
+      instead of “TCP/IP” or “Serial”.</p>
+
+      <p>Select a recorded session by clicking on the <q>Choose</q> button.
+      A dialog appears for selecting the recorded session file to replay.</p>
+
+      <p>When the recorded session file is selected, the session is replayed
+      by clicking on the <q>Run</q> button.</p>
+
+      <div class="notes">
+          <h3>Notes</h3>
+          <ul>
+              <li>Only the MODBUS master requests are replayed; the replies
+              are generated in real-time by the simulated MODBUS slaves in the
+              current project.
+              <li>The session can be recorded while being replayed!
+          </ul>
+      </div>
+
+  </body>
+</html>
