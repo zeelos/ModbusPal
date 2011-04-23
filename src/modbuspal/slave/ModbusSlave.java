@@ -39,6 +39,7 @@ implements ModbusPalXML, ModbusConst
     private int modbusImplementation = IMPLEMENTATION_MODBUS;
     private long minReplyDelay = 0L;
     private long maxReplyDelay = 0L;
+    private float noReplyRate = 0f;
     private ModbusPduProcessor pduProcessors[] = new ModbusPduProcessor[128];
     private InstanceCounter<ModbusPduProcessor> pduProcessorInstances = new InstanceCounter<ModbusPduProcessor>();
 
@@ -721,7 +722,16 @@ implements ModbusPalXML, ModbusConst
         out.write( tag.toString().getBytes() );
 
         tag = new StringBuilder();
-        tag.append("<").append(XML_REPLYDELAY_TAG).append(" min=\"").append(String.valueOf(minReplyDelay)).append("\" max=\"").append( String.valueOf(maxReplyDelay) ).append("\" />\r\n");
+        tag.append("<").append(XML_REPLYDELAY_TAG);
+        tag.append(" min=\"").append(String.valueOf(minReplyDelay));
+        tag.append("\" max=\"").append( String.valueOf(maxReplyDelay) );
+        tag.append("\" />\r\n");
+        out.write( tag.toString().getBytes() );
+
+        tag = new StringBuilder();
+        tag.append("<").append(XML_ERRORRATES_TAG);
+        tag.append(" "+XML_ERRORRATES_NOREPLY_ATTRIBUTE+"=\"").append(String.valueOf(noReplyRate)).append("\"");
+        tag.append(" />\r\n");
         out.write( tag.toString().getBytes() );
 
         tag = new StringBuilder();
@@ -754,7 +764,20 @@ implements ModbusPalXML, ModbusConst
             }
             setReplyDelay(min, max);
         }
-    }
+
+        // look for "error rates"
+        Node erNode = XMLTools.getNode(list, XML_ERRORRATES_TAG);
+        if(erNode!=null)
+        {
+            // look for no_reply
+            float no_reply = 0f;
+            String noReplyValue = XMLTools.getAttribute(XML_ERRORRATES_NOREPLY_ATTRIBUTE, erNode);
+            if(noReplyValue!=null)
+            {
+                no_reply = Float.parseFloat(noReplyValue);
+            }
+            setErrorRates(no_reply);
+        }    }
 
     private void clearTuning()
     {
@@ -773,6 +796,17 @@ implements ModbusPalXML, ModbusConst
         notifyReplyDelayChanged();
     }
 
+    public void setErrorRates(float noReply)
+    throws IllegalArgumentException
+    {
+        if( (noReply<0) || (noReply>1) )
+        {
+            throw new IllegalArgumentException("no reply rate must be a value between 0 and 1");
+        }
+        noReplyRate = noReply;
+        notifyErrorRatesChanged();
+    }
+
     private void notifyReplyDelayChanged()
     {
          for(ModbusSlaveListener l:listeners )
@@ -781,6 +815,13 @@ implements ModbusPalXML, ModbusConst
        }
     }
 
+    private void notifyErrorRatesChanged()
+    {
+         for(ModbusSlaveListener l:listeners )
+       {
+           l.modbusSlaveErrorRatesChanged(this,noReplyRate);
+       }
+    }
     public long getMaxReplyDelay()
     {
         return maxReplyDelay;
@@ -789,5 +830,10 @@ implements ModbusPalXML, ModbusConst
     public long getMinReplyDelay()
     {
         return minReplyDelay;
+    }
+
+    public float getNoReplyErrorRate()
+    {
+        return noReplyRate;
     }
 }

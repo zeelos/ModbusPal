@@ -11,6 +11,9 @@
 
 package modbuspal.automation;
 
+import java.awt.Image;
+import java.awt.Toolkit;
+
 /**
  *
  * @author avincon
@@ -28,6 +31,8 @@ extends javax.swing.JDialog
         setModalityType(ModalityType.APPLICATION_MODAL);
         automationListModel = al;
         initComponents();
+        Image img = Toolkit.getDefaultToolkit().createImage( getClass().getResource("../main/img/icon32.png") );
+        setIconImage(img);
     }
 
     public AutomationSelectionDialog(Automation[] a)
@@ -50,6 +55,7 @@ extends javax.swing.JDialog
         okButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Select an automation");
 
         jList1.setModel(automationListModel);
         jList1.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);

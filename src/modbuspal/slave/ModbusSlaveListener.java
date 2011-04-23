@@ -22,4 +22,6 @@ public interface ModbusSlaveListener
 
     public void modbusSlaveReplyDelayChanged(ModbusSlave slave, long min, long max);
 
+    public void modbusSlaveErrorRatesChanged(ModbusSlave slave, float noReplyRate);
+
 }

@@ -48,4 +48,6 @@ public interface ModbusPalXML
     public static final String XML_REPLYDELAY_TAG = "reply_delay";
     public static final String XML_REPLYDELAY_MIN_ATTRIBUTE = "min";
     public static final String XML_REPLYDELAY_MAX_ATTRIBUTE = "max";
+    public static final String XML_ERRORRATES_TAG = "error_rates";
+    public static final String XML_ERRORRATES_NOREPLY_ATTRIBUTE = "no_reply";
 }

@@ -5,16 +5,26 @@ and open the template in the editor.
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
   <head>
-    <title></title>
+    <title>ModbusPal</title>
+    <link rel="stylesheet" type="text/css" href="styles.css" />
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   </head>
   <body>
-8	Automations in ModbusPal
-At this point of the document, creating simple projects with ModbusPal has been covered. But such projects are still far from realistic MODBUS slave simulation!
-The following sections are dedicated to the mechanisms that can turn simple projects into realistic simulations. The registers and coils defined in the slaves of the project need to become dynamic.
-This section describes how to create dynamic values, which are called automations. Then, those automations can be associated with the registers and coils of the MODBUS slaves of the project.
-8.1	Overview
-An automation is made of a succession of generators. Each generator is a formulae that produces a dynamic value. A generator is executed for a limited duration, and then the next generator is used to continue producing the dynamic value.
+      
+      <h1>Automations in ModbusPal</h1>
+
+      <p>The registers and coils defined in the slaves of the project will become
+      dynamic by binding them to value generators, called <q>automations</q>.
+      Using automations will turn simple projects into realistic simulations.</p>
+      
+      <h2>Overview</h2>
+      
+      <p>An <q>automation</q> is made of a succession of <q>generators</q>.
+      Each generator is a formula that produces a dynamic value.
+      A generator is executed for a limited duration, and then the next
+      generator is used to continue producing the dynamic value.</p>
+
+      
 For example, consider the following requirements:
  The above graph is made of 3 segments. It can be simulated by using 3 linear generators:
 

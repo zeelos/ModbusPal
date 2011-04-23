@@ -45,6 +45,14 @@ implements ModbusConst
         // get the slave:
         ModbusSlave slave = modbusPalProject.getModbusSlave(slaveID);
 
+        // process the "no reply" error rate of the slave:
+        if( Math.random() < slave.getNoReplyErrorRate() )
+        {
+            System.err.println("Slave "+slaveID+" will no reply (check value error rate)" );
+            modbusPalProject.notifyPDUnotServiced();
+            return 0;
+        }
+
         byte functionCode = buffer[offset+0];
         ModbusPduProcessor mspp = slave.getPduProcessor(functionCode);
         if( mspp == null )

@@ -71,6 +71,7 @@ implements ModbusConst, ModbusSlaveListener
 
         // set tuning values.
         modbusSlaveReplyDelayChanged(s, s.getMinReplyDelay(), s.getMaxReplyDelay());
+        modbusSlaveErrorRatesChanged(s, s.getNoReplyErrorRate() );
     }
 
     ModbusSlave getModbusSlave()
@@ -247,7 +248,9 @@ implements ModbusConst, ModbusSlaveListener
         gridBagConstraints.gridy = 1;
         jPanel4.add(jLabel4, gridBagConstraints);
 
-        jPanel2.add(jPanel4, new java.awt.GridBagConstraints());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        jPanel2.add(jPanel4, gridBagConstraints);
 
         jPanel5.setBorder(javax.swing.BorderFactory.createTitledBorder("Error rates"));
         jPanel5.setLayout(new java.awt.GridBagLayout());
@@ -255,6 +258,11 @@ implements ModbusConst, ModbusSlaveListener
         jLabel5.setText("No reply:");
         jPanel5.add(jLabel5, new java.awt.GridBagConstraints());
 
+        noReplyRateSlider.setMajorTickSpacing(25);
+        noReplyRateSlider.setMinorTickSpacing(5);
+        noReplyRateSlider.setPaintLabels(true);
+        noReplyRateSlider.setPaintTicks(true);
+        noReplyRateSlider.setValue(0);
         noReplyRateSlider.addChangeListener(new javax.swing.event.ChangeListener() {
             public void stateChanged(javax.swing.event.ChangeEvent evt) {
                 noReplyRateSliderStateChanged(evt);
@@ -262,7 +270,11 @@ implements ModbusConst, ModbusSlaveListener
         });
         jPanel5.add(noReplyRateSlider, new java.awt.GridBagConstraints());
 
-        jPanel2.add(jPanel5, new java.awt.GridBagConstraints());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        jPanel2.add(jPanel5, gridBagConstraints);
 
         jScrollPane1.setViewportView(jPanel2);
 
@@ -541,12 +553,20 @@ implements ModbusConst, ModbusSlaveListener
     }
 
     private void noReplyRateValidate() {
-        throw new UnsupportedOperationException("Not yet implemented");
+        float noReply = ((float)noReplyRateSlider.getValue()) / 100f;
+        modbusSlave.setErrorRates(noReply);
     }
 
+    @Override
     public void modbusSlaveReplyDelayChanged(ModbusSlave slave, long min, long max) {
         ((NumericTextField)minReplyDelayTextField).setValue( min );
         ((NumericTextField)maxReplyDelayTextField).setValue( max );
+    }
+
+    @Override
+    public void modbusSlaveErrorRatesChanged(ModbusSlave slave, float noReplyRate)
+    {
+        noReplyRateSlider.setValue( (int)(noReplyRate*100f) );
     }
 
 

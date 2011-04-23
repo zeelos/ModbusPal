@@ -227,14 +227,17 @@ implements WindowListener, ModbusSlaveListener,AncestorListener
     private javax.swing.JLabel slaveIdLabel;
     // End of variables declaration//GEN-END:variables
 
+    @Override
     public void windowOpened(WindowEvent e)
     {
     }
 
+    @Override
     public void windowClosing(WindowEvent e)
     {
     }
 
+    @Override
     public void windowClosed(WindowEvent e)
     {
         if( e.getSource() == modbusSlaveDialog )
@@ -244,18 +247,22 @@ implements WindowListener, ModbusSlaveListener,AncestorListener
         }
     }
 
+    @Override
     public void windowIconified(WindowEvent e)
     {
     }
 
+    @Override
     public void windowDeiconified(WindowEvent e)
     {
     }
 
+    @Override
     public void windowActivated(WindowEvent e)
     {
     }
 
+    @Override
     public void windowDeactivated(WindowEvent e)
     {
     }
@@ -322,6 +329,10 @@ implements WindowListener, ModbusSlaveListener,AncestorListener
 
     @Override
     public void modbusSlaveReplyDelayChanged(ModbusSlave slave, long min, long max) {
+    }
+
+    @Override
+    public void modbusSlaveErrorRatesChanged(ModbusSlave slave, float noReplyRate) {
     }
 
 
