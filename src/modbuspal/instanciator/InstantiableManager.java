@@ -7,6 +7,8 @@ package modbuspal.instanciator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map.Entry;
+import java.util.Set;
 
 
 /**
@@ -80,7 +82,18 @@ public class InstantiableManager<T extends Instantiable<T>>
         }
     }
 
-
+    public String nameOf(T gi)
+    {
+        Set<Entry<String,T>> set = instanciators.entrySet();
+        for( Entry<String,T> entry:set )
+        {
+            if( entry.getValue()==gi )
+            {
+                return entry.getKey();
+            }
+        }
+        return null;
+    }
 
     public void addInstanciatorListener(InstantiableManagerListener l)
     {

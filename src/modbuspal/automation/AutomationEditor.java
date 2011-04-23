@@ -745,7 +745,7 @@ implements AutomationEditionListener, AutomationExecutionListener, InstantiableM
     {
         if( def instanceof Generator )
         {
-            addGeneratorButton(def.getClassName());
+            addGeneratorButton( factory.nameOf(def) );
         }
     }
 
