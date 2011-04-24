@@ -15,11 +15,14 @@
 
 package modbuspal.automation;
 
+import java.awt.CardLayout;
 import modbuspal.generator.Generator;
 import modbuspal.instanciator.Instantiable;
 import modbuspal.instanciator.InstantiableManagerListener;
 import modbuspal.generator.GeneratorRenderer;
 import java.awt.Component;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -31,12 +34,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.xml.parsers.ParserConfigurationException;
 import modbuspal.instanciator.InstantiableManager;
+import modbuspal.main.ErrorMessage;
 import modbuspal.main.ListLayout;
 import modbuspal.main.ModbusPalPane;
-import modbuspal.script.ScriptManagerDialog;
 import modbuspal.toolkit.XFileChooser;
 import modbuspal.toolkit.XMLTools;
 import org.w3c.dom.Document;
@@ -57,6 +61,7 @@ implements AutomationEditionListener, AutomationExecutionListener, InstantiableM
     private final ListLayout listLayout;
     private final InstantiableManager<Generator> generatorFactory;
     private final ModbusPalPane modbusPalPane;
+    private JPanel chartPanel;
 
     /** Creates new form AutomationEditor */
     public AutomationEditor(Automation a, ModbusPalPane p)
@@ -67,12 +72,26 @@ implements AutomationEditionListener, AutomationExecutionListener, InstantiableM
         automation = a;
         
         setTitle( "Automation:"+automation.getName() );
+        Image img = Toolkit.getDefaultToolkit().createImage( getClass().getResource("../main/img/icon32.png") );
+        setIconImage(img);
         
         listLayout = new ListLayout();
         initComponents();
         addAlreadyExistingGeneratorsToList();
         addGeneratorButtons();
         pack();
+
+        // try to install the ChartPanel
+        try
+        {
+            chartPanel = new AutomationChart(a);
+            jPanel1.add("chart",chartPanel);
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+            chartPanel=null;
+        }
     }
 
     
@@ -81,6 +100,7 @@ implements AutomationEditionListener, AutomationExecutionListener, InstantiableM
         JButton button = new JButton( className );
         button.addActionListener( new ActionListener()
         {
+            @Override
             public void actionPerformed(ActionEvent e)
             {
                 try 
@@ -268,8 +288,6 @@ implements AutomationEditionListener, AutomationExecutionListener, InstantiableM
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
-        generatorsListScrollPane = new javax.swing.JScrollPane();
-        generatorsListPanel = new javax.swing.JPanel();
         buttonsPanel = new javax.swing.JPanel();
         controlsPanel = new javax.swing.JPanel();
         playToggleButton = new javax.swing.JToggleButton();
@@ -289,17 +307,15 @@ implements AutomationEditionListener, AutomationExecutionListener, InstantiableM
         importExportPanel = new javax.swing.JPanel();
         importButton = new javax.swing.JButton();
         exportButton = new javax.swing.JButton();
+        chartToggleButton = new javax.swing.JToggleButton();
+        jPanel1 = new javax.swing.JPanel();
+        generatorsListScrollPane = new javax.swing.JScrollPane();
+        generatorsListPanel = new javax.swing.JPanel();
+        jPanel2 = new javax.swing.JPanel();
+        jLabel1 = new javax.swing.JLabel();
+        jButton1 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-
-        generatorsListScrollPane.setPreferredSize(new java.awt.Dimension(300, 250));
-
-        generatorsListPanel.setBackground(javax.swing.UIManager.getDefaults().getColor("List.background"));
-        generatorsListPanel.setLayout(null);
-        generatorsListPanel.setLayout(listLayout);
-        generatorsListScrollPane.setViewportView(generatorsListPanel);
-
-        getContentPane().add(generatorsListScrollPane, java.awt.BorderLayout.CENTER);
 
         buttonsPanel.setLayout(new java.awt.GridBagLayout());
 
@@ -457,7 +473,49 @@ implements AutomationEditionListener, AutomationExecutionListener, InstantiableM
         });
         importExportPanel.add(exportButton);
 
+        chartToggleButton.setText("Chart");
+        chartToggleButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chartToggleButtonActionPerformed(evt);
+            }
+        });
+        importExportPanel.add(chartToggleButton);
+
         getContentPane().add(importExportPanel, java.awt.BorderLayout.PAGE_START);
+
+        jPanel1.setLayout(new java.awt.CardLayout());
+
+        generatorsListScrollPane.setPreferredSize(new java.awt.Dimension(300, 250));
+
+        generatorsListPanel.setBackground(javax.swing.UIManager.getDefaults().getColor("List.background"));
+        generatorsListPanel.setLayout(null);
+        generatorsListPanel.setLayout(listLayout);
+        generatorsListScrollPane.setViewportView(generatorsListPanel);
+
+        jPanel1.add(generatorsListScrollPane, "generators");
+
+        jPanel2.setLayout(new java.awt.GridBagLayout());
+
+        jLabel1.setText("Chart is disabled.");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        jPanel2.add(jLabel1, gridBagConstraints);
+
+        jButton1.setText("Why?");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        jPanel2.add(jButton1, gridBagConstraints);
+
+        jPanel1.add(jPanel2, "disabled");
+
+        getContentPane().add(jPanel1, java.awt.BorderLayout.CENTER);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -588,9 +646,38 @@ implements AutomationEditionListener, AutomationExecutionListener, InstantiableM
 
     }//GEN-LAST:event_removeInstanciatorButtonActionPerformed
 
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        ErrorMessage dialog = new ErrorMessage("Close");
+        dialog.setTitle("Chart disabled");
+        dialog.append("It seems that jFreeChart is not present on your computer, and it is required to draw the chart.");
+        dialog.append("If you want to use the chart, go to http://www.jfree.org/jfreechart/.");
+        dialog.setVisible(true);
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void chartToggleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chartToggleButtonActionPerformed
+        CardLayout cl = (CardLayout)jPanel1.getLayout();
+        if( chartToggleButton.isSelected()==true )
+        {
+            if( chartPanel==null )
+            {
+                cl.show(jPanel1, "disabled");
+            }
+            else
+            {
+                cl.show(jPanel1, "chart");
+            }
+        }
+        else
+        {    
+            cl.show(jPanel1, "generators");
+        }
+
+    }//GEN-LAST:event_chartToggleButtonActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel addGenPanel;
     private javax.swing.JPanel buttonsPanel;
+    private javax.swing.JToggleButton chartToggleButton;
     private javax.swing.JPanel controlsPanel;
     private javax.swing.JButton exportButton;
     private javax.swing.JPanel genButtonsPanel;
@@ -600,8 +687,12 @@ implements AutomationEditionListener, AutomationExecutionListener, InstantiableM
     private javax.swing.JButton importButton;
     private javax.swing.JPanel importExportPanel;
     private javax.swing.JTextField initTextField;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
+    private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     private javax.swing.JToggleButton loopToggleButton;
     private javax.swing.JToggleButton playToggleButton;
     private javax.swing.JButton removeInstanciatorButton;

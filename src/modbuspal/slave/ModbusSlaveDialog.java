@@ -14,6 +14,8 @@ package modbuspal.slave;
 import modbuspal.toolkit.GUITools;
 import modbuspal.toolkit.XMLTools;
 import java.awt.BorderLayout;
+import java.awt.Image;
+import java.awt.Toolkit;
 import modbuspal.main.*;
 import java.io.File;
 import java.io.IOException;
@@ -51,6 +53,8 @@ implements ModbusConst, ModbusSlaveListener
         modbusSlave = s;
         
         setTitle( String.valueOf(s.getSlaveId()) + ":" + s.getName() );
+        Image img = Toolkit.getDefaultToolkit().createImage( getClass().getResource("../main/img/icon32.png") );
+        setIconImage(img);
         
         modbusSlave.addModbusSlaveListener(this);
         initComponents();

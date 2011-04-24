@@ -11,6 +11,8 @@
 
 package modbuspal.main;
 
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JButton;
@@ -27,9 +29,16 @@ implements ActionListener
     private int selectedButton = -1;
 
 
+    ErrorMessage()
+    {
+        Image img = Toolkit.getDefaultToolkit().createImage( getClass().getResource("../main/img/icon32.png") );
+        setIconImage(img);
+    }
+
     /** Creates new form ErrorMessage */
     public ErrorMessage(int nbButtons)
     {
+        this();
         setModalityType(ModalityType.DOCUMENT_MODAL);
         create(nbButtons);
     }
@@ -37,6 +46,7 @@ implements ActionListener
 
     public ErrorMessage(String text)
     {
+        this();
         setModalityType(ModalityType.DOCUMENT_MODAL);
         create(1);
         setButton(0, text);
