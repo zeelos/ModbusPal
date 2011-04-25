@@ -44,6 +44,8 @@ extends Generator
     public void setInitialValue(double value)
     {
         super.setInitialValue(value);
+        if( catchup==true )
+        {
         value -= offset;
         if( value > amplitude )
         {
@@ -56,6 +58,7 @@ extends Generator
         else
         {
             initialAngle = Math.asin(value/amplitude);
+        }
         }
     }
 

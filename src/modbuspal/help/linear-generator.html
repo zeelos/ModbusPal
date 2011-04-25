@@ -5,31 +5,60 @@ and open the template in the editor.
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
   <head>
-    <title></title>
+    <title>ModbusPal</title>
+    <link rel="stylesheet" type="text/css" href="styles.css" />
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   </head>
   <body>
-    Linear generator
-The Linear generator acts like a mathematical linear function of the “f(x)=ax+b” kind. The first and the final values must be specified so that the “a” and “b” parameters are computed automatically.
+    
+      <h1>Linear generator</h1>
 
-A large variety of results can be obtained by enabling or disabling the “relative” options:
-	When “relative” is enabled for the “Start” value, the actual start value is the sum of the automations’ value at the moment of the starting of the generator and the value in the “Start value” input box.
-	When “relative” is enabled for the “End” value, the actual end value is the sum of the generator’s start value and the value in the “End value” input box.
-Refer to the following examples in order to get a better understanding of the “relative” option.
-Example #1: absolute values
-Create an automation with a single “Linear” generator inside. Use the same settings as in the example below, and the resulting dynamic value is a segment repeating itself over and over again.
+      <p>
+      <img src="../generator/linear/LinearGenerator.png" alt="Linear generator icon" class="img-wrap-around"/>
+        The Linear generator acts like a mathematical linear function of the
+        <q>f(x)=ax+b</q> kind. The first and the final values must be
+        specified so that the “a” and “b” parameters are computed automatically.</p>
 
-Create repeated data segment with Linear generator
-Example #2: relative values (continuous)
-Create an automation with a single “Linear” generator, and use relative starting and ending values in order to create an ever-increasing dynamic value.
+      <p>A large variety of results can be obtained by enabling or disabling
+      the <q>relative</q> options:</p>
+
+        <ul>
+            <li>When <q>relative</q> is enabled for the <q>Start value</q>, 
+            the actual start value is the sum of the automation’s value at the 
+            moment when the generator starts and the value in the <q>Start value</q> input box.
+            <li>When <q>relative</q> is enabled for the <q>End value</q>, the 
+            actual end value is the sum of the generator’s start value and 
+            the value in the <q>End value</q> input box.
+        </ul>
 
 
-Create an ever-increasing value with the Linear generator
-In this example, the initial value of the automation has been set to -2. Also, the “step” has been changed to 2, which means that the value is updated every 2 seconds (instead of 1 second by default).
-Example #3: relative values (segmented)
-By changing the relative start value and using 5 instead of 0, a mix of the two above examples is obtained.
+      <h2>Example 1: absolute values only</h2>
 
-A mix of the two previous examples.
+      <p>
+          <img class="img-stand-alone" src="img/linear_params_ex1.jpg" alt="Example 1 parameters"/>
+          <img class="img-stand-alone" src="img/linear_chart_ex1.jpg" alt="Example 1 chart"/>
+      </p>
 
+      <h2>Example 2: relative start value</h2>
+
+      <p>
+          <img class="img-stand-alone" src="img/linear_params_ex2.jpg" alt="Example 2 parameters"/>
+          <img class="img-stand-alone" src="img/linear_chart_ex2.jpg" alt="Example 2 chart"/>
+      </p>
+
+      <h2>Example 3: segmented chart</h2>
+
+      <p>
+          <img class="img-stand-alone" src="img/linear_params_ex3.jpg" alt="Example 3 parameters"/>
+          <img class="img-stand-alone" src="img/linear_chart_ex3.jpg" alt="Example 3 chart"/>
+      </p>
+
+      <h2>Example 4: continuous line</h2>
+
+      <p>
+          <img class="img-stand-alone" src="img/linear_params_ex4.jpg" alt="Example 4 parameters"/>
+          <img class="img-stand-alone" src="img/linear_chart_ex4.jpg" alt="Example 4 chart"/>
+      </p>
+        
   </body>
 </html>

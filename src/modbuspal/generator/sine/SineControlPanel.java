@@ -45,7 +45,7 @@ extends javax.swing.JPanel
         periodTextField = new NumericTextField(sineGen.period);
         catchupCheckBox = new javax.swing.JCheckBox();
         jLabel3 = new javax.swing.JLabel();
-        offsetTextField = new NumericTextField(sineGen.period);
+        offsetTextField = new NumericTextField(sineGen.offset);
 
         setLayout(new java.awt.GridBagLayout());
 

@@ -5,16 +5,30 @@ and open the template in the editor.
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
   <head>
-    <title></title>
+    <title>ModbusPal</title>
+    <link rel="stylesheet" type="text/css" href="styles.css" />
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   </head>
   <body>
-9.2	Random generator
-The Random generator creates random values in the interval defined by the specified minimum and maximum values.
+      
+      <h1>Random generator</h1>
 
-The minimum and maximum values are either absolute or relative.
-If relative, the actual minimum value is obtained by summing the current automation’s value (at the moment when this generator starts) and the value specified in the “Minimum value” input box.
-If relative, the actual maximum value is obtained by summing the current automation’s value (at the moment when this generator starts) and the value specified in the “Maximum value” input box.
+      <p>
+      <img src="../generator/random/RandomGenerator.png" alt="Random generator icon" class="img-wrap-around"/>
+      The Random generator creates random values in the interval defined by the 
+      specified minimum and maximum values.</p>
 
+
+      <p>The minimum and maximum values are either absolute or relative:</p>
+      
+      <ul>
+          <li>If relative, the actual minimum value is obtained by summing the
+          current automation’s value (at the moment when this generator starts)
+          and the value specified in the <q>Minimum value</q> input box.
+          <li>If relative, the actual maximum value is obtained by summing
+          the current automation’s value (at the moment when this generator
+          starts) and the value specified in the <q>Maximum value</q> input box.
+      </ul>
+      
   </body>
 </html>
