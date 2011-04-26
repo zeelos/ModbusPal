@@ -5,55 +5,139 @@ and open the template in the editor.
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
   <head>
-    <title></title>
+    <title>ModbusPal</title>
+    <link rel="stylesheet" type="text/css" href="styles.css" />
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   </head>
   <body>
 
-10	Bindings
-10.1	Overview
-Bindings have to be created in order to use automations in the MODBUS slaves of the project.
-A binding is an association between a register/coil and an automation.
-The data stored in a real-world MODBUS slave is very often formatted as a combination of bytes/words in order to fit into the 16-bit registers.
-For example, a value may be stored internally as 32-bits signed integer, with the most significant word (MSW) in one 16-bit register and the least significant word (LSW) in another one.
-The goal of a binding in ModbusPal is precisely to create such mappings between the output value of the automations and the registers/coils of the MODBUS slaves.
+      <h1>Bindings</h1>
 
-The bindings define how to associate the automations and the MODBUS slaves registers/coils
-10.2	Creating a binding
-The bindings are created by selecting the registers and coils directly in the dialog of a MODBUS slave
-First, choose the slave for which the bindings has to be created and display its dialog (refer to §4.3, ”Configuring the MODBUS slave”). Then, choose the tab corresponding to the registers/coils that must be bound.
-10.2.1	Single selection
-Select the line corresponding to the register/coil to bind and click on the “Bind” button.
+      <p>A binding is what glues an automation and a register/coil together.</p>
+      
+      <h2>Overview</h2>
 
-Create a binding by selecting one register/coil and clicking on “Bind”
-A new dialog appears, in which the automation to bind to that register/coil must be selected from the list, along with the desired data format.
+      <p>Bindings have to be created in order to use automations in the MODBUS 
+      slaves of the project. A binding is an association between a register/coil
+      and an automation.</p>
+      
+      <p>The data stored in a real-world MODBUS slave is very often formatted
+      as a combination of bytes/words in order to fit into the 16-bit registers.
+      For example, a value may be stored internally as 32-bits signed integer,
+      with the most significant word (MSW) in one 16-bit register and the
+      least significant word (LSW) in another one.</p>
+      
+      <p>The goal of bindings is precisely to create such mappings between
+      the output value of the automations and the registers/coils of the
+      MODBUS slaves.</p>
 
-Choose the automation on the left and the data format on the right
-For most data formats, an order has to be explicitly defined.
-For example, a 32-bit value fits into two 16-bits registers: one register for the LSW, and another one for the MSW. When a binding is defined between a register and an automation formatted as a 32-bit value, the order defines if the register will hold the LSW (order 0) or the MSW (order 1).
-When all the selections are done, click on “OK” to validate.
-10.2.2	Multiple selection
-Hold the “Control” key of the keyboard and select the lines corresponding to the registers/coil to bind and click on the “Bind” button.
+      <h2>Creating a binding</h2>
 
-Create a binding by selecting multiple registers/coils and clicking on “Bind”
-When the “Automation Binding” dialog appears, the “Order” selection is disabled. The automation to bind to those registers/coils must be selected from the list, along with the desired data format. Click on “OK” to validate the selection.
-The order is automatically set starting from 0 for the first selected line, and then is increased by one for the following lines.
-For example, if three registers/coils are selected, the first will get “order=0”, the second will get “order=1” and the last will get “order=2”.
-10.3	Changing a binding
-An existing binging can be easily modified by selecting the corresponding line and clicking on the “Binding” button. Then, a new automation/data format selection can be made, and applied by pressing the “OK” button. Changing a binding works with single or multiple line selection.
-10.4	Removing a binding
-To remove one or several bindings, select the appropriate registers/coils and then click on the “Unbind” button.
-10.5	Predefined bindings
-ModbusPal comes with a few built-in bindings. They will suffice most of the time. Otherwise, it is possible to make custom bindings thanks to Python scripts.
-The following paragraphs describe the built-in bindings.
-10.5.1	SINT32
-The automation’s value is formatted as a 32-bit signed integer value. The least significant 16-bit word (LSW) is obtained with “order=0”. The most significant 16-bit word is obtained with “order=1”.
-10.5.2	FLOAT32
-The automation’s value is formatted as a 32-bit IEEE floating point number. The least significant 16-bit word (LSW) is obtained with “order=0”. The most significant 16-bit word is obtained with “order=1”.
-10.5.3	Summary
-Name	Type	Signed	Size
-SINT32	Integer	yes	32-bits
-FLOAT32	IEEE float	yes	32-bits
-10.6	Custom bindings
+      <h3>Selection</h3>
+
+      <p>The bindings are created by selecting the registers and coils
+      directly in the dialog of a MODBUS slave and then clicking on the <q>Bind</q>
+      button.
+      <img src="img/select_a_register_for_binding.jpg" class="img-stand-alone" alt="View of register selection for binding" />
+      </p>
+      
+      <p>A new dialog appears. This is the binding editor, in which the user
+      selects which automation should be associated with the selected
+      register/coil, and what mapping to use.
+      <img src="img/view_of_binding_editor.jpg" class="img-stand-alone" alt="View of the binding editor" />
+      </p>
+
+      <h3>Order</h3>
+
+      <p>For some mappings, the value will span several registers and coils. In
+          that case, the user must specify the <q>order</q> of the binding being
+          created.</p>
+
+      <p>For example, an automation value using the SINT32 mapping will span
+      2 registers. The user creates two distinct bindings:</p>
+
+      <ul>
+          <li>The first one will associate the upper 16 bits of the
+          automation value (cast as a signed 32-bit integer) by selecting the
+          order 1 (<acronym>MSW</acronym> stands for <q>Most Significant Word</q>).
+          <li>The second one will associate the lower 16 bits of the automation
+          value (cast as a signed 32-bit integer) by selecting the order 0
+          (<acronym>LSW</acronym> stands for <q>Least Significant Word</q>).
+      </ul>
+      
+      <h3>Multiple selection</h3>
+
+      <p>Hold the <abbr>CTRL</abbr> key of the keyboard and select the lines
+      corresponding to the registers/coils to bind and click on the <q>Bind</q> button.</p>
+
+      <p>When the binding editor appears, the <q>Order</q> selection is
+      disabled. The order is automatically set starting from 0 for the first
+      selected line, and then is increased by one for the following lines.</p>
+      
+      <p>For example, if three registers are selected, the first will get
+      <em>order=0</em>, the second will get <em>order=1</em> and the last
+      will get <em>order=2</em>.</p>
+
+
+      <h2>Changing a binding</h2>
+
+      <p>An existing binging can be easily modified by selecting the
+      corresponding line and clicking on the <q>Binding</q> button. Then,
+      a new selection can be made, and applied by pressing the <q>OK</q> button.
+      Changing a binding works with single or multiple line selection.</p>
+
+      <h2>Removing a binding</h2>
+
+      <p>To remove one or several bindings, select the appropriate
+          registers/coils and then click on the <q>Unbind</q> button.</p>
+
+      <h2>Predefined bindings</h2>
+      
+      <p>ModbusPal comes with a few built-in bindings. They will suffice
+      most of the time. Otherwise, it is possible to make custom bindings
+      thanks to Python scripts.</p>
+
+      <h3>SINT16</h3>
+
+      <p>The automation's value is formatted as a 16-bit signed integer value.
+      It fits perfectly into a register, so there is no need to select an order.
+      </p>
+
+      <h3>SINT32</h3>
+
+      <p>The automation’s value is formatted as a 32-bit signed integer value.
+      The least significant 16-bit word (LSW) is obtained with <em>order=0</em>.
+      The most significant 16-bit word is obtained with <em>order=1</em>.
+      </p>
+      
+      <h3>FLOAT32</h3>
+      
+      <p>The automation’s value is formatted as a 32-bit IEEE floating point
+      number. The least significant 16-bit word (LSW) is obtained with
+      <em>order=0</em>. The most significant 16-bit word is obtained with <em>order=1</em>.
+      </p>
+
+      <h2>Scripted binding</h2>
+
+      <p>For special cases, it is always possible to define a custom binding
+          class thanks to the Python script support. Information on how to
+      write scripted bindings is available in
+      <a href="python-binding.html">this page</a>.</p>
+
+      <h2>Null automation</h2>
+
+      <p>When the users write their own binding scripts, in some cases they
+      will figure out that the binding could directly generate the values they
+      are supposed to format. It is not always necessary to have a seperate
+      automation for that.</p>
+
+      <p>Still, ModbusPal requires that a binding is associated with an automation.
+      This is when the Null automation comes in handy.</p>
+
+      <p>The Null automation is always available, even when the project does
+      not define any automation. And it does <em>nothing</em>. So if the
+      custom binding generates the values by itself, the user can use the Null
+      automation to make it work.</p>
+
   </body>
 </html>

@@ -46,7 +46,7 @@ public class InstantiableManager<T extends Instantiable<T>>
         return add(gi.getClassName(), gi);
     }
 
-    public boolean add(String name, T gi)
+    private boolean add(String name, T gi)
     {
         if( exists(name)==true )
         {

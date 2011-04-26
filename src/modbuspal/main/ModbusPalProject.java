@@ -964,9 +964,10 @@ implements ModbusPalXML
     }
 
 
+    @Deprecated
     public void addGeneratorInstantiator(String name, Generator g)
     {
-        generatorFactory.add(name, g);
+        addGeneratorInstantiator(g);
     }
 
     public void addGeneratorInstantiator(Generator g)
@@ -1025,9 +1026,10 @@ implements ModbusPalXML
         bindingFactory.add(b);
     }
 
+    @Deprecated
     public void addBindingInstantiator(String name, Binding b)
     {
-        bindingFactory.add(name, b);
+        addBindingInstantiator(b);
     }
 
 
@@ -1076,9 +1078,10 @@ implements ModbusPalXML
     }
 
 
+    @Deprecated
     public void addFunctionInstantiator(String name, ModbusPduProcessor pi)
     {
-        functionFactory.add(name, pi);
+        addFunctionInstantiator(pi);
     }
 
 

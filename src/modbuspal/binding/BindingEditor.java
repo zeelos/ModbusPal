@@ -11,6 +11,8 @@
 
 package modbuspal.binding;
 
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -116,6 +118,8 @@ extends javax.swing.JDialog
         automations = new AutomationListModel( modbusPalProject.getAutomations() );
         bindings = new BindingList( modbusPalProject.getBindingFactory().getList() );
         initComponents();
+        Image img = Toolkit.getDefaultToolkit().createImage( getClass().getResource("../main/img/icon32.png") );
+        setIconImage(img);
     }
 
     public String getSelectedClass()

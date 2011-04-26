@@ -233,6 +233,7 @@ implements Instantiable<Generator>
      * Generators written in Python.
      * @return the "human readable" class name of this generator.
      */
+    @Override
     public String getClassName()
     {
         return getClass().getSimpleName();

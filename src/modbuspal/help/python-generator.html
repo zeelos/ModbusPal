@@ -5,29 +5,50 @@ and open the template in the editor.
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
   <head>
-    <title></title>
+    <title>ModbusPal</title>
+    <link rel="stylesheet" type="text/css" href="styles.css" />
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   </head>
   <body>
-9.4	Custom generators
-The project may require very specific generators in order to mimic a real-world device. The approach of ModbusPal is to let the user create its own generators thanks to scripts.
-To add scripted generators, summon the script manager dialog by clicking on the “…” button.
 
-In order to add scripted generators, summon the script manager dialog by clicking on “…”
-Refer to chapter §11 for more information.
+      <h1>How to write a generator using Python?</h1>
+      
+      <p>A ModbusPal project may require very specific generators in order
+      to mimic a real-world device. The approach of ModbusPal is to let the
+      user create its own generators thanks to scripts.</p>
 
-Scripted generators
-Overview
-Writing a scripted generator consists of subclassing the PythonGenerator Java class in a Python class. The magic of interpreting the Python class is made by the Jython interpreter.
-Important: Make sure that the name of the Python class matches the name of the file containing the script. For example, the script that defines a “CustomGenerator” class must be named “CustomGenerator.py”.
-A scripted generator should only contain a class definition, this class being a subclass of PythonGenerator.
-Minimalist generator script
-The PythonGenerator class has no abstract member, so there is no obligation to implement any of its method.
-The following example only overrides the “getValue” method, which is responsible of returning the dynamic value created by the generator.
-The returned value is “time” itself, which means that the “getValue” method is equivalent to the mathematical function f(x)=x.
+      <h2>Important notice</h2>
 
-Content of “MinimalistGenerator.py”
+      <div class="important">
+      <ul>
+          <li>When a script defines a new generator class, it should be
+          executed before the automations are loaded from the project
+          file. The script should be added with the <q>Before init</q> parameter.
+          <li>It is highly recommanded to implement the <q>getClassName()</q> function.
+      </ul>
+      </div>
 
+      <h2>Minimalist generator</h2>
+
+      <ol>
+          <li>Import the class <q>PythonGenerator</q> from the <q>modbuspal.script</q> package.
+          <li>Create a Python class that inherits <q>PythonGenerator</q>.
+          <li>Override the <q>getValue()</q> function (the default implementation
+          only returns zeroes).
+      </ol>
+
+      <p>Then the new generator should be registered into the project, so that
+          it can be used from the Automation Editor of any automation in the
+          current project:</p>
+
+      <ol>
+          <li>Create an instance of the generator.
+          <li>Register this instance by calling the <q>ModbusPal.addGeneratorInstantiator()</q> function.
+      </ol>
+
+      <div class="code-sample">
+          <a href="py/MinimalistGenerator.py">MinimalistGenerator.py</a>
+      <pre>
 from modbuspal.script import PythonGenerator
 
 class MinimalistGenerator(PythonGenerator):
@@ -35,17 +56,200 @@ class MinimalistGenerator(PythonGenerator):
   def getValue(self,time):
     return time;
 
+mg = MinimalistGenerator();
+ModbusPal.addGeneratorInstantiator(mg);
+      </pre>
+      </div>
 
-Advanced generator script
-The following script illustrates all the aspects of a fully customized generator.
-	It defines a new icon for display in the automation editor
-	It creates a control panel for display in the automation editor, letting the user customize some parameters
-	It generates a dynamic value of the f(x)=ax+b kind, where ‘a’ is a user-defined value and ‘b’ is the initial value of the generator.
-	It saves some parameters with XML formatting into the project file
-	It loads those parameters from the project file
+      <h2>Why does the generator have a strange name?</h2>
 
-Content of “AdvancedGenerator.py”
+      <p>The above example will create a new generator with a rather strange name:
+      <img src="img/view_of_python_generator_strange_name.jpg" class="img-stand-alone" alt="View of a generator with a strange name"/>
+      </p>
 
+      <p>This is because, by default, the generator is named after the Java classname.
+          But in the case of a class created by a Python script, the resulting classname
+          is cryptic.</p>
+
+      <p>To solve this problem, the generator must implement the <q>getClassName()</q>
+      function in order to return a better name.</p>
+
+      <p><strong>It is highly recommanded to implement the <q>getClassName()</q> function.</strong></p>
+
+      <div class="code-sample">
+      <pre>
+from modbuspal.script import PythonGenerator
+
+class MinimalistGenerator(PythonGenerator):
+
+  def getValue(self,time):
+    return time;
+
+  def getClassName(self):
+    return "MinimalistGenerator";
+
+mg = MinimalistGenerator();
+ModbusPal.addGeneratorInstantiator(mg);
+      </pre>
+      </div>
+
+      <h2>How to initialize the generator?</h2>
+
+      <p>Some generators will require to initialize variables when they
+          are instanciated. Normally, this would be done in the constructor
+          of the Python class, the <q>__init__()</q> function.</p>
+
+      <p>But, due to the way ModbusPal operates, the constructor is not always
+      called. So, in order to initialize the internal variables of the generator,
+      the user should implement the <q>init()</q> function instead.</p>
+
+      <p>All initializations that are required by the generator should be made
+          into the <q>init()</q> function. The following sample of code illustrates
+      how:</p>
+
+      <div class="code-sample">
+          <pre>
+class MyGenerator(PythonGenerator):
+  def init(self):
+    self.myVar = 5;
+          </pre>
+      </div>
+
+      <h2>How to change the icon of the generator?</h2>
+
+      <p>By default, the genetor has the following icon:
+          <img class="img-stand-alone" src="../generator/Generator.png" alt="Default icon for a new generator"/>
+          But it can be modified, replaced by any other 64x64 PNG or JPEG image.
+      </p>
+
+      <p>To replace the icon of a generator, call the <q>setIcon()</q> function. This
+      is usually performed in the <q>init()</q> function described above. When
+      using the <q>setIcon</q> function, only absolute paths should be used. </p>
+
+      <p>The following snippet illustrates how to use the <q>setIcon()</q>
+          function in order to use an PNG image that is located in the same
+          directory as the script:</p>
+
+      <div class="code-sample">
+          <pre>
+class MyGenerator(PythonGenerator):
+  def init(self):
+    self.setIcon(mbp_script_directory+"/my_icon.png");
+          </pre>
+      </div>
+
+      <h2>How to create a configuration panel for the generator?</h2>
+
+      <p>It is a natural thing that a generator lets the user modify some
+          parameters. But this task implies that a graphical interface is
+          available.</p>
+
+      <p>When writing a PythonGenerator, a graphical interface can be provided
+          to ModbusPal so that the parameters of the generator are modified
+          by the user.</p>
+
+      <p>To do so, simply implement the <q>getControlPanel()</q> function; it
+          should return an object of the javax.swing.JPanel class.</p>
+
+      <p>The following example creates a dummy user interface. There is actually
+          no input, but only a text in a JLabel:</p>
+
+      <div class="code-sample">
+          <pre>
+class MyGenerator(PythonGenerator):
+
+  def init(self):
+    self.controlPanel = JPanel();
+    self.controlPanel.setLayout( BorderLayout() );
+    self.controlPanel.add( JLabel("Hello, world!") );
+
+  def getControlPanel(self):
+    return self.controlPanel;
+          </pre>
+      </div>
+
+      <h2>How to save and load the settings of the generator?</h2>
+
+      <p>If the generator requires the user to provide some parameters, usually
+      thanks to a control panel, then it becomes necessary to save those parameters
+      into the project file. And then, of course, it is necessary to be able to
+      load those parameters from the project file.</p>
+
+      <h3>Save</h3>
+
+      <p>To save the parameters of the generator, implement the
+      <q>saveGeneratorSettings()</q> function. This function has one important
+      parameter: it is the OutputStream to write into.</p>
+
+      <p>The project file is an XML formatted file, so its best if the generator
+          uses also XML.</p>
+      
+      <p>The following example saves the value of <q>paramA</q> and <q>paramB</q>
+          into the project file:</p>
+
+      <div class="code-sample">
+          <pre>
+class MyGenerator(PythonGenerator):
+
+  def init(self):
+    self.paramA = 5;
+    self.paramB = 7;
+
+  def saveGeneratorSettings(self,outputStream):
+    out.write("&lt;paramA value=\""+ self.paramA +"\" />\r\n");
+    out.write("&lt;paramB value=\""+ self.paramB +"\" />\r\n");
+          </pre>
+      </div>
+
+      <h3>Load</h3>
+
+      <p>In order to load the settings of a generator, the <q>loadGeneratorSettings()</q> function has
+          to be implemented.</p>
+
+      <p>The following example will load the settings saved by the previous example.
+          If the settings have been saved using the XML format, that the user
+          can use the powerful APIs of Java, as well as the toolkit class provided 
+          by ModbusPal, <q>modbuspal.toolkit.XMLTools</q>.
+          The input parameter <q>nodeList</q>is
+          an instance of <q>org.w3c.dom.NodeList</q>.</p>
+
+      <div class="code-sample">
+          <pre>
+class MyGenerator(PythonGenerator):
+
+  def init(self):
+    self.paramA = 5;
+    self.paramB = 7;
+
+  def loadGeneratorSettings(self,nodeList):
+    nodeParamA = XMLTools.getNode(nodeList,"paramA");
+    if nodeParamA is not None:
+        self.paramA = int( XMLTools.getAttribute("value",nodeParamA) );
+    nodeParamB = XMLTools.getNode(nodeList,"paramB");
+    if nodeParamB is not None:
+        self.paramB = int( XMLTools.getAttribute("value",nodeParamB) );
+          </pre>
+      </div>
+
+      <h2>API</h2>
+
+      <p>Please consult the Javadoc of ModbusPal in order to get more
+      information on all the classes introduced in this page.</p>
+
+      <h2>Full example</h2>
+      
+      <p>The following script illustrates all the aspects of a fully customized generator:</p>
+      <ul>
+          <li>It defines a new icon for display in the automation editor
+          <li>It creates a control panel for display in the automation editor, letting the user customize some parameters
+          <li>It generates a dynamic value of the f(x)=ax+b kind, where ‘a’ is a user-defined value and ‘b’ is the initial value of the generator.
+          <li>It saves some parameters with XML formatting into the project file
+          <li>It loads those parameters from the project file
+    </ul>
+
+      <div class="code-sample">
+          <a href="py/AdvancedGenerator.py">AdvancedGenerator.py</a>
+      <pre>
 from modbuspal.script import PythonGenerator
 from modbuspal.toolkit import NumericTextField
 from modbuspal.toolkit import XMLTools
@@ -59,9 +263,12 @@ class AdvancedGenerator(PythonGenerator):
   # - create the control panel
   def init(self):
 
-    self.setIcon("./CustomGenerator.png");
+    self.setIcon(mbp_script_directory+"/CustomGenerator.png");
     self.createCtrlPane();
 
+  # Returns the real class name of this generator
+  def getClassName(self):
+    return "AdvancedGenerator";
 
   # This function will create a control panel using Java Swing components.
   # The control panel will appear in the middle of the generator panel,
@@ -98,7 +305,7 @@ class AdvancedGenerator(PythonGenerator):
   # the provided output stream.
   def saveSettings(self, out):
 
-    out.write("<a value=\""+ self.aTextField.getText() +"\" />\r\n");
+    out.write("&lt;a value=\""+ self.aTextField.getText() +"\" />\r\n");
 
 
   # Load the parameters of this generator from the provided DOM structure.
@@ -109,7 +316,10 @@ class AdvancedGenerator(PythonGenerator):
       value = XMLTools.getAttribute("value",node);
       self.aTextField.setText(value);
 
-
+genInstance = AdvancedGenerator();
+ModbusPal.addGeneratorInstantiator(genInstance);
+      </pre>
+      </div>
 
   </body>
 </html>
