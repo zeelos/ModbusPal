@@ -12,10 +12,15 @@ package modbuspal.automation;
 public class NullAutomation
 extends Automation
 {
+    /** name of the null automation. */
     public static final String NAME = "Null";
 
     private static NullAutomation instance = new NullAutomation();
 
+    /**
+     * returns the unique instance of the NullAutomation.
+     * @return the unique instance of the NullAutomation
+     */
     public static NullAutomation getInstance()
     {
         return instance;

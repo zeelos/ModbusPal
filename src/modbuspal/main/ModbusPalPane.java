@@ -47,7 +47,7 @@ public class ModbusPalPane
 extends JPanel
 implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
 {
-    public static final String APP_STRING = "ModbusPal 1.6";
+    public static final String APP_STRING = "ModbusPal 1.6a";
     public static final String BASE_REGISTRY_KEY = "modbuspal";
 
     private ArrayList<ModbusPalProjectListener> listeners = new ArrayList<ModbusPalProjectListener>();
