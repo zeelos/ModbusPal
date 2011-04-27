@@ -12,6 +12,8 @@
 package modbuspal.script;
 
 import java.awt.Component;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.dnd.DropTarget;
 import java.io.File;
 import java.util.List;
@@ -46,6 +48,8 @@ implements ScriptListener, FileTransferHandler.FileTransferTarget
     {
         super();
         initComponents();
+        Image img = Toolkit.getDefaultToolkit().createImage( getClass().getResource("../main/img/icon32.png") );
+        setIconImage(img);
         scriptsList.setDropTarget( new DropTarget(this, new FileTransferHandler(this) ) );
     }
 

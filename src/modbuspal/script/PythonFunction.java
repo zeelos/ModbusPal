@@ -30,6 +30,7 @@ implements ModbusPduProcessor
         return null;
     }
 
+    @Override
     public String getClassName() {
         return getClass().getSimpleName();
     }
@@ -38,6 +39,7 @@ implements ModbusPduProcessor
      * the script should override this method and put
      * its initialization commands in here.
      */
+    @Override
     public void init()
     {
     }
@@ -46,11 +48,13 @@ implements ModbusPduProcessor
      * the script should override this method and put
      * its reset commands in here.
      */
+    @Override
     public void reset()
     {
     }
 
     
+    @Override
     public ModbusPduProcessor newInstance()
     throws InstantiationException, IllegalAccessException
     {

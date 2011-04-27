@@ -27,6 +27,12 @@ extends Binding
     }
 
     @Override
+    public boolean getCoil(int rank, double value)
+    {
+        return false;
+    }
+
+    @Override
     public Binding newInstance()
     throws InstantiationException, IllegalAccessException
     {

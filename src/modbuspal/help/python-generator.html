@@ -196,8 +196,8 @@ class MyGenerator(PythonGenerator):
     self.paramB = 7;
 
   def saveGeneratorSettings(self,outputStream):
-    out.write("&lt;paramA value=\""+ self.paramA +"\" />\r\n");
-    out.write("&lt;paramB value=\""+ self.paramB +"\" />\r\n");
+    outputStream.write("&lt;paramA value=\""+ str(self.paramA) +"\" />\r\n");
+    outputStream.write("&lt;paramB value=\""+ str(self.paramB) +"\" />\r\n");
           </pre>
       </div>
 
@@ -207,7 +207,7 @@ class MyGenerator(PythonGenerator):
           to be implemented.</p>
 
       <p>The following example will load the settings saved by the previous example.
-          If the settings have been saved using the XML format, that the user
+          If the settings have been saved using the XML format, then the user
           can use the powerful APIs of Java, as well as the toolkit class provided 
           by ModbusPal, <q>modbuspal.toolkit.XMLTools</q>.
           The input parameter <q>nodeList</q>is

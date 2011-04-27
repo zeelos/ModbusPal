@@ -27,17 +27,39 @@ extends javax.swing.JDialog
     /** Creates new form AutomationSelectionDialog */
     public AutomationSelectionDialog(AutomationListModel al)
     {
+        this(al,null);
+    }
+
+    public AutomationSelectionDialog(Automation[] a)
+    {
+        this( new AutomationListModel(a), null );
+    }
+
+    public AutomationSelectionDialog(Automation[] a, Automation selected)
+    {
+        this( new AutomationListModel(a), selected );
+    }
+
+    public AutomationSelectionDialog(AutomationListModel al, Automation selected)
+    {
         super();
         setModalityType(ModalityType.APPLICATION_MODAL);
         automationListModel = al;
         initComponents();
         Image img = Toolkit.getDefaultToolkit().createImage( getClass().getResource("../main/img/icon32.png") );
         setIconImage(img);
+        select(selected);
     }
 
-    public AutomationSelectionDialog(Automation[] a)
+
+    private void select(Automation selected)
     {
-        this( new AutomationListModel(a) );
+        if(selected==null)
+        {
+            return;
+        }
+
+        jList1.setSelectedValue( selected.getName(), true);
     }
 
     /** This method is called from within the constructor to

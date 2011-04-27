@@ -11,7 +11,8 @@
 
 package modbuspal.main;
 
-import modbuspal.toolkit.GUITools;
+import java.awt.Image;
+import java.awt.Toolkit;
 
 /**
  *
@@ -60,6 +61,9 @@ extends javax.swing.JDialog
         setTitle(title);
         initComponents();
         messageLabel.setText(message);
+        Image img = Toolkit.getDefaultToolkit().createImage( getClass().getResource("img/icon32.png") );
+        setIconImage(img);
+
         //TODO: GUITools.align(parent, this);
     }
 

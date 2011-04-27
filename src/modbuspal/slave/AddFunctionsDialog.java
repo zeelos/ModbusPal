@@ -12,6 +12,8 @@
 package modbuspal.slave;
 
 import java.awt.Frame;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -49,18 +51,22 @@ extends javax.swing.JDialog
             }
         }
 
+        @Override
         public int getSize() {
             return names.length;
         }
 
+        @Override
         public Object getElementAt(int index) {
             return names[index];
         }
 
+        @Override
         public void setSelectedItem(Object anItem) {
             selectedInstance = (String)anItem;
         }
 
+        @Override
         public Object getSelectedItem() {
             return selectedInstance;
         }
@@ -95,6 +101,8 @@ extends javax.swing.JDialog
         listOfFunctions = new ListOfFunctions(ff);
         listOfInstances = new ListOfInstances(slave.getPduProcessorInstances());
         initComponents();
+        Image img = Toolkit.getDefaultToolkit().createImage( getClass().getResource("../main/img/icon32.png") );
+        setIconImage(img);
         if( listOfFunctions.getSize()>0 )
         {
             newRadioButton.requestFocus();
@@ -126,6 +134,7 @@ extends javax.swing.JDialog
         cancelButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("Select a PDU processor");
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
         instanceGroup.add(existingRadioButton);
@@ -133,6 +142,8 @@ extends javax.swing.JDialog
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 5);
         getContentPane().add(existingRadioButton, gridBagConstraints);
 
         instanceGroup.add(newRadioButton);
@@ -141,6 +152,8 @@ extends javax.swing.JDialog
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 5);
         getContentPane().add(newRadioButton, gridBagConstraints);
 
         existingComboBox.setModel(listOfInstances);
@@ -149,7 +162,11 @@ extends javax.swing.JDialog
                 existingComboBoxActionPerformed(evt);
             }
         });
-        getContentPane().add(existingComboBox, new java.awt.GridBagConstraints());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
+        getContentPane().add(existingComboBox, gridBagConstraints);
 
         newComboBox.setModel(listOfFunctions);
         newComboBox.addActionListener(new java.awt.event.ActionListener() {
@@ -160,6 +177,9 @@ extends javax.swing.JDialog
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
         getContentPane().add(newComboBox, gridBagConstraints);
 
         okButton.setText("OK");
@@ -171,6 +191,8 @@ extends javax.swing.JDialog
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(10, 5, 5, 5);
         getContentPane().add(okButton, gridBagConstraints);
 
         cancelButton.setText("Cancel");
@@ -182,6 +204,8 @@ extends javax.swing.JDialog
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(10, 5, 5, 5);
         getContentPane().add(cancelButton, gridBagConstraints);
 
         pack();

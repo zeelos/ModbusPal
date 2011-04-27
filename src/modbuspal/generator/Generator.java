@@ -263,5 +263,6 @@ implements Instantiable<Generator>
     @Override
     public void reset()
     {
+        throw new RuntimeException("This method is implemented because of the Instantiale interface, but is never user.");
     }
 }

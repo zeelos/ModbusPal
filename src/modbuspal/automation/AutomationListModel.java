@@ -102,10 +102,28 @@ implements ListModel, ComboBoxModel
         }
     }
 
-    public void setSelectedItem(Object anItem) {
-        selectedAutomation = (String)anItem;
+    @Override
+    public void setSelectedItem(Object anItem)
+    {
+        String s = (String)anItem;
+
+        if( s.compareTo(NullAutomation.NAME)==0 )
+        {
+            selectedAutomation = s;
+            return;
+        }
+
+        // check that the object to select actually belongs to the list:
+        for(Automation a:automations )
+        {
+            if( a.getName().compareTo(s)==0 )
+            {
+                selectedAutomation = s;
+            }
+        }
     }
 
+    @Override
     public String getSelectedItem() {
         return selectedAutomation;
     }

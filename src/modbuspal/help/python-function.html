@@ -5,10 +5,689 @@ and open the template in the editor.
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
   <head>
-    <title></title>
+    <title>ModbusPal</title>
+    <link rel="stylesheet" type="text/css" href="styles.css" />
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   </head>
   <body>
-    TODO write content
+    
+      <h1>How to write a PDU processor using Python?</h1>
+
+      <p>A ModbusPal project may require to handle non-standard MODBUS function.
+      Actually, the specification defines two ranges of user-defined functions,
+      65-75 and 100-110.</p>
+
+      <p>ModbusPal handles standard requests with built-in objects called
+      <q>PDU processors</q>. In order to handle those non-standard function,
+      the approach of ModbusPal is to let the user create its own PDU
+      processors thanks to scripts.</p>
+
+      <h2>Important notice</h2>
+
+      <div class="important">
+      <ul>
+          <li>When a script defines a new PDU processor class, it should be
+          executed before the MODBUS slaves are loaded from the project
+          file. The script should be added with the <q>Before init</q> parameter.
+          <li>It is highly recommanded to implement the <q>getClassName()</q> function.
+      </ul>
+      </div>
+
+      <h2>Minimalist PDU processor</h2>
+
+      <ol>
+          <li>Import the class <q>PythonFunction</q> from the <q>modbuspal.script</q> package.
+          <li>Create a Python class that inherits <q>PythonFunction</q>.
+          <li>Override the <q>processPDU()</q> function (the default implementation
+          produces no reply).
+      </ol>
+
+      <p>Then the new PDU processor should be registered into the project, so that
+          it can be used by any MODBUS slave in the
+          current project:</p>
+
+      <ol>
+          <li>Create an instance of the PDU processor.
+          <li>Register this instance by calling the <q>ModbusPal.addFunctionInstantiator()</q> function.
+      </ol>
+
+      <div class="code-sample">
+          <a href="py/MinimalistFunction.py">MinimalistFunction.py</a>
+      <pre>
+from modbuspal.script import PythonFunction
+from modbuspal.toolkit import ModbusTools
+
+class MinimalistFunction(PythonFunction):
+
+  def processPDU(self,functionCode,slaveID,buffer,offset,createIfNotExist):
+    # offset+0 holds the function code, do not touch
+    # put value 123 if the next byte of the reply
+    ModbusTools.setUint8 (buffer, offset+1,  123);
+    # the reply is only two-byte long
+    return 2;
+
+mf = MinimalistFunction();
+ModbusPal.addFunctionInstantiator(mf);
+      </pre>
+      </div>
+
+      <h2>Why does the PDU processor have a strange name?</h2>
+
+      <p>The above example will create a new PDU processor with a rather strange name:
+      <img src="img/view_of_python_function_strange_name.jpg" class="img-stand-alone" alt="View of a PDU processor with a strange name"/>
+      </p>
+
+      <p>This is because, by default, the PDU processor is named after the Java classname.
+          But in the case of a class created by a Python script, the resulting classname
+          is cryptic.</p>
+
+      <p>To solve this problem, the PDU processor must implement the <q>getClassName()</q>
+      function in order to return a better name.</p>
+
+      <p><strong>It is highly recommanded to implement the <q>getClassName()</q> function.</strong></p>
+
+      <div class="code-sample">
+      <pre>
+from modbuspal.script import PythonFunction
+from modbuspal.toolkit import ModbusTools
+
+class MinimalistFunction(PythonFunction):
+
+  def getClassName(self):
+    return "MinimalistFunction";
+
+  def processPDU(self,functionCode,slaveID,buffer,offset,createIfNotExist):
+    # offset+0 holds the function code, do not touch
+    # put value 123 if the next byte of the reply
+    ModbusTools.setUint8 (buffer, offset+1,  123);
+    # the reply is only two-byte long
+    return 2;
+
+mf = MinimalistFunction();
+ModbusPal.addFunctionInstantiator(mf);
+      </pre>
+      </div>
+
+      <h2>How does the processPDU function work?</h2>
+
+      <p>The prototype of the function is as follow:</p>
+      <pre>
+        def processPDU(self,functionCode,slaveID,buffer,offset,createIfNotExist):
+      </pre>
+
+      <p>Basically, the processPDU function provides an array of bytes (<q>buffer</q>)
+          that contains the PDU to process. The developper must implement the reading
+          of the content of the request.
+          Then the reply must also be written into the same byte buffer,
+          and the length of that reply must be returned by the function.</p>
+
+      <p>Here is a full description of the arguments:</p>
+      <dl>
+          <dt>functionCode</dt>
+          <dd>The function code that triggered the call to this PDU processor instance.</dd>
+          <dt>slaveID</dt>
+          <dd>The MODBUS slave address that is the target of the request.</dd>
+          <dt>buffer</dt>
+          <dd>The byte buffer containing the request, and where the reply must be written.</dd>
+          <dt>offset</dt>
+          <dd>Offset where the actual data starts in the buffer.</dd>
+          <dt>createIfNotExist</dt>
+          <dd>True is the "Learn mode" is active, False otherwise.</dd>
+      </dl>
+
+      <p>The function must return the length of the reply. If the returned
+      length is less than or equal to zero, then ModbusPal will react like there
+      was no reply to the request. Do not forget that the reply is at least
+      one byte long, because the first byte contains the function code.  </p>
+      
+      <h2>How to initialize the PDU processor?</h2>
+
+      <p>Some PDU processors will require to initialize variables when they
+          are instanciated. Normally, this would be done in the constructor
+          of the Python class, the <q>__init__()</q> function.</p>
+
+      <p>But, due to the way ModbusPal operates, the constructor is not always
+      called. So, in order to initialize the internal variables of the PDU processor,
+      the user should implement the <q>init()</q> function instead.</p>
+
+      <p>Please note that one particular instance of a PDU processor can be
+          associated to multiple function codes; the <q>init()</q> will be
+          called only once, when a new instance of a PDU processor is associated
+          for the first time to a function code. When the same instance is associated
+          to another function code, the <q>init()</q> function won't be called
+          again.</p>
+
+      <p>All initializations that are required by the PDU processor should be made
+          into the <q>init()</q> function. The following sample of code illustrates
+      how:</p>
+
+      <div class="code-sample">
+          <pre>
+class MyFunction(PythonFunction):
+  def init(self):
+    self.myReplyString = "Hello,world!";
+          </pre>
+      </div>
+
+      <h2>How to finalize the PDU processor?</h2>
+
+      <p>When all instances of a PDU processor have been removed from the
+          project, ModbusPal will call its <q>reset()</q> function. The
+          <q>reset()</q> function serves as a destructor.</p>
+
+      <p>The default implementation does nothing. It the developer needs to
+          perform some actions when the PDU processor is not used anymore,
+          then the <q>reset()</q> should be overridden:</p>
+
+      <div class="code-sample">
+          <pre>
+class MyFunction(PythonFunction):
+  def init(self):
+    self.myReplyString = "Hello,world!";
+  def reset(self):
+    self.myReplyString = None;
+          </pre>
+      </div>
+
+     <h2>How to create a configuration panel for the PDU processor?</h2>
+
+      <p>It is a natural thing that a PDU processor lets the user modify some
+          parameters, the same way that the user is able to edit the content
+          of the holding registers or coils. But this task implies that a
+          graphical interface is available.</p>
+
+      <p>When writing a PythonFunction, a graphical interface can be provided
+          to ModbusPal so that the parameters of the PDU processor are modified
+          by the user.</p>
+
+      <p>To do so, simply implement the <q>getPduPane()</q> function; it
+          should return an object of the javax.swing.JPanel class.</p>
+
+      <p>The following example creates a dummy user interface. There is actually
+          no input, but only a text in a JLabel:</p>
+
+      <div class="code-sample">
+          <pre>
+class MyFunction(PythonFunction):
+
+  def init(self):
+    self.controlPanel = JPanel();
+    self.controlPanel.setLayout( BorderLayout() );
+    self.controlPanel.add( JLabel("Hello, world!") );
+
+  def getPduPane(self):
+    return self.controlPanel;
+          </pre>
+      </div>
+
+     <h2>How to save and load the settings of the PDU processor?</h2>
+
+      <p>If the PDU processor lets the user to modify some parameters, usually
+      thanks to a control panel, then it becomes necessary to save those parameters
+      into the project file. And then, of course, it is necessary to be able to
+      load those parameters from the project file.</p>
+
+      <h3>Save</h3>
+
+      <p>To save the parameters of the PDU processor, implement the
+      <q>savePduProcessorSettings()</q> function. This function has one important
+      parameter: it is the OutputStream to write into.</p>
+
+      <p>The project file is an XML formatted file, so its best if the PDU processor
+          uses also XML.</p>
+
+      <p>The following example saves the value of <q>paramA</q> and <q>paramB</q>
+          into the project file:</p>
+
+      <div class="code-sample">
+          <pre>
+class MyFunction(PythonFunction):
+
+  def init(self):
+    self.paramA = 5;
+    self.paramB = 7;
+
+  def savePduProcessorSettings(self,outputStream):
+    outputStream.write("&lt;paramA value=\""+ str(self.paramA) +"\" />\r\n");
+    outputStream.write("&lt;paramB value=\""+ str(self.paramB) +"\" />\r\n");
+          </pre>
+      </div>
+
+      <h3>Load</h3>
+
+      <p>In order to load the settings of a PDU processor, the
+          <q>loadPduProcessorSettings()</q> function has
+          to be implemented.</p>
+
+      <p>The following example will load the settings saved by the previous example.
+          If the settings have been saved using the XML format, then the user
+          can use the powerful APIs of Java, as well as the toolkit class provided
+          by ModbusPal, <q>modbuspal.toolkit.XMLTools</q>.
+          The input parameter <q>nodeList</q>is
+          an instance of <q>org.w3c.dom.NodeList</q>.</p>
+
+      <div class="code-sample">
+          <pre>
+class MyFunction(PythonFunction):
+
+  def init(self):
+    self.paramA = 5;
+    self.paramB = 7;
+
+  def loadPduProcessorSettings(self,nodeList):
+    nodeParamA = XMLTools.getNode(nodeList,"paramA");
+    if nodeParamA is not None:
+        self.paramA = int( XMLTools.getAttribute("value",nodeParamA) );
+    nodeParamB = XMLTools.getNode(nodeList,"paramB");
+    if nodeParamB is not None:
+        self.paramB = int( XMLTools.getAttribute("value",nodeParamB) );
+          </pre>
+      </div>
+
+      <h2>API</h2>
+
+      <p>Please consult the Javadoc of ModbusPal in order to get more
+      information on all the classes introduced in this page.</p>
+
+      <h2>Real-case example</h2>
+
+      <p>The following example is real-case PDU processor script. The device
+      only replies to MODBUS requests with function code 66.
+      The manufacturer provides the following description of
+          the reply:</p>
+
+      <table>
+          <tr><th>Bytes</th><th>Content</th><th>Expected value</th></tr>
+          <tr><td>0</td><td>Function code</td><td>66</td></tr>
+          <tr><td>1</td><td>Sequence number (0-255 with rollover)</td></tr>
+          <tr><td>2</td><td>Configuration switch settings</td></tr>
+          <tr><td>3-6</td><td>Pulse count 1</td></tr>
+          <tr><td>7-10</td><td>Pulse count 2</td></tr>
+          <tr><td>11-12</td><td>Analog input 1</td></tr>
+          <tr><td>13-14</td><td>Analog input 2</td></tr>
+          <tr><td>15-16</td><td>Power monitor</td></tr>
+          <tr><td>17-20</td><td>Jennic digital states from u32AHI_DIOReadInput()</td></tr>
+          <tr><td>21-27</td><td>Reserved for future expansion</td></tr>
+          <tr><td>28</td><td>Version Year</td><td>11 (0x0B)</td></tr>
+          <tr><td>29</td><td>Version Month</td><td>03 (0x03)</td></tr>
+           <tr><td>30</td><td>Version Day</td><td>22 (0x16)</td></tr>
+      </table>
+
+
+      <p>The following script covers the specification and also:</p>
+      <ul>
+          <li>It creates a control panel for display in the MODBUS slave
+              editor, letting the user customize some parameters
+          <li>The user can define 4 values manually (<q>Pulse 1</q>, <q>Pulse 2</q>,
+              <q>Analog 1</q> and <q>Analog 2</q>), or associate an automation
+              to each of these values.
+          <li>It saves the configuration with XML formatting into the project file
+          <li>It loads those parameters from the project file
+    </ul>
+
+
+
+      <div class="code-sample">
+          <a href="py/Function66.py">Function66.py</a>
+      <pre>
+from modbuspal.script import PythonFunction
+from modbuspal.toolkit import ModbusTools
+from modbuspal.toolkit import XMLTools
+from modbuspal.binding import Binding_SINT32
+from modbuspal.slave import ModbusSlave
+from modbuspal.automation import AutomationExecutionListener
+from modbuspal.automation import AutomationSelectionDialog
+from modbuspal.automation import *
+from javax.swing import *
+from javax.swing.border import TitledBorder
+from javax.swing.event import *
+from java.awt import GridBagLayout
+from java.awt import GridBagConstraints
+from java.awt import BorderLayout
+from java.awt.event import ActionListener
+from java.lang import *
+
+class Function66(PythonFunction,ChangeListener,ActionListener,AutomationExecutionListener):
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def init(self):
+
+    # data of the WDS
+    self.sequenceNumber = 0;
+    self.configSwitch = 0;
+    self.pulseCount1 = 0;
+    self.pulseCount2 = 0;
+    self.analog1 = 0;
+    self.analog2 = 0;
+    self.power = 0;
+    self.jennicDIS = 0;
+    self.vyear = 11;
+    self.vmonth = 3;
+    self.vday = 22;
+
+    # bindings
+    self.binding_sint32 = Binding_SINT32();
+
+    # automations
+    self.pulse1automation = None;
+    self.pulse2automation = None;
+    self.analog1automation = None;
+    self.analog2automation = None;
+
+    # main panel
+    self.pduPanel = JPanel();
+    self.pduPanel.setLayout( BorderLayout() );
+    scrollPane =JScrollPane();
+    self.pduPanel.add(scrollPane,BorderLayout.CENTER);
+
+    mainPanel = JPanel();
+    mainLayout = GridBagLayout();
+    mainPanel.setLayout( mainLayout );
+    scrollPane.setViewportView(mainPanel);
+
+    # pulse panel
+    pulsePanel = JPanel();
+    pulsePanel.setBorder( TitledBorder('Pulses') );
+    pulsePanel.setLayout( GridBagLayout() );
+    mainPanel.add(pulsePanel);
+    ct = GridBagConstraints();
+
+    pulse1Label = JLabel('Pulse 1:');
+    ct.gridx = 0;
+    ct.gridy = 0;
+    pulsePanel.add(pulse1Label,ct);
+
+    self.pulse1Spinner = JSpinner( SpinnerNumberModel(0,0,Integer.MAX_VALUE,1) );
+    self.pulse1Spinner.addChangeListener(self);
+    ct.gridx = 1;
+    ct.gridy = 0;
+    pulsePanel.add(self.pulse1Spinner,ct);
+
+    self.pulse1Button = JButton('...');
+    self.pulse1Button.addActionListener(self);
+    ct.gridx = 2;
+    ct.gridy = 0;
+    pulsePanel.add(self.pulse1Button,ct);
+
+    pulse2Label = JLabel('Pulse 2:');
+    ct.gridx = 0;
+    ct.gridy = 1;
+    pulsePanel.add(pulse2Label,ct);
+
+    self.pulse2Spinner = JSpinner( SpinnerNumberModel(0,0,Integer.MAX_VALUE,1) );
+    self.pulse2Spinner.addChangeListener(self);
+    ct.gridx = 1;
+    ct.gridy = 1;
+    pulsePanel.add(self.pulse2Spinner,ct);
+
+    self.pulse2Button = JButton('...');
+    self.pulse2Button.addActionListener(self);
+    ct.gridx = 2;
+    ct.gridy = 1;
+    pulsePanel.add(self.pulse2Button,ct);
+
+    # analog panel
+    analogPanel = JPanel();
+    analogPanel.setBorder( TitledBorder('Analog inputs') );
+    analogPanel.setLayout( GridBagLayout() );
+    mainPanel.add(analogPanel);
+    ct = GridBagConstraints();
+
+    analog1Label = JLabel('Analog 1:');
+    ct.gridx = 0;
+    ct.gridy = 0;
+    analogPanel.add(analog1Label,ct);
+
+    self.analog1Spinner = JSpinner( SpinnerNumberModel(0,0,4095,1) );
+    self.analog1Spinner.addChangeListener(self);
+    ct.gridx = 1;
+    ct.gridy = 0;
+    analogPanel.add(self.analog1Spinner,ct);
+
+    self.analog1Button = JButton('...');
+    self.analog1Button.addActionListener(self);
+    ct.gridx = 2;
+    ct.gridy = 0;
+    analogPanel.add(self.analog1Button,ct);
+
+    analog2Label = JLabel('Analog 2:');
+    ct.gridx = 0;
+    ct.gridy = 1;
+    analogPanel.add(analog2Label,ct);
+
+    self.analog2Spinner = JSpinner( SpinnerNumberModel(0,0,4095,1) );
+    self.analog2Spinner.addChangeListener(self);
+    ct.gridx = 1;
+    ct.gridy = 1;
+    analogPanel.add(self.analog2Spinner,ct);
+
+    self.analog2Button = JButton('...');
+    self.analog2Button.addActionListener(self);
+    ct.gridx = 2;
+    ct.gridy = 1;
+    analogPanel.add(self.analog2Button,ct);
+
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def stateChanged(self, changeEvent):
+
+    if changeEvent.getSource()==self.pulse1Spinner:
+      value=self.pulse1Spinner.getValue();
+      self.pulseCount1=value;
+
+    elif changeEvent.getSource()==self.pulse2Spinner:
+      value=self.pulse2Spinner.getValue();
+      self.pulseCount2=value;
+
+    elif changeEvent.getSource()==self.analog1Spinner:
+      value=self.analog1Spinner.getValue();
+      self.analog1=value;
+
+    elif changeEvent.getSource()==self.analog2Spinner:
+      value=self.analog2Spinner.getValue();
+      self.analog2=value;
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def reset(self):
+    if self.pulse1automation is not None:
+      self.pulse1automation.removeAutomationExecutionListener(self);
+    if self.pulse2automation is not None:
+      self.pulse2automation.removeAutomationExecutionListener(self);
+    if self.analog1automation is not None:
+      self.analog1automation.removeAutomationExecutionListener(self);
+    if self.analog2automation is not None:
+      self.analog2automation.removeAutomationExecutionListener(self);
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def actionPerformed(self, actionEvent):
+
+    if actionEvent.getSource()==self.pulse1Button:
+      automations = ModbusPal.getAutomations();
+      dialog = AutomationSelectionDialog(automations, self.pulse1automation);
+      dialog.setVisible(Boolean.TRUE);
+      if self.pulse1automation is not None:
+        self.pulse1automation.removeAutomationExecutionListener(self);
+      self.pulse1automation = dialog.getSelectedAutomation();
+      if self.pulse1automation is not None:
+        self.pulse1automation.addAutomationExecutionListener(self);
+
+    elif actionEvent.getSource()==self.pulse2Button:
+      automations = ModbusPal.getAutomations();
+      dialog = AutomationSelectionDialog(automations, self.pulse2automation);
+      dialog.setVisible(Boolean.TRUE);
+      automation = dialog.getSelectedAutomation();
+      if self.pulse2automation is not None:
+        self.pulse2automation.removeAutomationExecutionListener(self);
+      self.pulse2automation = dialog.getSelectedAutomation();
+      if self.pulse2automation is not None:
+        self.pulse2automation.addAutomationExecutionListener(self);
+
+    elif actionEvent.getSource()==self.analog1Button:
+      automations = ModbusPal.getAutomations();
+      dialog = AutomationSelectionDialog(automations, self.analog1automation);
+      dialog.setVisible(Boolean.TRUE);
+      if self.analog1automation is not None:
+        self.analog1automation.removeAutomationExecutionListener(self);
+      self.analog1automation = dialog.getSelectedAutomation();
+      if self.analog1automation is not None:
+        self.analog1automation.addAutomationExecutionListener(self);
+
+    elif actionEvent.getSource()==self.analog2Button:
+      automations = ModbusPal.getAutomations();
+      dialog = AutomationSelectionDialog(automations, self.analog2automation);
+      dialog.setVisible(Boolean.TRUE);
+      automation = dialog.getSelectedAutomation();
+      if self.analog2automation is not None:
+        self.analog2automation.removeAutomationExecutionListener(self);
+      self.analog2automation = dialog.getSelectedAutomation();
+      if self.analog2automation is not None:
+        self.analog2automation.addAutomationExecutionListener(self);
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def automationHasStarted(self, automation):
+    return;
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def automationHasEnded(self, automation):
+    return;
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def automationValueHasChanged(self, automation, time, value):
+
+    if self.pulse1automation==automation:
+      self.pulse1Spinner.setValue( int(value) );
+      self.pulseCount1 = int(value);
+    if self.pulse2automation==automation:
+      self.pulse2Spinner.setValue( int(value) );
+      self.pulseCount2 = int(value);
+    if self.analog1automation==automation:
+      self.analog1Spinner.setValue( int(value) );
+      self.analog1 = int(value);
+    if self.analog2automation==automation:
+      self.analog2Spinner.setValue( int(value) );
+      self.analog2 = int(value);
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def automationReloaded(self, automation):
+    return;
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  # Byte 0: Function code (66)
+  # Byte 1: Sequence number (0-255 with rollover)
+  # Byte 2: Configuration switch settings
+  # Byte 3-6: Pulse count 1
+  # Byte 7-10: Pulse count 2
+  # Byte 11-12: Analog input 1
+  # Byte 13-14: Analog input 2
+  # Byte 15-16: Power monitor
+  # Byte 17-20: Jennic digital states from u32AHI_DIOReadInput()
+  # Byte 21-27: Reserved for future expansion
+  # Byte 28: Version Year     11 (0x0B)
+  # Byte 29: Version Month   03 (0x03)
+  # Byte 30: Version Day      22 (0x16)
+  def processPDU(self,functionCode,slaveID,buffer,offset,createIfNotExist):
+
+    # increment sequence number:
+    self.sequenceNumber = self.sequenceNumber+1;
+
+    ModbusTools.setUint8 (buffer, offset+1,  self.sequenceNumber);
+    ModbusTools.setUint8 (buffer, offset+2,  self.configSwitch);
+    ModbusTools.setUint16(buffer, offset+3,  self.binding_sint32.getRegister(1,self.pulseCount1) );
+    ModbusTools.setUint16(buffer, offset+5,  self.binding_sint32.getRegister(0,self.pulseCount1) );
+    ModbusTools.setUint16(buffer, offset+7,  self.binding_sint32.getRegister(1,self.pulseCount2) );
+    ModbusTools.setUint16(buffer, offset+9,  self.binding_sint32.getRegister(0,self.pulseCount2) );
+    ModbusTools.setUint16(buffer, offset+11, self.analog1 );
+    ModbusTools.setUint16(buffer, offset+13, self.analog2 );
+    ModbusTools.setUint16(buffer, offset+15, self.power );
+    ModbusTools.setUint16(buffer, offset+17, self.binding_sint32.getRegister(1,self.jennicDIS) );
+    ModbusTools.setUint16(buffer, offset+19, self.binding_sint32.getRegister(0,self.jennicDIS) );
+    ModbusTools.setUint8 (buffer, offset+28, self.vyear);
+    ModbusTools.setUint8 (buffer, offset+29, self.vmonth);
+    ModbusTools.setUint8 (buffer, offset+30, self.vday);
+    return 31;
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def getClassName(self):
+    return "Function66";
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def getPduPane(self):
+    return self.pduPanel;
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def savePduProcessorSettings(self,outputStream):
+
+    # pulse1:
+    tag = "&lt;pulse1 value=\"" + str(self.pulseCount1) +"\"";
+    if self.pulse1automation is not None:
+      tag = tag + " automation=\""+self.pulse1automation.getName()+"\"";
+    tag = tag + " />\r\n";
+    outputStream.write(tag);
+
+    # pulse2:
+    tag = "&lt;pulse2 value=\"" + str(self.pulseCount2) +"\"";
+    if self.pulse2automation is not None:
+      tag = tag + " automation=\""+self.pulse2automation.getName()+"\"";
+    tag = tag + " />\r\n";
+    outputStream.write(tag);
+
+    # analog1
+    tag = "&lt;analog1 value=\"" + str(self.analog1)+"\"";
+    if self.analog1automation is not None:
+      tag = tag + " automation=\""+self.analog1automation.getName()+"\"";
+    tag = tag + " />\r\n";
+    outputStream.write(tag);
+
+    # analog2
+    tag = "&lt;analog2 value=\"" + str(self.analog2)+"\"";
+    if self.analog2automation is not None:
+      tag = tag + " automation=\""+self.analog2automation.getName()+"\"";
+    tag = tag + " />\r\n";
+    outputStream.write(tag);
+
+  #- - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  def loadPduProcessorSettings(self,nodeList):
+
+    # pulse1:
+    nodePulse1 = XMLTools.getNode(nodeList,"pulse1");
+    if nodePulse1 is not None:
+        self.pulseCount1 = int( XMLTools.getAttribute("value",nodePulse1) );
+        self.pulse1Spinner.setValue(self.pulseCount1);
+        automationName = XMLTools.getAttribute("automation",nodePulse1);
+        if automationName is not None:
+          self.pulse1automation = ModbusPal.getAutomation(automationName);
+
+    # pulse2:
+    nodePulse2 = XMLTools.getNode(nodeList,"pulse2");
+    if nodePulse2 is not None:
+        self.pulseCount2 = int( XMLTools.getAttribute("value",nodePulse2) );
+        self.pulse2Spinner.setValue(self.pulseCount2);
+        automationName = XMLTools.getAttribute("automation",nodePulse2);
+        if automationName is not None:
+          self.pulse2automation = ModbusPal.getAutomation(automationName);
+
+    # analog1:
+    nodeAnalog1 = XMLTools.getNode(nodeList,"analog1");
+    if nodeAnalog1 is not None:
+        self.analog1 = int( XMLTools.getAttribute("value",nodeAnalog1) );
+        self.analog1Spinner.setValue(self.analog1);
+        automationName = XMLTools.getAttribute("automation",nodeAnalog1);
+        if automationName is not None:
+          self.analog1automation = ModbusPal.getAutomation(automationName);
+
+    # analog2:
+    nodeAnalog2 = XMLTools.getNode(nodeList,"analog2");
+    if nodeAnalog2 is not None:
+        self.analog2 = int( XMLTools.getAttribute("value",nodeAnalog2) );
+        self.analog2Spinner.setValue(self.analog2);
+        automationName = XMLTools.getAttribute("automation",nodeAnalog2);
+        if automationName is not None:
+          self.analog2automation = ModbusPal.getAutomation(automationName);
+
+Function66Instance = Function66();
+ModbusPal.addFunctionInstantiator( Function66Instance );
+      </pre>
+      </div>
+
   </body>
 </html>

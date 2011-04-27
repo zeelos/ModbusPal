@@ -11,7 +11,6 @@ import modbuspal.automation.Automation;
 import modbuspal.automation.AutomationExecutionListener;
 import modbuspal.instanciator.Instantiable;
 import modbuspal.slave.ModbusRegisters;
-import org.w3c.dom.NodeList;
 
 /**
  *
@@ -43,6 +42,7 @@ implements AutomationExecutionListener, Cloneable, Instantiable<Binding>
     @Override
     public void reset()
     {
+        throw new RuntimeException("This method is implemented because of the Instantiable interface, but is never used");
     }
 
     public void attach(ModbusRegisters l, int address)
