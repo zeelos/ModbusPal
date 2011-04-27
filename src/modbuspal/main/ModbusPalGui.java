@@ -54,6 +54,7 @@ public class ModbusPalGui
     */
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
             public void run() {
                 setNativeLookAndFeel();
                 newFrame().setVisible(true);
@@ -88,25 +89,32 @@ public class ModbusPalGui
             setFrameIcon( new ImageIcon(image2) );
         }
 
+        @Override
         public void internalFrameOpened(InternalFrameEvent e) {
         }
 
+        @Override
         public void internalFrameClosing(InternalFrameEvent e) {
             modbusPal.exit();
         }
 
+        @Override
         public void internalFrameClosed(InternalFrameEvent e) {
         }
 
+        @Override
         public void internalFrameIconified(InternalFrameEvent e) {
         }
 
+        @Override
         public void internalFrameDeiconified(InternalFrameEvent e) {
         }
 
+        @Override
         public void internalFrameActivated(InternalFrameEvent e) {
         }
 
+        @Override
         public void internalFrameDeactivated(InternalFrameEvent e) {
         }
     }
@@ -137,10 +145,16 @@ public class ModbusPalGui
     }
 
 
-    public static ModbusPalFrame newFrame()
+    public static JFrame newFrame()
     {
         ModbusPalFrame frame = new ModbusPalFrame();
         return frame;
+    }
+
+    public static JInternalFrame newInternalFrame()
+    {
+        ModbusPalInternalFrame iframe = new ModbusPalInternalFrame();
+        return iframe;
     }
 
     public static ModbusPalPane newInstance()

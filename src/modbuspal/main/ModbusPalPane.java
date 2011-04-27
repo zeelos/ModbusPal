@@ -388,58 +388,6 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
-        jPanel6 = new javax.swing.JPanel();
-        settingsPanel1 = new javax.swing.JPanel();
-        linkPanel1 = new javax.swing.JPanel();
-        linksTabbedPane1 = new javax.swing.JTabbedPane();
-        tcpIpSettingsPanel1 = new javax.swing.JPanel();
-        jLabel4 = new javax.swing.JLabel();
-        portTextField1 = new NumericTextField();
-        jPanel7 = new javax.swing.JPanel();
-        serialSettingsPanel1 = new javax.swing.JPanel();
-        comPortComboBox1 = new javax.swing.JComboBox();
-        baudRateComboBox1 = new javax.swing.JComboBox();
-        parityComboBox1 = new javax.swing.JComboBox();
-        xonxoffCheckBox1 = new javax.swing.JCheckBox();
-        rtsctsCheckBox1 = new javax.swing.JCheckBox();
-        jPanel8 = new javax.swing.JPanel();
-        jLabel5 = new javax.swing.JLabel();
-        jButton2 = new javax.swing.JButton();
-        replaySettingsPanel1 = new javax.swing.JPanel();
-        jLabel6 = new javax.swing.JLabel();
-        recordFileChooseButton1 = new javax.swing.JButton();
-        chosenRecordFileTextField1 = new javax.swing.JTextField();
-        runPanel1 = new javax.swing.JPanel();
-        runToggleButton1 = new javax.swing.JToggleButton();
-        learnToggleButton1 = new javax.swing.JToggleButton();
-        tiltLabel1 = new TiltLabel();
-        recordToggleButton1 = new javax.swing.JToggleButton();
-        asciiToggleButton1 = new javax.swing.JToggleButton();
-        projectPanel1 = new javax.swing.JPanel();
-        loadButton1 = new javax.swing.JButton();
-        saveProjectButton1 = new javax.swing.JButton();
-        clearProjectButton1 = new javax.swing.JButton();
-        saveProjectAsButton1 = new javax.swing.JButton();
-        toolsPanel1 = new javax.swing.JPanel();
-        masterToggleButton1 = new javax.swing.JToggleButton();
-        scriptsToggleButton1 = new javax.swing.JToggleButton();
-        helpButton1 = new javax.swing.JButton();
-        consoleToggleButton1 = new javax.swing.JToggleButton();
-        jSplitPane2 = new javax.swing.JSplitPane();
-        slavesListView1 = new javax.swing.JPanel();
-        jPanel9 = new javax.swing.JPanel();
-        addModbusSlaveButton1 = new javax.swing.JButton();
-        enableAllSlavesButton1 = new javax.swing.JButton();
-        disableAllSlavesButton1 = new javax.swing.JButton();
-        slaveListScrollPane1 = new javax.swing.JScrollPane();
-        slavesListPanel1 = new javax.swing.JPanel();
-        jPanel10 = new javax.swing.JPanel();
-        jPanel11 = new javax.swing.JPanel();
-        addAutomationButton1 = new javax.swing.JButton();
-        startAllAutomationsButton1 = new javax.swing.JButton();
-        stopAllAutomationsButton1 = new javax.swing.JButton();
-        automationListScrollPane1 = new javax.swing.JScrollPane();
-        automationsListPanel1 = new javax.swing.JPanel();
         settingsPanel = new javax.swing.JPanel();
         linkPanel = new javax.swing.JPanel();
         linksTabbedPane = new javax.swing.JTabbedPane();
@@ -491,401 +439,6 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         stopAllAutomationsButton = new javax.swing.JButton();
         automationListScrollPane = new javax.swing.JScrollPane();
         automationsListPanel = new javax.swing.JPanel();
-
-        jPanel6.setLayout(new java.awt.BorderLayout());
-
-        settingsPanel1.setLayout(new java.awt.GridBagLayout());
-
-        linkPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Link settings"));
-        linkPanel1.setLayout(new java.awt.GridBagLayout());
-
-        tcpIpSettingsPanel1.setLayout(new java.awt.GridBagLayout());
-
-        jLabel4.setText("TCP Port:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 2);
-        tcpIpSettingsPanel1.add(jLabel4, gridBagConstraints);
-
-        portTextField1.setText("502");
-        portTextField1.setPreferredSize(new java.awt.Dimension(40, 20));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(5, 2, 5, 5);
-        tcpIpSettingsPanel1.add(portTextField1, gridBagConstraints);
-
-        linksTabbedPane1.addTab("TCP/IP", tcpIpSettingsPanel1);
-
-        jPanel7.setLayout(new java.awt.CardLayout());
-
-        serialSettingsPanel1.setLayout(new java.awt.GridBagLayout());
-
-        comPortComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "COM 1" }));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 2, 2);
-        serialSettingsPanel1.add(comPortComboBox1, gridBagConstraints);
-
-        baudRateComboBox1.setEditable(true);
-        baudRateComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "115200", "57600", "19200", "9600" }));
-        baudRateComboBox1.setSelectedIndex(2);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(5, 2, 2, 5);
-        serialSettingsPanel1.add(baudRateComboBox1, gridBagConstraints);
-
-        parityComboBox1.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "No parity", "Odd parity", "Even parity" }));
-        parityComboBox1.setSelectedIndex(2);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.insets = new java.awt.Insets(2, 5, 2, 2);
-        serialSettingsPanel1.add(parityComboBox1, gridBagConstraints);
-
-        xonxoffCheckBox1.setText("XON/XOFF");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(2, 5, 5, 2);
-        serialSettingsPanel1.add(xonxoffCheckBox1, gridBagConstraints);
-
-        rtsctsCheckBox1.setText("RTS/CTS");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(2, 2, 5, 5);
-        serialSettingsPanel1.add(rtsctsCheckBox1, gridBagConstraints);
-
-        jPanel7.add(serialSettingsPanel1, "enabled");
-
-        jPanel8.setLayout(new java.awt.GridBagLayout());
-
-        jLabel5.setText("Serial communication is disabled.");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        jPanel8.add(jLabel5, gridBagConstraints);
-
-        jButton2.setText("Why?");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        jPanel8.add(jButton2, gridBagConstraints);
-
-        jPanel7.add(jPanel8, "disabled");
-
-        linksTabbedPane1.addTab("Serial", jPanel7);
-
-        replaySettingsPanel1.setLayout(new java.awt.GridBagLayout());
-
-        jLabel6.setText("Record file:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 2, 2);
-        replaySettingsPanel1.add(jLabel6, gridBagConstraints);
-
-        recordFileChooseButton1.setText("Choose...");
-        recordFileChooseButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                recordFileChooseButton1ActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(5, 2, 2, 5);
-        replaySettingsPanel1.add(recordFileChooseButton1, gridBagConstraints);
-
-        chosenRecordFileTextField1.setEditable(false);
-        chosenRecordFileTextField1.setText("No file selected.");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(2, 5, 5, 5);
-        replaySettingsPanel1.add(chosenRecordFileTextField1, gridBagConstraints);
-
-        linksTabbedPane1.addTab("Replay", replaySettingsPanel1);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
-        linkPanel1.add(linksTabbedPane1, gridBagConstraints);
-
-        runPanel1.setLayout(new java.awt.GridBagLayout());
-
-        runToggleButton1.setText("Run");
-        runToggleButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                runToggleButton1ActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
-        runPanel1.add(runToggleButton1, gridBagConstraints);
-
-        learnToggleButton1.setText("Learn");
-        learnToggleButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                learnToggleButton1ActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
-        runPanel1.add(learnToggleButton1, gridBagConstraints);
-
-        tiltLabel1.setText("X");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
-        runPanel1.add(tiltLabel1, gridBagConstraints);
-
-        recordToggleButton1.setText("Record");
-        recordToggleButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                recordToggleButton1ActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        runPanel1.add(recordToggleButton1, gridBagConstraints);
-
-        asciiToggleButton1.setText("Ascii");
-        asciiToggleButton1.setEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 3;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        runPanel1.add(asciiToggleButton1, gridBagConstraints);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.SOUTH;
-        linkPanel1.add(runPanel1, gridBagConstraints);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridheight = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        settingsPanel1.add(linkPanel1, gridBagConstraints);
-
-        projectPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Project"));
-        projectPanel1.setLayout(new java.awt.GridBagLayout());
-
-        loadButton1.setText("Load");
-        loadButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                loadButton1ActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        projectPanel1.add(loadButton1, gridBagConstraints);
-
-        saveProjectButton1.setText("Save");
-        saveProjectButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                saveProjectButton1ActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        projectPanel1.add(saveProjectButton1, gridBagConstraints);
-
-        clearProjectButton1.setText("Clear");
-        clearProjectButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                clearProjectButton1ActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        projectPanel1.add(clearProjectButton1, gridBagConstraints);
-
-        saveProjectAsButton1.setText("Save as");
-        saveProjectAsButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                saveProjectAsButton1saveProjectButtonActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        projectPanel1.add(saveProjectAsButton1, gridBagConstraints);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        settingsPanel1.add(projectPanel1, gridBagConstraints);
-
-        toolsPanel1.setBorder(javax.swing.BorderFactory.createTitledBorder("Tools"));
-        toolsPanel1.setLayout(new java.awt.GridBagLayout());
-
-        masterToggleButton1.setText("Master");
-        masterToggleButton1.setEnabled(false);
-        masterToggleButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                masterToggleButton1ActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        toolsPanel1.add(masterToggleButton1, gridBagConstraints);
-
-        scriptsToggleButton1.setText("Scripts");
-        scriptsToggleButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                scriptsToggleButton1ActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        toolsPanel1.add(scriptsToggleButton1, gridBagConstraints);
-
-        helpButton1.setText("Help");
-        helpButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                helpButton1ActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        toolsPanel1.add(helpButton1, gridBagConstraints);
-
-        consoleToggleButton1.setText("Console");
-        consoleToggleButton1.setEnabled(false);
-        consoleToggleButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                consoleToggleButton1ActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        toolsPanel1.add(consoleToggleButton1, gridBagConstraints);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        settingsPanel1.add(toolsPanel1, gridBagConstraints);
-
-        jPanel6.add(settingsPanel1, java.awt.BorderLayout.NORTH);
-
-        jSplitPane2.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
-
-        slavesListView1.setBorder(javax.swing.BorderFactory.createTitledBorder("Modbus slaves"));
-        slavesListView1.setLayout(new java.awt.BorderLayout());
-
-        jPanel9.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
-
-        addModbusSlaveButton1.setText("Add");
-        addModbusSlaveButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                addModbusSlaveButton1ActionPerformed(evt);
-            }
-        });
-        jPanel9.add(addModbusSlaveButton1);
-
-        enableAllSlavesButton1.setText("Enable all");
-        enableAllSlavesButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                enableAllSlavesButton1ActionPerformed(evt);
-            }
-        });
-        jPanel9.add(enableAllSlavesButton1);
-
-        disableAllSlavesButton1.setText("Disable all");
-        disableAllSlavesButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                disableAllSlavesButton1ActionPerformed(evt);
-            }
-        });
-        jPanel9.add(disableAllSlavesButton1);
-
-        slavesListView1.add(jPanel9, java.awt.BorderLayout.NORTH);
-
-        slaveListScrollPane1.setPreferredSize(new java.awt.Dimension(300, 150));
-
-        slavesListPanel1.setBackground(javax.swing.UIManager.getDefaults().getColor("List.background"));
-        slavesListPanel1.setLayout(null);
-        slavesListPanel.setLayout( new ListLayout() );
-        slaveListScrollPane1.setViewportView(slavesListPanel1);
-
-        slavesListView1.add(slaveListScrollPane1, java.awt.BorderLayout.CENTER);
-
-        jSplitPane2.setLeftComponent(slavesListView1);
-
-        jPanel10.setBorder(javax.swing.BorderFactory.createTitledBorder("Automation"));
-        jPanel10.setLayout(new java.awt.BorderLayout());
-
-        jPanel11.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
-
-        addAutomationButton1.setText("Add");
-        addAutomationButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                addAutomationButton1ActionPerformed(evt);
-            }
-        });
-        jPanel11.add(addAutomationButton1);
-
-        startAllAutomationsButton1.setText("Start all");
-        startAllAutomationsButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                startAllAutomationsButton1ActionPerformed(evt);
-            }
-        });
-        jPanel11.add(startAllAutomationsButton1);
-
-        stopAllAutomationsButton1.setText("Stop all");
-        stopAllAutomationsButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                stopAllAutomationsButton1ActionPerformed(evt);
-            }
-        });
-        jPanel11.add(stopAllAutomationsButton1);
-
-        jPanel10.add(jPanel11, java.awt.BorderLayout.NORTH);
-
-        automationListScrollPane1.setPreferredSize(new java.awt.Dimension(300, 150));
-
-        automationsListPanel1.setBackground(javax.swing.UIManager.getDefaults().getColor("List.background"));
-        automationsListPanel1.setLayout(null);
-        automationsListPanel.setLayout( new ListLayout() );
-        automationListScrollPane1.setViewportView(automationsListPanel1);
-
-        jPanel10.add(automationListScrollPane1, java.awt.BorderLayout.CENTER);
-
-        jSplitPane2.setRightComponent(jPanel10);
-
-        jPanel6.add(jSplitPane2, java.awt.BorderLayout.CENTER);
 
         setLayout(new java.awt.BorderLayout());
 
@@ -1580,6 +1133,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         final WorkInProgressDialog dialog = new WorkInProgressDialog("Load project","Loading project...");
         Thread loader = new Thread( new Runnable()
         {
+            @Override
             public void run()
             {
                 try
@@ -1842,82 +1396,6 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         dialog.setVisible(true);
     }//GEN-LAST:event_jButton1ActionPerformed
 
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_jButton2ActionPerformed
-
-    private void recordFileChooseButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_recordFileChooseButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_recordFileChooseButton1ActionPerformed
-
-    private void runToggleButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runToggleButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_runToggleButton1ActionPerformed
-
-    private void learnToggleButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_learnToggleButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_learnToggleButton1ActionPerformed
-
-    private void recordToggleButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_recordToggleButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_recordToggleButton1ActionPerformed
-
-    private void loadButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_loadButton1ActionPerformed
-
-    private void saveProjectButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveProjectButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_saveProjectButton1ActionPerformed
-
-    private void clearProjectButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearProjectButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_clearProjectButton1ActionPerformed
-
-    private void saveProjectAsButton1saveProjectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveProjectAsButton1saveProjectButtonActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_saveProjectAsButton1saveProjectButtonActionPerformed
-
-    private void masterToggleButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_masterToggleButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_masterToggleButton1ActionPerformed
-
-    private void scriptsToggleButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_scriptsToggleButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_scriptsToggleButton1ActionPerformed
-
-    private void helpButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_helpButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_helpButton1ActionPerformed
-
-    private void consoleToggleButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_consoleToggleButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_consoleToggleButton1ActionPerformed
-
-    private void addModbusSlaveButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addModbusSlaveButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_addModbusSlaveButton1ActionPerformed
-
-    private void enableAllSlavesButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_enableAllSlavesButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_enableAllSlavesButton1ActionPerformed
-
-    private void disableAllSlavesButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_disableAllSlavesButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_disableAllSlavesButton1ActionPerformed
-
-    private void addAutomationButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addAutomationButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_addAutomationButton1ActionPerformed
-
-    private void startAllAutomationsButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_startAllAutomationsButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_startAllAutomationsButton1ActionPerformed
-
-    private void stopAllAutomationsButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stopAllAutomationsButton1ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_stopAllAutomationsButton1ActionPerformed
-
 
     public void startAll()
     {
@@ -1935,118 +1413,69 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addAutomationButton;
-    private javax.swing.JButton addAutomationButton1;
     private javax.swing.JButton addModbusSlaveButton;
-    private javax.swing.JButton addModbusSlaveButton1;
     private javax.swing.JToggleButton asciiToggleButton;
-    private javax.swing.JToggleButton asciiToggleButton1;
     private javax.swing.JScrollPane automationListScrollPane;
-    private javax.swing.JScrollPane automationListScrollPane1;
     private javax.swing.JPanel automationsListPanel;
-    private javax.swing.JPanel automationsListPanel1;
     private javax.swing.JComboBox baudRateComboBox;
-    private javax.swing.JComboBox baudRateComboBox1;
     private javax.swing.JTextField chosenRecordFileTextField;
-    private javax.swing.JTextField chosenRecordFileTextField1;
     private javax.swing.JButton clearProjectButton;
-    private javax.swing.JButton clearProjectButton1;
     private javax.swing.JComboBox comPortComboBox;
-    private javax.swing.JComboBox comPortComboBox1;
     private javax.swing.JToggleButton consoleToggleButton;
-    private javax.swing.JToggleButton consoleToggleButton1;
     private javax.swing.JButton disableAllSlavesButton;
-    private javax.swing.JButton disableAllSlavesButton1;
     private javax.swing.JButton enableAllSlavesButton;
-    private javax.swing.JButton enableAllSlavesButton1;
     private javax.swing.JButton helpButton;
-    private javax.swing.JButton helpButton1;
     private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
-    private javax.swing.JPanel jPanel10;
-    private javax.swing.JPanel jPanel11;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
-    private javax.swing.JPanel jPanel6;
-    private javax.swing.JPanel jPanel7;
-    private javax.swing.JPanel jPanel8;
-    private javax.swing.JPanel jPanel9;
     private javax.swing.JSplitPane jSplitPane1;
-    private javax.swing.JSplitPane jSplitPane2;
     private javax.swing.JToggleButton learnToggleButton;
-    private javax.swing.JToggleButton learnToggleButton1;
     private javax.swing.JPanel linkPanel;
-    private javax.swing.JPanel linkPanel1;
     private javax.swing.JTabbedPane linksTabbedPane;
-    private javax.swing.JTabbedPane linksTabbedPane1;
     private javax.swing.JButton loadButton;
-    private javax.swing.JButton loadButton1;
     private javax.swing.JToggleButton masterToggleButton;
-    private javax.swing.JToggleButton masterToggleButton1;
     private javax.swing.JComboBox parityComboBox;
-    private javax.swing.JComboBox parityComboBox1;
     private javax.swing.JTextField portTextField;
-    private javax.swing.JTextField portTextField1;
     private javax.swing.JPanel projectPanel;
-    private javax.swing.JPanel projectPanel1;
     private javax.swing.JButton recordFileChooseButton;
-    private javax.swing.JButton recordFileChooseButton1;
     private javax.swing.JToggleButton recordToggleButton;
-    private javax.swing.JToggleButton recordToggleButton1;
     private javax.swing.JPanel replaySettingsPanel;
-    private javax.swing.JPanel replaySettingsPanel1;
     private javax.swing.JCheckBox rtsctsCheckBox;
-    private javax.swing.JCheckBox rtsctsCheckBox1;
     private javax.swing.JPanel runPanel;
-    private javax.swing.JPanel runPanel1;
     private javax.swing.JToggleButton runToggleButton;
-    private javax.swing.JToggleButton runToggleButton1;
     private javax.swing.JButton saveProjectAsButton;
-    private javax.swing.JButton saveProjectAsButton1;
     private javax.swing.JButton saveProjectButton;
-    private javax.swing.JButton saveProjectButton1;
     javax.swing.JToggleButton scriptsToggleButton;
-    javax.swing.JToggleButton scriptsToggleButton1;
     private javax.swing.JPanel serialSettingsPanel;
-    private javax.swing.JPanel serialSettingsPanel1;
     private javax.swing.JPanel settingsPanel;
-    private javax.swing.JPanel settingsPanel1;
     private javax.swing.JScrollPane slaveListScrollPane;
-    private javax.swing.JScrollPane slaveListScrollPane1;
     private javax.swing.JPanel slavesListPanel;
-    private javax.swing.JPanel slavesListPanel1;
     private javax.swing.JPanel slavesListView;
-    private javax.swing.JPanel slavesListView1;
     private javax.swing.JButton startAllAutomationsButton;
-    private javax.swing.JButton startAllAutomationsButton1;
     private javax.swing.JButton stopAllAutomationsButton;
-    private javax.swing.JButton stopAllAutomationsButton1;
     private javax.swing.JPanel tcpIpSettingsPanel;
-    private javax.swing.JPanel tcpIpSettingsPanel1;
     private javax.swing.JLabel tiltLabel;
-    private javax.swing.JLabel tiltLabel1;
     private javax.swing.JPanel toolsPanel;
-    private javax.swing.JPanel toolsPanel1;
     private javax.swing.JCheckBox xonxoffCheckBox;
-    private javax.swing.JCheckBox xonxoffCheckBox1;
     // End of variables declaration//GEN-END:variables
 
+    @Override
     public void windowOpened(WindowEvent e)
     {
     }
 
+    @Override
     public void windowClosing(WindowEvent e)
     {
     }
 
+    @Override
     public void windowClosed(WindowEvent e)
     {
         Object source = e.getSource();
@@ -2065,18 +1494,22 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         }
     }
 
+    @Override
     public void windowIconified(WindowEvent e)
     {
     }
 
+    @Override
     public void windowDeiconified(WindowEvent e)
     {
     }
 
+    @Override
     public void windowActivated(WindowEvent e)
     {
     }
 
+    @Override
     public void windowDeactivated(WindowEvent e)
     {
     }

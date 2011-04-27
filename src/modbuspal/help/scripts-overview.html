@@ -5,45 +5,74 @@ and open the template in the editor.
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html>
   <head>
-    <title></title>
+    <title>ModbusPal</title>
+    <link rel="stylesheet" type="text/css" href="styles.css" />
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   </head>
   <body>
 
-      "ModbusPal" is actually an instance of the ModbusPalProject java class.
-"mbp_script_directory"
+      <h1>How to use Python scripts?</h1>
 
-      14	Startup and on-demand scripts
-14.1	Overview
-Startup scripts and on-demand scripts are a bit different from scripted generators and bindings.
-While scripted generators and bindings are only class definitions, startup scripts and on-demand scripts are procedures.
-Startup scripts are executed automatically when the project is opened. They can be used to initialize the project (creating a custom GUI, for example).
-On-demand scripts can be executed as often as desired, but each time they have to be triggered by the user.
-14.2	Startup scripts
-14.2.1	Adding startup scripts
-Startup scripts are added by using the Script manager. Click on the “Script” button located in the main window to summon the Script manager’s window.
+      <h2>Script Manager</h2>
 
-Click on the “Script” button in the main window in order to display the Script manager.
-Then, in the Script manager window, select the “Startup scripts” tab and click on the “Add” button.
+      <p>To open the Script Manager, click on the <q>Script</q> button in the
+      main interface.
+      <img src="img/view_of_script_manager_dialog.jpg" class="img-stand-alone" alt="View of the Script Manager dialog" />
+      </p>
 
-Click on the “Add” button in the “Startup scripts” tab in order to add a new startup script.
-A file chooser dialog appears. Select a script file from your computer and validate. If the script file is valid, it is added in the list.
+      <h3>Adding a new script</h3>
 
-If the script file is valid, it is added in the list of startup scripts.
-14.2.2	Execution of startup scripts
-Startup scripts are executed automatically when the project file is loaded.
-But they also can be executed later by clicking on the corresponding “Execute” button in the Script manager.
+      <p>Click on the <q>Add</q> button, and browse the filesystem to select
+          of script file. Python scripts should have the <q>.py</q> extension.</p>
 
-Click in the “Execute” button if you want to execute the startup script again.
-14.2.3	Removing a startup script
-A startup script can be removed from the project by clicking on the corresponding “Delete” button in the Script manager.
+      <p>When the script is added to the project, a new entry appears in the
+          Script Manager:
+      <img src="img/a_script_into_the_script_manager.jpg" class="img-stand-alone" alt="A script added into the script manager" />
+      </p>
 
-Click in the “Delete” button to delete the corresponding startup script.
-14.2.4	Example
-The following example is a startup script that displays a small dialog saying “Hello world”. It contains an “OK” button, which hides the window when clicked. If this script is added in the project as a startup script, then this dialog will appear each time the project file is loaded.
+      <h3>Executing a script</h3>
 
-Content of “HelloWorldStartup.py”
+      <p>Click on the <q>Execute</q> button of a script in order to execute it.</p>
 
+      <h3>Removing a script</h3>
+
+      <p>Click on the <q>Delete</q> button of a script in order to remove it
+      from the project.</p>
+
+      <h3>Opening a script</h3>
+
+      <p>Click on the <q>Open</q> button of a script in order to open it into
+      the editor defined by the system for Python scripts.</p>
+
+      <h2>Script execution classes</h2>
+
+      <p>Each script has an <q>execution class</q>, which defines when the script
+          should be executed. The classes are:</p>
+
+      <dl>
+          <dt>On demand</dt>
+          <dd>A script with the <q>On demand</q> attribute is not executed
+          automatically by ModbusPal. The user has to click on the <q>Execute</q>
+          button of this script.</dd>
+          <dt>Before init</dt>
+          <dd>A script with the <q>Before init</q> attribute will be automatically
+          executed when the project is loaded, right before the MODBUS slaves
+          and automations information are processed. Examples of scripts that
+          should be executed <q>before init</q> are: scripts registering new
+          generators, bindings, functions.</dd>
+          <dt>After init</dt>
+          <dd>A script with the <q>After init</q> attribute will be automatically
+          executed when the project is loaded, only after the MODBUS slaves
+          and automations information have been processed. Examples of scripts that
+          should be executed <q>after init</q> are: scripts creating a user
+          interface.</dd>
+      </dl>
+
+      <h2>Example</h2>
+
+      <div class="code-sample">
+          <a href="py/HelloWorldFrame.py">HelloWorldFrame.py</a>
+      <pre>
 from javax.swing import *
 from java.awt import *
 
@@ -68,8 +97,6 @@ class HelloWorldFrame(JFrame):
     self.button = JButton('OK',actionPerformed=self.buttonPushed);
     self.add(self.button, BorderLayout.SOUTH);
 
-
-
 # Create the Hello world frame:
 frame = HelloWorldFrame();
 
@@ -78,50 +105,26 @@ frame.setVisible(True);
 
 # Make it the top window:
 frame.toFront();
+      </pre>
+      </div>
 
+      <h2>Special variables</h2>
 
-14.3	On-demand scripts
-14.3.1	Adding on-demand scripts
-On-demand scripts are added by using the Script manager. Click on the “Script” button located in the main window to summon the Script manager’s window.
+      <dl>
+          <dt>ModbusPal</dt>
+          <dd>Instance of the current ModbusPalProject java class.</dd>
+          <dt>mbp_script_path</dt>
+          <dd>A String containing the complete pathname of the current script file. Ex: "C:/directory/script.py"</dd>
+          <dt>mbp_script_directory</dt>
+          <dd>A String containing only the path of the current script file. Ex: "C:/directory"</dd>
+          <dt>mbp_script_file</dt>
+          <dd>A String containing only the name of the current script file. Ex: "script.py"</dd>
+      </dl>
 
-Click on the “Script” button in the main window to display the Script manager.
-Then, in the Script manager window, select the “On-demand scripts” tab and click on the “Add” button.
+      <h2>API</h2>
 
-Click on the “Add” button in the “On-demand scripts” tab to add a new on-demand script.
-A file chooser dialog appears. Select a script file from your computer and validate. If the script file is valid, it is added in the list.
-
-If the script file is valid, it is added in the list of on-demand scripts.
-14.3.2	Execution of on-demand scripts
-On-demand scripts are only executed if triggered by clicking on the corresponding “Execute” button.
-
-Click on the “Execute” button to execute the on-demand script.
-14.3.3	Removing an on-demand script
-An on-demand script can be removed from the project by clicking on the corresponding “Delete” button in the Script manager.
-
-Click in the “Delete” button to delete the corresponding on-demand script.
-14.3.4	Example
-The following example is an on-demand script that disables all MODBUS slaves defined in the current project.
-
-Content of “DisableAllSlavesOnDemand.py”
-
-from modbuspal.main import ModbusPal
-from modbuspal.main import ModbusConst
-
-# Try each possible MODBUS slave addresses
-for addr in range(ModbusConst.FIRST_MODBUS_SLAVE, ModbusConst.LAST_MODBUS_SLAVE+1):
-
-  # Get the MODBUS slave object corresponding to this address
-  slave = ModbusPal.getModbusSlave(addr);
-
-  # Verify that there actually IS a MODBUS slave with this address
-  if not(slave is None):
-
-    # Disable the slave:
-    slave.setEnabled(False);
-
-
- 
-
+      <p>Please consult the Javadoc of ModbusPal in order to get more
+      information on all the classes introduced in this page.</p>
 
   </body>
 </html>

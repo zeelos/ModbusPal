@@ -1,0 +1,54 @@
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>ModbusPal</title>
+    <link rel="stylesheet" type="text/css" href="styles.css" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+
+      <h1>Embedding ModbusPal in a graphical application</h1>
+
+      <h2>Introduction</h2>
+
+      <p>In version 1.6, ModbusPal has been redesigned so that several instances
+      can coexist. The core of the application resides in the modbuspal.main.ModbusPalPane
+      class, which is a subclass of javax.swing.JPanel.</p>
+
+      <h2>Creating a JFrame</h2>
+
+      <p>The developer can create multiple instances of ModbusPalPane, 
+      packaged in a JFrame, by callong the static method <code>ModbusPalGui.newFrame()</code>.</p>
+
+      <h2>Creating a JInternalFrame</h2>
+
+      <p>The developer can create multiple instances of ModbusPalPane,
+      packaged in a JInternalFrame, by callong the static method
+      <code>ModbusPalGui.newInternalFrame()</code>.</p>
+
+      <h2>Using ModbusPalPane directly</h2>
+
+      <p>The developer may want to use the ModbusPalPane directly in his/her
+      application. The constructor is as follow:</p>
+
+      <pre><code>ModbusPalPane(boolean useInternalConsole)</code></pre>
+
+      <ul>
+          <li>If <q>useInternalConsole</q> is TRUE, then the console outputs
+              (as in System.out and System.err) are directed to the ModbusPal
+              console.
+          <li>If <q>useInternalConsole</q> is FALSE, then the console outputs
+              are untouched.
+      </ul>
+
+      <p class="important">
+          When an instance of ModbusPalPane is not used and is going to be
+          discarded from the application, its <code>exit()</code> method
+          must be called to cleanly terminate the project.</p>
+
+  </body>
+</html>
