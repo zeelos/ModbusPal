@@ -36,7 +36,10 @@ implements WindowListener, AutomationExecutionListener, AncestorListener
     private final InstantiableManager<Generator> generatorFactory;
     private final ModbusPalPane modbusPalPane;
 
-    /** Creates new form listOfSlavesCellRenderer */
+    /** Creates new AutomationPanel form
+     * @param a the automation associated with this panel
+     * @param p the ModbusPalPane that contains the panel
+     */
     public AutomationPanel(Automation a, ModbusPalPane p)
     {
         modbusPalPane = p;
@@ -54,7 +57,10 @@ implements WindowListener, AutomationExecutionListener, AncestorListener
         addAncestorListener(this);
     }
 
-
+    /**
+     * ModbusPal will call this method when the automation is removed from
+     * the project. It should not be called direcly.
+     */
     public void disconnect()
     {
         automationEditor.removeWindowListener(this);
@@ -63,7 +69,10 @@ implements WindowListener, AutomationExecutionListener, AncestorListener
         assert(automation.removeAutomationExecutionListener(this)==false);
     }
 
-
+    /**
+     * Returns the automation that is associated with this panel.
+     * @return the automation that is associated with this panel.
+     */
     public Automation getAutomation()
     {
         return automation;
@@ -75,6 +84,10 @@ implements WindowListener, AutomationExecutionListener, AncestorListener
         setBackground( automation.isRunning() );
     }
 
+    /**
+     * Makes this component obtain the focus. More specifically, the focus
+     * is requested by the text field where the user edits the name of the automation.
+     */
     public void focus()
     {
         nameTextField.selectAll();

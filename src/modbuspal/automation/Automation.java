@@ -25,7 +25,8 @@ import org.w3c.dom.NodeList;
 public class Automation
 implements Runnable
 {
-    public final static String DEFAULT_NAME = "no name";
+    /** default name of an automation */
+    public final static String DEFAULT_NAME = "no name"; 
     private ArrayList<Generator> generators = new ArrayList<Generator>();
     private double stepDelay = 1.0;
     private Thread thread = null;
@@ -99,7 +100,7 @@ implements Runnable
      * @param attributes the xml node representing the attributes
      * of the automation
      */
-    public void loadAttributes(NamedNodeMap attributes)
+    public final void loadAttributes(NamedNodeMap attributes)
     {
         Node stepNode = attributes.getNamedItem("step");
         String stepValue = stepNode.getNodeValue();
@@ -189,7 +190,9 @@ implements Runnable
 
 
     /**
-     * Removes all generators from the automation.
+     * Removes all generators from the automation that have
+     * the specified classname
+     * @param classname classname of the generators to remove
      */
     public void removeAllGenerators(String classname)
     {
@@ -222,13 +225,20 @@ implements Runnable
     }
 
 
-
+    /**
+     * Adds a GeneratorListener to the list of listeners
+     * @param l the GeneratorListener to add
+     */
     public void addGeneratorListener(GeneratorListener l)
     {
         assert( generatorListeners.contains(l) == false );
         generatorListeners.add(l);
     }
 
+    /**
+     * Removes a GeneratorListener from the list of listeners
+     * @param l the GeneratorListener to remove
+     */
     public void removeGeneratorListener(GeneratorListener l)
     {
         assert( generatorListeners.contains(l) == true );
@@ -242,6 +252,7 @@ implements Runnable
      * using the content of the node list. The generators are instantiated
      * by using the provided InstantiableManager object.
      * @param nodes
+     * @param gf the "generator factory", object that holds the instantiable generators
      * @throws java.lang.InstantiationException
      * @throws java.lang.IllegalAccessException
      */
@@ -267,7 +278,11 @@ implements Runnable
         }
     }
 
-
+    /**
+     * Saves the configuration of the automation, in XML format.
+     * @param out the outpustream where the configuration is written
+     * @throws IOException 
+     */
     public void save(OutputStream out)
     throws IOException
     {
@@ -532,12 +547,20 @@ implements Runnable
     }
 
 
+    /**
+     * Verifies if the automation is currently running or not.
+     * @return true is the automation is running, false otherwise
+     */
     public boolean isRunning()
     {
         return (thread!=null);
     }
 
-    public void disconnect()
+    /**
+     * ModbusPal will call this function when the automation is removed from
+     * the project. It should not be called directly. 
+     */
+    public final void disconnect()
     {
         automationEditionListeners.clear();
         automationExecutionListeners.clear();
@@ -545,17 +568,31 @@ implements Runnable
         generators.clear();
     }
 
+    /**
+     * Adds an AutomationEditionListener to the list of listeners
+     * @param l the AutomationEditionListener to add
+     */
     public void addAutomationEditionListener(AutomationEditionListener l)
     {
         assert( automationEditionListeners.contains(l) == false );
         automationEditionListeners.add(l);
     }
 
+    /**
+     * Removes an AutomationEditionListener from the list of listeners
+     * @param l the AutomationEditionListener to remove
+     * @return true if removed correctly
+     */
     public boolean removeAutomationEditionListener(AutomationEditionListener l)
     {
         return automationEditionListeners.remove(l);
     }
 
+    /**
+     * Adds an AutomationExecutionListener to the list of listeners
+     * @param l the AutomationExecutionListener to add
+     * @return true if added correctly
+     */
     public boolean addAutomationExecutionListener(AutomationExecutionListener l)
     {
         if( automationExecutionListeners.addInstance(l)==true )
@@ -566,6 +603,11 @@ implements Runnable
         return false;
     }
 
+    /**
+     * Removes an AutomationExecutionListener from the list of listeners
+     * @param l the AutomationExecutionListener to remove
+     * @return true if removed properly
+     */
     public boolean removeAutomationExecutionListener(AutomationExecutionListener l)
     {
 

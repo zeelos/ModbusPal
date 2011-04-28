@@ -34,7 +34,9 @@ implements AutomationExecutionListener
     private XYSeries xySeries;
 
 
-    /** Creates new form ChartPanel */
+    /** Creates new form ChartPanel 
+     * @param source the automation that produces the value to draw on the chart
+     */
     public AutomationChart(Automation source)
     {
         initComponents();

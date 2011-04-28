@@ -63,7 +63,10 @@ implements AutomationEditionListener, AutomationExecutionListener, InstantiableM
     private final ModbusPalPane modbusPalPane;
     private JPanel chartPanel;
 
-    /** Creates new form AutomationEditor */
+    /** Creates new form AutomationEditor 
+     * @param a the automation to edit
+     * @param p reference on the ModbusPalPane that is summoning this editor
+     */
     public AutomationEditor(Automation a, ModbusPalPane p)
     {
         //mainGui = gui;
@@ -72,7 +75,7 @@ implements AutomationEditionListener, AutomationExecutionListener, InstantiableM
         automation = a;
         
         setTitle( "Automation:"+automation.getName() );
-        Image img = Toolkit.getDefaultToolkit().createImage( getClass().getResource("../main/img/icon32.png") );
+        Image img = Toolkit.getDefaultToolkit().createImage( getClass().getResource("/modbuspal/main/img/icon32.png") );
         setIconImage(img);
         
         listLayout = new ListLayout();
@@ -82,14 +85,13 @@ implements AutomationEditionListener, AutomationExecutionListener, InstantiableM
         pack();
 
         // try to install the ChartPanel
-        try
+        if( ModbusPalPane.verifyJFreeChart()==true )
         {
             chartPanel = new AutomationChart(a);
             jPanel1.add("chart",chartPanel);
         }
-        catch(Exception e)
+        else
         {
-            e.printStackTrace();
             chartPanel=null;
         }
     }
@@ -156,12 +158,20 @@ implements AutomationEditionListener, AutomationExecutionListener, InstantiableM
         }
     }
 
+    /**
+     * Moves the specified generator down in the list of generators.
+     * @param source the generator to move down
+     */
     public void down(GeneratorRenderer source)
     {
         Generator gen = source.getGenerator();
         automation.down(gen);
     }
 
+    /**
+     * Removes the specified generator from the list of generators
+     * @param renderer the generator to remove
+     */
     public void remove(GeneratorRenderer renderer)
     {
         // get the generator
@@ -171,6 +181,10 @@ implements AutomationEditionListener, AutomationExecutionListener, InstantiableM
         automation.removeGenerator(gen);
     }
 
+    /**
+     * Moves the specified generator up in the generators list
+     * @param source the generator to move up
+     */
     public void up(GeneratorRenderer source)
     {
         Generator gen = source.getGenerator();

@@ -6,6 +6,7 @@
 package modbuspal.automation;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import javax.swing.ComboBoxModel;
 import javax.swing.ListModel;
 import javax.swing.event.ListDataEvent;
@@ -23,28 +24,42 @@ implements ListModel, ComboBoxModel
     private String selectedAutomation = null;
     private final ArrayList<ListDataListener> listeners = new ArrayList<ListDataListener>();
 
+    /**
+     * Creates a new instance of AutomationListModel.
+     * @param list the list of automation for this model
+     */
     public AutomationListModel( Automation[] list )
     {
         changeModel(list);
     }
 
+    /**
+     * Creates a new instance of AutomationListModel.
+     * @param mpp the project from which the list of automation for this model must be obtained
+     */
     public AutomationListModel( ModbusPalProject mpp )
     {
         changeModel(mpp);
     }
 
+    /*
     public AutomationListModel()
     {
-    }
+    }*/
 
 
-    public void changeModel( Automation[] list )
+    /**
+     * Modifies the list of automations for this model
+     * @param list the new list of automations
+     */
+    public final void changeModel( Automation[] list )
     {
         automations.clear();
-        for(int i=0; i<list.length; i++)
+        automations.addAll(Arrays.asList(list));
+        /*        for(int i=0; i<list.length; i++)
         {
             automations.add(list[i]);
-        }
+        }*/
         selectedAutomation = null;
         notifyModelChanged();
     }
@@ -52,12 +67,22 @@ implements ListModel, ComboBoxModel
 
 
     
-
-    public void changeModel( ModbusPalProject mpp )
+    /**
+     * Modifies the list of automations for this model by getting the list
+     * of automations defined in the specified ModbusPalProject
+     * @param mpp the project from which the list of automations must be obtained
+     */
+    public final void changeModel( ModbusPalProject mpp )
     {
         changeModel(mpp.getAutomations());
     }
 
+    /**
+     * Returns the automation that is defined at the specified index in the 
+     * list.
+     * @param index index of the automation to return
+     * @return the automation at the specified index in the lit
+     */
     public Automation getAutomation(int index)
     {
         if( index==0 )
@@ -154,6 +179,10 @@ implements ListModel, ComboBoxModel
         }
     }
 
+    /**
+     * Adds the specified automation to the model
+     * @param a the automation to add to the model
+     */
     public void add(Automation a)
     {
         automations.add(a);
@@ -161,6 +190,10 @@ implements ListModel, ComboBoxModel
         notifyInsertion(index);
     }
 
+    /**
+     * Removes the specified automation from the model
+     * @param a the automation to remove from the model
+     */
     public void remove(Automation a)
     {
         int index = automations.indexOf(a);

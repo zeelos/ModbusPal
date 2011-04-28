@@ -24,29 +24,49 @@ extends javax.swing.JDialog
     private final AutomationListModel automationListModel;
     private boolean isOK = false;
 
-    /** Creates new form AutomationSelectionDialog */
+    /** Creates new form AutomationSelectionDialog 
+     * @param al the list of automations to display in the form
+     */
     public AutomationSelectionDialog(AutomationListModel al)
     {
         this(al,null);
     }
 
+    /**
+     *  Creates new form AutomationSelectionDialog 
+     * @param a the list of automatoins to display in the form
+     */
     public AutomationSelectionDialog(Automation[] a)
     {
         this( new AutomationListModel(a), null );
     }
 
+    /**
+     *  Creates new form AutomationSelectionDialog, and
+     *  specifies which automation should be selecte 
+     *  by default.
+     * @param a the list of automations to display
+     * @param selected the selected automation
+     */
     public AutomationSelectionDialog(Automation[] a, Automation selected)
     {
         this( new AutomationListModel(a), selected );
     }
 
+    /**
+     *  Creates new form AutomationSelectionDialog, and
+     *  specifies which automation should be selecte 
+     *  by default.
+     * @param al the list of automations to display
+     * @param selected the selected automation
+     */
     public AutomationSelectionDialog(AutomationListModel al, Automation selected)
     {
         super();
         setModalityType(ModalityType.APPLICATION_MODAL);
         automationListModel = al;
         initComponents();
-        Image img = Toolkit.getDefaultToolkit().createImage( getClass().getResource("../main/img/icon32.png") );
+        Image img = Toolkit.getDefaultToolkit().createImage( getClass().getResource("/modbuspal/main/img/icon32.png") );
         setIconImage(img);
         select(selected);
     }
@@ -106,6 +126,12 @@ extends javax.swing.JDialog
     }//GEN-LAST:event_okButtonActionPerformed
 
 
+    /**
+     * Returns the selected automation, or null if no selection
+     * has been made, or null if the user has no validated the selection by 
+     * clicking on OK.
+     * @return the selected automation
+     */
     public Automation getSelectedAutomation()
     {
         if(isOK==false)
