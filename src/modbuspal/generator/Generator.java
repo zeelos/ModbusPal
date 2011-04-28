@@ -61,8 +61,9 @@ implements Instantiable<Generator>
      * The icon is the image that is visible on the left of the generator's control
      * panel. 
      * @param iconUrl a string describing the path of the icon image file
+     * @return true if the icon with changed successfully
      */
-    protected boolean setIcon(String iconUrl)
+    protected final boolean setIcon(String iconUrl)
     {
         URL url = null;
 
@@ -189,8 +190,22 @@ implements Instantiable<Generator>
         loadGeneratorSettings( genNode.getChildNodes() );
     }
 
+    /**
+     * This method is called during the loading of the generator from a modbuspal
+     * project file. The subclasses must implement this method so that they
+     * can retrieve the settings they have previously save in saveGeneratorSettings().
+     * @param list the XML nodes where to read the configuration from.
+     */
     public abstract void loadGeneratorSettings(NodeList list);
 
+    /**
+     * This method is called during the saving of the generator's parameters
+     * into a modbuspal project file. The subclasses must implement this method
+     * so that they can save their specific settings into the project file.
+     * The settings should be saved using XML format.
+     * @param out the output stream where to write the settings
+     * @throws IOException 
+     */
     public abstract void saveGeneratorSettings(OutputStream out) throws IOException;
 
 
@@ -213,6 +228,7 @@ implements Instantiable<Generator>
      * generator has to save paremeters, you have to override the "saveSettings" method, which
      * by default doesn't do anything.
      * @param out the output stream into which the XML must be written.
+     * @throws IOException
      */
     public final void save(OutputStream out)
     throws IOException

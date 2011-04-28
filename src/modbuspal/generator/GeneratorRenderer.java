@@ -36,7 +36,9 @@ implements GeneratorListener
     private AutomationEditor editor;
 
 
-    /** Creates new form GeneratorRenderer */
+    /** Creates new form GeneratorRenderer
+     * @param parent the automation editor that contains this generator renderer 
+     * @param gen the generator being rendered by this component */
     public GeneratorRenderer(AutomationEditor parent, Generator gen)
     {
         editor = parent;
@@ -76,6 +78,10 @@ implements GeneratorListener
         }
     }
 
+    /**
+     * Returns the generator that is being rendered by this component
+     * @return the generator that is being rendered by this component
+     */
     public Generator getGenerator() {
         return generator;
     }
@@ -219,6 +225,7 @@ implements GeneratorListener
     private javax.swing.JButton upButton;
     // End of variables declaration//GEN-END:variables
 
+    @Override
     public void generatorHasEnded(Generator gen)
     {
         if (gen == generator)
@@ -227,6 +234,7 @@ implements GeneratorListener
         }
     }
 
+    @Override
     public void generatorHasStarted(Generator gen)
     {
         if (gen == generator)
