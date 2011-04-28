@@ -25,7 +25,6 @@ import javax.swing.ListModel;
 import javax.swing.event.ListDataListener;
 import modbuspal.main.ModbusPalPane;
 import modbuspal.main.ModbusPalProject;
-import modbuspal.script.ScriptManagerDialog;
 
 /**
  *
@@ -43,18 +42,22 @@ extends javax.swing.JDialog
             bindings = list;
         }
 
+        @Override
         public int getSize() {
             return bindings.length;
         }
 
+        @Override
         public Object getElementAt(int index) {
             return bindings[index];
         }
 
+        @Override
         public void addListDataListener(ListDataListener l) {
             return;
         }
 
+        @Override
         public void removeListDataListener(ListDataListener l) {
             return;
         }
@@ -74,16 +77,19 @@ extends javax.swing.JDialog
             fireIntervalAdded(this, 0, maxOrder-1);
         }
 
+        @Override
         public int getSize() {
             return maxOrder;
         }
 
+        @Override
         public Object getElementAt(int index) {
             if( index==0 ) return "0 (LSW)";
             else if( index==maxOrder-1) return String.valueOf(maxOrder-1) + " (MSW)";
             else return String.valueOf(index);
         }
 
+        @Override
         public void setSelectedItem(Object anItem) {
             String string = (String)anItem;
             Pattern p = Pattern.compile("(\\d+)(.*)");
@@ -96,6 +102,7 @@ extends javax.swing.JDialog
            }
         }
 
+        @Override
         public Object getSelectedItem() {
             return getElementAt(selectedOrder);
         }
@@ -109,7 +116,10 @@ extends javax.swing.JDialog
     private final HashMap<String,Binding> bindingCache = new HashMap<String,Binding>();
     private final OrderList orderList = new OrderList();
 
-    /** Creates new form BindingEditor */
+    /** Creates new form BindingEditor 
+     * @param p the ModbusPalPane that is the root panel
+     * of the graphical interface
+     */
     public BindingEditor(ModbusPalPane p)
     {
         modbusPalPane = p;
@@ -118,15 +128,25 @@ extends javax.swing.JDialog
         automations = new AutomationListModel( modbusPalProject.getAutomations() );
         bindings = new BindingList( modbusPalProject.getBindingFactory().getList() );
         initComponents();
-        Image img = Toolkit.getDefaultToolkit().createImage( getClass().getResource("../main/img/icon32.png") );
+        Image img = Toolkit.getDefaultToolkit().createImage( getClass().getResource("/modbuspal/main/img/icon32.png") );
         setIconImage(img);
     }
 
+    /**
+     * Returns a string containing the name of the binding class that
+     * has been selected by the user.
+     * @return the selected binding class name
+     */
     public String getSelectedClass()
     {
         return (String)bindingsList.getSelectedValue();
     }
 
+    /**
+     * Returns the automation instance that has been selected for
+     * association with the selected binding.
+     * @return the automation to associate with the binding
+     */
     public Automation getSelectedAutomation()
     {
         int index = automationsList.getSelectedIndex();
@@ -139,6 +159,11 @@ extends javax.swing.JDialog
         return selected;
     }
 
+    /**
+     * Returns the order that has been chosen by the user for
+     * the binding to create.
+     * @return the selected order for the binding
+     */
     public int getSelectedOrder()
     {
         return orderComboBox.getSelectedIndex();

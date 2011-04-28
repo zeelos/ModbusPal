@@ -13,6 +13,9 @@ public class Binding_FLOAT32
 extends Binding
 {
 
+    /**
+     * Creates a new instance of Binding_FLOAT32
+     */
     public Binding_FLOAT32()
     {
         super();

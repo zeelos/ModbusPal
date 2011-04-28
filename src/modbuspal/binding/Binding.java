@@ -129,25 +129,51 @@ implements AutomationExecutionListener, Cloneable, Instantiable<Binding>
         }
     }
 
+    /**
+     * Calls getRegister(int,double) with the order and value of the automation
+     * previously specified by setup(Automation,int)
+     * @return the value of the register
+     */
     public final int getRegister()
     {
         return getRegister(order, automation.getCurrentValue());
     }
 
 
-    public abstract int getRegister(int rank, double value);
+    /**
+     * Process the specified value and return the 16-word register corresponding
+     * to the requested order. 
+     * @param order the rank of the 16-word register to return, depending of the
+     * mapping implemented by this binding.
+     * @param value the value to process
+     * @return the register of the specified order, after processing of the input value
+     */
+    public abstract int getRegister(int order, double value);
 
 
+    /**
+     * Calls getCoil(int,double) with the order and value of the automation
+     * previously specified by setup(Automation,int)
+     * @return the value of the register
+     */
     public final boolean getCoil()
     {
         return getCoil(order, automation.getCurrentValue());
     }
 
 
-    protected boolean getCoil(int rank, double value)
+    /**
+     * Process the specified value and return the boolean value (coil)  corresponding
+     * to the requested order. 
+     * @param order the rank of the boolean (coil) to return, depending of the
+     * mapping implemented by this binding.
+     * @param value the value to process
+     * @return the boolean (coil) of the specified order, after processing of the input value
+     */
+    public boolean getCoil(int order, double value)
     {
-        int rankWord = rank / 16;
-        int rankBit = rank % 16;
+        int rankWord = order / 16;
+        int rankBit = order % 16;
         int reg = getRegister(rankWord,value);
         int mask = 1 << rankBit;
         return (reg&mask)!=0;
@@ -159,6 +185,12 @@ implements AutomationExecutionListener, Cloneable, Instantiable<Binding>
         return automation.getName() + " (" + getClassName() + ":" + String.valueOf(order) + ")";
     }
 
+    /**
+     * Returns the name of the automation that 
+     * has been associated to this binding by
+     * calling the setup() method.
+     * @return the name of the automation
+     */
     public String getAutomationName()
     {
         return automation.getName();

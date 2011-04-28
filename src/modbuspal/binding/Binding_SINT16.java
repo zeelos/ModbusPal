@@ -13,6 +13,9 @@ public class Binding_SINT16
 extends Binding
 {
 
+    /**
+     * Creates a new instance of Binding_SINT16.
+     */
     public Binding_SINT16()
     {
         super();

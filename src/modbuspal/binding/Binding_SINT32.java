@@ -13,6 +13,9 @@ public class Binding_SINT32
 extends Binding
 {
 
+    /**
+     * Creates a new instance of Binding_SINT32.
+     */
     public Binding_SINT32()
     {
         super();
