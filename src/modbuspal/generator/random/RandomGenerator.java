@@ -26,6 +26,9 @@ extends Generator
     boolean relativeMin = false;
     boolean relativeMax = false;
 
+    /**
+     * Creates a new instance of RandomGenerator
+     */
     public RandomGenerator()
     {
         setIcon("RandomGenerator.png");

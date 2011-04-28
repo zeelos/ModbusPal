@@ -27,6 +27,9 @@ extends Generator
     boolean catchup = false;
     double offset = 0.0;
 
+    /**
+     * Creates a new instance of SineGenerator.
+     */
     public SineGenerator()
     {
         setIcon("SineGenerator.png");

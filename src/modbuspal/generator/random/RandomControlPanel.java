@@ -20,7 +20,9 @@ extends javax.swing.JPanel
 {
     private RandomGenerator generator;
     
-    /** Creates new form RandomControlPanel */
+    /** Creates new form RandomControlPanel 
+     * @param gen the random generator whose parameters are being displayed by this component
+     */
     public RandomControlPanel(RandomGenerator gen)
     {
         generator = gen;

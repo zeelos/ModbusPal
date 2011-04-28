@@ -22,7 +22,9 @@ extends javax.swing.JPanel
 {
     private final SineGenerator sineGen;
 
-    /** Creates new form SineControlPanel */
+    /** Creates new form SineControlPanel 
+     * @param gen the sine generator whose parameters are being displayed by this component
+     */
     public SineControlPanel(SineGenerator gen)
     {
         sineGen = gen;

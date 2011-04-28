@@ -20,7 +20,9 @@ extends javax.swing.JPanel
 {
     private LinearGenerator generator;
     
-    /** Creates new form LinearControlPanel */
+    /** Creates new form LinearControlPanel
+     * @param gen the linear generator whose parameters are being displayed by this component
+     */
     public LinearControlPanel(LinearGenerator gen)
     {
         generator = gen;

@@ -26,6 +26,9 @@ extends Generator
     boolean relativeStart = false;
     boolean relativeEnd = false;
 
+    /**
+     * Creates a new instance of LinearGenerator.
+     */
     public LinearGenerator()
     {
         setIcon("LinearGenerator.png");
