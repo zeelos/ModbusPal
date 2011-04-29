@@ -21,15 +21,9 @@ extends Binding
     }
 
     @Override
-    public int getRegister(int rank, double value)
+    public int getRegister(int order, double value)
     {
         return 0;
-    }
-
-    @Override
-    public boolean getCoil(int rank, double value)
-    {
-        return false;
     }
 
     @Override

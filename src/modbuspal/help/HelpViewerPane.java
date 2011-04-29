@@ -27,7 +27,10 @@ extends javax.swing.JPanel
     private final URL myURL;
 
 
-    /** Creates new form HelpViewerPane */
+    /** Creates new form HelpViewerPane 
+     * @param page the url of the page to display inside this pane
+     * @throws IOException
+     */
     public HelpViewerPane(URL page) throws IOException
     {
         myURL = page;
@@ -56,11 +59,19 @@ extends javax.swing.JPanel
         add(jScrollPane1, java.awt.BorderLayout.CENTER);
     }// </editor-fold>//GEN-END:initComponents
 
+    /**
+     * adds a HyperlinkListener to the html renderer
+     * @param l the listener to add 
+     */
     public void addHyperlinkListener(HyperlinkListener l)
     {
         myHTMLviewer.addHyperlinkListener(l);
     }
 
+    /**
+     * removes a HyperlinkListener to the html renderer
+     * @param l the listener to remove
+     */
     public void removeHyperlinkListener(HyperlinkListener l)
     {
         myHTMLviewer.removeHyperlinkListener(l);

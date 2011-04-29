@@ -850,7 +850,7 @@ implements AutomationEditionListener, AutomationExecutionListener, InstantiableM
     {
         if( def instanceof Generator )
         {
-            addGeneratorButton( factory.nameOf(def) );
+            addGeneratorButton( def.getClassName() );
         }
     }
 

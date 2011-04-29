@@ -31,7 +31,7 @@ implements ActionListener
 
     ErrorMessage()
     {
-        Image img = Toolkit.getDefaultToolkit().createImage( getClass().getResource("../main/img/icon32.png") );
+        Image img = Toolkit.getDefaultToolkit().createImage( getClass().getResource("/modbuspal/main/img/icon32.png") );
         setIconImage(img);
     }
 

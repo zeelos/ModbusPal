@@ -63,7 +63,7 @@ implements Instantiable<Generator>
      * @param iconUrl a string describing the path of the icon image file
      * @return true if the icon with changed successfully
      */
-    protected final boolean setIcon(String iconUrl)
+    public final boolean setIcon(String iconUrl)
     {
         URL url = null;
 

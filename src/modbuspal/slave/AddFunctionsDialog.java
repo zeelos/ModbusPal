@@ -101,7 +101,7 @@ extends javax.swing.JDialog
         listOfFunctions = new ListOfFunctions(ff);
         listOfInstances = new ListOfInstances(slave.getPduProcessorInstances());
         initComponents();
-        Image img = Toolkit.getDefaultToolkit().createImage( getClass().getResource("../main/img/icon32.png") );
+        Image img = Toolkit.getDefaultToolkit().createImage( getClass().getResource("/modbuspal/main/img/icon32.png") );
         setIconImage(img);
         if( listOfFunctions.getSize()>0 )
         {

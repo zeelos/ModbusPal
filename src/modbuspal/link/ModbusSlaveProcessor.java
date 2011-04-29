@@ -21,14 +21,32 @@ import modbuspal.slave.ModbusSlave;
 public abstract class ModbusSlaveProcessor
 implements ModbusConst
 {
+    /**
+     * reference on the project that hold all the information
+     * for the modbus slaves to simulate
+     */
     protected final ModbusPalProject modbusPalProject;
 
+    /**
+     * Constructor that stores the reference of the modbuspal project
+     * @param mpp 
+     */
     protected ModbusSlaveProcessor(ModbusPalProject mpp)
     {
         modbusPalProject = mpp;
     }
 
-
+    /**
+     * The subclass will call this method in order to process the content of
+     * the PDU that has been received from the master.
+     * The reply is written in the same buffer where the request was transmitted.
+     * @param slaveID the slave identifier of the target MODBUS device 
+     * @param buffer a byte buffer containing the MODBUS PDU
+     * @param offset the offset in the buffer where the PDU actually starts
+     * @param pduLength the length of the PDU.
+     * @return the size of the reply. if less than 1, modbuspal considers that
+     * there is no reply to the request.
+     */
     protected int processPDU(int slaveID, byte[] buffer, int offset, int pduLength)
     {
         // record the request
@@ -90,6 +108,14 @@ implements ModbusConst
         return length;
     }
 
+    /**
+     * Builds a standard exception response given the specified arguments.
+     * @param functionCode the function code that generates the exception
+     * @param exceptionCode the code that explicits the cause of the exception
+     * @param buffer the buffer where to write the exception
+     * @param offset the offset in the buffer where to start writing
+     * @return the length of the exception response
+     */
     public static int makeExceptionResponse(byte functionCode, byte exceptionCode, byte[] buffer, int offset)
     {
         buffer[offset+0] = (byte) (((byte)0x80) | functionCode);
@@ -97,6 +123,14 @@ implements ModbusConst
         return 2;
     }
 
+    /**
+     * Builds a standard exception response given the specified arguments.
+     * The function code is OR-ed with 0x80.
+     * @param exceptionCode the code that explicits the cause of the exception
+     * @param buffer the buffer where to write the exception
+     * @param offset the offset in the buffer where to start writing
+     * @return the length of the exception response
+     */
     public static int makeExceptionResponse(byte exceptionCode, byte[] buffer, int offset)
     {
         buffer[offset+0] |= (byte)0x80;

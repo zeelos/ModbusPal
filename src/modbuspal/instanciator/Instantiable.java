@@ -5,14 +5,11 @@
 
 package modbuspal.instanciator;
 
-import java.io.IOException;
-import java.io.OutputStream;
-import org.w3c.dom.NodeList;
-
 /**
  * A Instanciator is an object that is able to create object instances of a given class.
  * This interface defines the methods that a class must implement in order to
  * instanciate objects.
+ * @param <T> the class of object the will be instantiated by this Instantiable
  * @author nnovic
  */
 public interface Instantiable<T>
@@ -28,6 +25,8 @@ public interface Instantiable<T>
     /**
      * Creates a new object instance.
      * @return an instance of the object as defined by this instanciator.
+     * @throws InstantiationException
+     * @throws IllegalAccessException
      */
     public T newInstance() throws InstantiationException, IllegalAccessException;
 

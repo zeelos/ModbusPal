@@ -48,7 +48,7 @@ implements ScriptListener, FileTransferHandler.FileTransferTarget
     {
         super();
         initComponents();
-        Image img = Toolkit.getDefaultToolkit().createImage( getClass().getResource("../main/img/icon32.png") );
+        Image img = Toolkit.getDefaultToolkit().createImage( getClass().getResource("/modbuspal/main/img/icon32.png") );
         setIconImage(img);
         scriptsList.setDropTarget( new DropTarget(this, new FileTransferHandler(this) ) );
     }

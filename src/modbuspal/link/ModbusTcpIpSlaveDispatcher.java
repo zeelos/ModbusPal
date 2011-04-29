@@ -61,6 +61,12 @@ implements Runnable
     private InputStream slaveInput;
     private OutputStream slaveOutput;
 
+    /**
+     * Creates a new instance of ModbusTcpIpSlaveDispatcher
+     * @param mpp the modbuspal project that holds MODBUS slaves information
+     * @param sock the socket to use to communicate with the master
+     * @throws IOException 
+     */
     public ModbusTcpIpSlaveDispatcher(ModbusPalProject mpp, Socket sock)
     throws IOException
     {
@@ -70,12 +76,18 @@ implements Runnable
         slaveOutput = sock.getOutputStream();
     }
 
+    /**
+     * starts the thread that processes the incoming requests
+     */
     public void start()
     {
         slaveThread = new Thread(this,"tcp/ip dispatcher");
         slaveThread.start();
     }
 
+    /**
+     * stops the thread that processes  the incoming requests
+     */
     public void stop()
     {
         try 

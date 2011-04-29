@@ -27,6 +27,8 @@ extends javax.swing.JDialog
     /** 
      * Creates new form AddSlaveDialog. This constructor is usually
      * called when the user add a new slave in the project.
+     * @param slaves the list of modbus slaves in the project,
+     * indexed by slave number.
      */
     public AddSlaveDialog(ModbusSlave slaves[])
     {
@@ -37,6 +39,9 @@ extends javax.swing.JDialog
     /** 
      * Creates new form AddSlaveDialog. This constructor is usually
      * called when the user duplicates a modbus slave.
+     * @param slaves the list of modbus slaves in the project,
+     * indexed by slave number.
+     * @param name suggested name for the modbus slave(s) to add
      */
     public AddSlaveDialog(String name, ModbusSlave slaves[])
     {
@@ -60,11 +65,23 @@ extends javax.swing.JDialog
         }
     }
 
+    /**
+     * Indicates that the user has validated the selection by clicking
+     * on the ok button.
+     * @return true if the user has validate the selection by clicking on the
+     * ok button
+     */
     public boolean isAdded()
     {
         return added;
     }
 
+    
+    /**
+     * Gets the list of the slaves to add in the project, identified by their
+     * slave numbers
+     * @return list of the modbus slave numbers to create in the project
+     */
     public int[] getSlaveIds()
     {
         Object sel[] = slaveIdList.getSelectedValues();
@@ -77,6 +94,11 @@ extends javax.swing.JDialog
         return ids;
     }
 
+    /**
+     * Gets the slave name that has been typed by the user and shall be
+     * used for the modbus slave(s) to create in the project
+     * @return slave name typed by the user
+     */
     public String getSlaveName()
     {
         return nameTextField.getText();

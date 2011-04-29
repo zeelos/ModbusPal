@@ -42,10 +42,14 @@ implements ListModel, ComboBoxModel
         changeModel(mpp);
     }
 
-    /*
+    
+    /**
+     * Creates a new instance of AutomationListModel.
+     * The list is empty.
+     */
     public AutomationListModel()
     {
-    }*/
+    }
 
 
     /**

@@ -70,9 +70,17 @@ implements ModbusPalXML
     //==========================================================================
 
 
-
-
-
+    /** Creates a new ModbusPalProject with the configuration contained 
+     * in the specified project file.
+     * @param source the project file to load
+     * @return the ModbusPalProject created from the information contained in
+     * the specified file.
+     * @throws ParserConfigurationException
+     * @throws SAXException
+     * @throws IOException
+     * @throws InstantiationException
+     * @throws IllegalAccessException 
+     */
     public static ModbusPalProject load(File source)
     throws ParserConfigurationException, SAXException, IOException, InstantiationException, IllegalAccessException
     {
@@ -278,7 +286,7 @@ implements ModbusPalXML
         }
     }
 
-    public void loadAutomations(Document doc)
+    private void loadAutomations(Document doc)
     throws InstantiationException, IllegalAccessException
     {
         NodeList automationsList = doc.getElementsByTagName("automation");
@@ -352,14 +360,13 @@ implements ModbusPalXML
         }
     }
 
-    // TODO: why is it public ???
     /**
      * This method scans the content of the document in order to find all
      * "<binding>" tags, and then call the loadBinding(Node) method for each
      * of them.
      * @param doc
      */
-    public void loadBindings(Document doc, ModbusSlave slave)
+    private void loadBindings(Document doc, ModbusSlave slave)
     {
         NodeList list = doc.getElementsByTagName("binding");
         for(int i=0; i<list.getLength(); i++ )
@@ -527,6 +534,13 @@ implements ModbusPalXML
     //==========================================================================
 
 
+    /**
+     * Saves the current project into the project file. Implies that this
+     * project was loaded from a project file. The same file is overwritten
+     * with the current data held by this ModbusPalProject.
+     * @throws FileNotFoundException
+     * @throws IOException 
+     */
     public void save() 
     throws FileNotFoundException, IOException
     {
@@ -797,6 +811,9 @@ implements ModbusPalXML
         return automations.toArray(out);
     }
 
+    /**
+     * Starts all the automations of the project.
+     */
     public void startAllAutomations()
     {
         for(int i=0; i<automations.size(); i++ )
@@ -806,6 +823,9 @@ implements ModbusPalXML
         }
     }
 
+    /**
+     * Stops all the automations defined in the project.
+     */
     public void stopAllAutomations()
     {
         for(int i=0; i<automations.size(); i++ )
@@ -815,6 +835,10 @@ implements ModbusPalXML
         }
     }
 
+    /**
+     * Removes the specified automation from the project
+     * @param automation the automation to remove
+     */
     public void removeAutomation(Automation automation)
     {
         // disconnect the automation from the rest of the project
@@ -846,6 +870,11 @@ implements ModbusPalXML
     }
 
 
+    /**
+     * Checks if an automation with the specified name exists in the project
+     * @param name the name of the automation to check
+     * @return true if an automation with the same name exists.
+     */
     public boolean automationExists(String name)
     {
         return (getAutomation(name)!=null);
@@ -957,24 +986,46 @@ implements ModbusPalXML
         }
     }
 
+    /**
+     * @see #addGeneratorInstantiator(Generator)
+     * @param g the instantiable generator to add into the project.
+     * @deprecated spelling error in the name of the method
+     */
     @Deprecated
     public void addGeneratorInstanciator(Generator g)
     {
         addGeneratorInstantiator(g);
     }
 
-
+    /**
+     * @see #addGeneratorInstantiator(Generator)
+     * @param g the instantiable generator to add into the project.
+     * @param name the instantiable generator should have this name. 
+     * this parameter is ignored.
+     * @deprecated parameter "name" is ignored
+     */
     @Deprecated
     public void addGeneratorInstantiator(String name, Generator g)
     {
         addGeneratorInstantiator(g);
     }
 
+    /**
+     * Adds the specified generator to the list of instantiable generators.
+     * It means that the Automation Editor will be able to instantiate 
+     * generators of this type.
+     * @param g the instantiable generator to add into the project.
+     */
     public void addGeneratorInstantiator(Generator g)
     {
         generatorFactory.add(g);
     }
 
+    /**
+     * Returns the "library" that holds all the instantiable generators
+     * added in the project.
+     * @return the "library" of instantiable generators
+     */
     public InstantiableManager<Generator> getGeneratorFactory()
     {
         return generatorFactory;
@@ -1014,25 +1065,46 @@ implements ModbusPalXML
         }
     }
 
-
+    /**
+     * @see #addBindingInstantiator(Binding)
+     * @param b the instantiable binding to add into the project.
+     * @deprecated spelling error in the name of the method
+     */
     @Deprecated
     public void addBindingInstanciator(Binding b)
     {
         addBindingInstantiator(b);
     }
 
+    /**
+     * Adds the specified instantiable binding into the project. It means
+     * that the user will be able to use this new type of binding in the
+     * MODBUS slave editor.
+     * @param b the instantiable binding to add in the project
+     */
     public void addBindingInstantiator(Binding b)
     {
         bindingFactory.add(b);
     }
 
+    /**
+     * @see #addBindingInstantiator(Binding)
+     * @param b the instantiable binding to add into the project.
+     * @param name the instantiable binding should have this name. 
+     * this parameter is ignored.
+     * @deprecated parameter "name" is ignored
+     */    
     @Deprecated
     public void addBindingInstantiator(String name, Binding b)
     {
         addBindingInstantiator(b);
     }
 
-
+    /**
+     * Returns the "library" that holds all the instantiable bindings
+     * added in the project.
+     * @return the "library" of instantiable bindings
+     */
     public InstantiableManager<Binding> getBindingFactory()
     {
         return bindingFactory;
@@ -1070,14 +1142,24 @@ implements ModbusPalXML
     }
 
 
-
+    /**
+     * @see #addFunctionInstantiator(ModbusPduProcessor)
+     * @param mspp the instantiable ModbusPduProcessor to add into the project.
+     * @deprecated spelling error in the name of the method
+     */
     @Deprecated
     public void addFunctionInstanciator(ModbusPduProcessor mspp)
     {
         addFunctionInstantiator(mspp);
     }
 
-
+    /**
+     * @see #addFunctionInstantiator(ModbusPduProcessor)
+     * @param pi the instantiable ModbusPduProcessor to add into the project.
+     * @param name the instantiable ModbusPduProcessor should have this name. 
+     * this parameter is ignored.
+     * @deprecated parameter "name" is ignored
+     */
     @Deprecated
     public void addFunctionInstantiator(String name, ModbusPduProcessor pi)
     {
@@ -1085,11 +1167,22 @@ implements ModbusPalXML
     }
 
 
+    /**
+     * Adds the specified instantiable ModbusPduProcessor into the project. 
+     * It means that the user will be able to use this new type of 
+     * ModbusPduProcessor in the MODBUS slave editor.
+     * @param pi the instantiable ModbusPduProcessor to add in the project
+     */
     public void addFunctionInstantiator(ModbusPduProcessor pi)
     {
         functionFactory.add(pi);
     }
 
+    /**
+     * Returns the "library" that holds all the instantiable ModbusPduProcessors
+     * added in the project.
+     * @return the "library" of instantiable ModbusPduProcessors
+     */
     public InstantiableManager<ModbusPduProcessor> getFunctionFactory()
     {
         return functionFactory;
@@ -1219,6 +1312,10 @@ implements ModbusPalXML
         return null;
     }
 
+    /**
+     * Removes the specified MODBUS  slave from the project.
+     * @param slaveID the slave number of the MODBUS slave to remove
+     */
     public void removeModbusSlave(int slaveID)
     {
         ModbusSlave slave = getModbusSlave(slaveID);
@@ -1230,6 +1327,10 @@ implements ModbusPalXML
         setModbusSlave(slaveID, null);
     }
 
+    /**
+     * Removes the specified MODBUS  slave from the project.
+     * @param slave the modbus slave to remove from the project.
+     */
     public void removeModbusSlave(ModbusSlave slave)
     {
         int slaveID = slave.getSlaveId();
@@ -1249,7 +1350,12 @@ implements ModbusPalXML
     }
 
 
-
+    /**
+     * Creates a duplicate of an existing MODBUS slave.
+     * @param idSrc the slave number of the model MODBUS slave to duplicate
+     * @param idDst the slave number of the copy 
+     * @param name the name to give to the copy
+     */
     public void duplicateModbusSlave(int idSrc, int idDst, String name)
     {
         ModbusSlave newSlave = new ModbusSlave(idDst);
@@ -1282,6 +1388,12 @@ implements ModbusPalXML
         addModbusSlave(newSlave);
     }
 
+    /**
+     * Enables or disables the specified MODBUS slave
+     * @param slaveID slave number of the MODUBS slave to enable or disable
+     * @param b if true, enables the MODBUS slave. if false, disables the
+     * MODBUS slave.
+     */
     public void setSlaveEnabled(int slaveID, boolean b)
     {
         ModbusSlave ms = getModbusSlave(slaveID, learnModeEnabled);
@@ -1315,6 +1427,15 @@ implements ModbusPalXML
         return false;
     }
 
+    /**
+     * Exports the settings of a MODBUS slave into an XML export file.
+     * @param exportFile the file where the settings will be written
+     * @param modbusID the slave number of the MODBUS slave to export
+     * @param withBindings if true, the specs of the bindings are exported.
+     * @param withAutomations if true, the automations used by the slave are exported as well
+     * @throws FileNotFoundException
+     * @throws IOException 
+     */
     public void exportSlave(File exportFile, int modbusID, boolean withBindings, boolean withAutomations)
     throws FileNotFoundException, IOException
     {
@@ -1349,6 +1470,23 @@ implements ModbusPalXML
     }
 
 
+    /**
+     * Loads the settings of a MODBUS slave from an XML file. Configure
+     * the specified MODBUS slave with these settings, create the MODBUS slave
+     * if it doesn't already exist.
+     * @param importFile the XML file containing the settings to import
+     * @param idDst the modbus number of the MODBUS slave to configure with the
+     * settings from the DOM document.
+     * @param withBindings if true, import the bindings that may be defined
+     * in the DOM document
+     * @param withAutomations if true, import the automations that may be 
+     * defined in the DOM document
+     * @throws ParserConfigurationException
+     * @throws SAXException
+     * @throws IOException
+     * @throws InstantiationException
+     * @throws IllegalAccessException 
+     */
     public void importSlave(File importFile, int idDst, boolean withBindings, boolean withAutomations)
     throws ParserConfigurationException, SAXException, IOException, InstantiationException, IllegalAccessException
     {
@@ -1360,6 +1498,23 @@ implements ModbusPalXML
         importSlave(doc, idDst, withBindings, withAutomations);
     }
 
+    /**
+     * Loads the settings of a MODBUS slave from a XML structure. Configure
+     * the specified MODBUS slave with these settings, create the MODBUS slave
+     * if it doesn't already exist.
+     * @param doc the DOM document where the settings are stored
+     * @param idDst the modbus number of the MODBUS slave to configure with the
+     * settings from the DOM document.
+     * @param withBindings if true, import the bindings that may be defined
+     * in the DOM document
+     * @param withAutomations if true, import the automations that may be 
+     * defined in the DOM document
+     * @throws ParserConfigurationException
+     * @throws SAXException
+     * @throws IOException
+     * @throws InstantiationException
+     * @throws IllegalAccessException 
+     */
     public void importSlave(Document doc, int idDst, boolean withBindings, boolean withAutomations)
     throws ParserConfigurationException, SAXException, IOException, InstantiationException, IllegalAccessException
     {
@@ -1367,6 +1522,21 @@ implements ModbusPalXML
         importSlave(doc, target, withBindings, withAutomations);
     }
 
+    /**
+     * Loads the settings of a MODBUS slave from a XML structure.
+     * @param doc the DOM document where the settings are stored
+     * @param target the modbus slave to configure from the settings stored in
+     * the DOM document
+     * @param withBindings if true, import the bindings that may be defined
+     * in the DOM document
+     * @param withAutomations if true, import the automations that may be 
+     * defined in the DOM document
+     * @throws ParserConfigurationException
+     * @throws SAXException
+     * @throws IOException
+     * @throws InstantiationException
+     * @throws IllegalAccessException 
+     */
     public void importSlave(Document doc, ModbusSlave target, boolean withBindings, boolean withAutomations)
     throws ParserConfigurationException, SAXException, IOException, InstantiationException, IllegalAccessException
     {
@@ -1395,6 +1565,14 @@ implements ModbusPalXML
     //==========================================================================
 
 
+    /**
+     * Returns the ModbusPduProcessor that has been assigned to the specified
+     * MODBUS slave for the specified MODBUS function.
+     * @param slaveID the slave number
+     * @param functionCode the function code
+     * @return the ModbusPduProcessor, or null if none is assigned for the
+     * specified MODBUS slave and function code.
+     */
     public ModbusPduProcessor getSlavePduProcessor(int slaveID, byte functionCode)
     {
         ModbusSlave ms = getModbusSlave(slaveID, learnModeEnabled);
@@ -1407,7 +1585,19 @@ implements ModbusPalXML
     }
 
 
-
+    /**
+     * Checks if the modbus registers exist. If they don't and if the "lear mode"
+     * is enabled, then they are created.
+     * @param slaveID the slave number for which the existance of registers
+     * must be checked
+     * @param startingAddress the address of the first register to check
+     * @param quantity the quantity of registers to check
+     * @return true if all the registers exist, false if one or more of the 
+     * registers do not exist.
+     * @deprecated the preferred way to do that is to get the ModbusSlave 
+     * reference with ModbusPalProject#getModbusSlave(), then call 
+     * ModbusSlave#getHoldingRegisters(), and then ModbusRegisters#exist()
+     */
     @Deprecated
     public boolean holdingRegistersExist(int slaveID, int startingAddress, int quantity)
     {
@@ -1418,7 +1608,20 @@ implements ModbusPalXML
         }
         return ms.getHoldingRegisters().exist(startingAddress, quantity, learnModeEnabled);
     }
-
+    
+    /**
+     * Checks if the modbus coils exist. If they don't and if the "lear mode"
+     * is enabled, then they are created.
+     * @param slaveID the slave number for which the existance of coils
+     * must be checked
+     * @param startingAddress the address of the first coil to check
+     * @param quantity the quantity of coils to check
+     * @return true if all the coils exist, false if one or more of the 
+     * coils do not exist.
+     * @deprecated the preferred way to do that is to get the ModbusSlave 
+     * reference with ModbusPalProject#getModbusSlave(), then call 
+     * ModbusSlave#getCoils(), and then ModbusCoils#exist()
+     */
     @Deprecated
     public boolean coilsExist(int slaveID, int startingAddress, int quantity)
     {
@@ -1445,19 +1648,26 @@ implements ModbusPalXML
     //
     //==========================================================================
 
-
+    /**
+     * Adds the specified script file into the project.
+     * @param scriptFile the script file to add
+     */
     public void addScript(File scriptFile)
     {
         ScriptRunner runner = ScriptRunner.create(this, scriptFile, ScriptRunner.SCRIPT_TYPE_ON_DEMAND);
         addScript(runner);
     }
 
-    public void addScript(ScriptRunner runner)
+    private void addScript(ScriptRunner runner)
     {
         scripts.add(runner);
         notifyScriptAdded(runner);
     }
 
+    /**
+     * Removes the specified script from the project
+     * @param runner the script to remove
+     */
     public void removeScript(ScriptRunner runner)
     {
         if( scripts.remove(runner)==true )
@@ -1488,6 +1698,13 @@ implements ModbusPalXML
         }
     }
 
+    /**
+     * Returns a list of the scripts currently defined in the project,
+     * filtered by type.
+     * @param type one of the ScriptRunner.SCRIPT_TYPE_xxx constants
+     * @return an Iterable encapsulating the list of scripts contained
+     * in the project, using the specified filter.
+     */
     public Iterable<ScriptRunner> getScripts(int type)
     {
         ArrayList<ScriptRunner> output = new ArrayList<ScriptRunner>();
@@ -1507,6 +1724,10 @@ implements ModbusPalXML
     //
     //==========================================================================
 
+    /**
+     * Adds a ModbusPalListener to the list of listeners
+     * @param l the listener to add
+     */
     public void addModbusPalListener(ModbusPalListener l)
     {
         synchronized(listeners)
@@ -1518,6 +1739,10 @@ implements ModbusPalXML
         }
     }
 
+    /**
+     * Removes a ModbusPalListener from the list of listeners
+     * @param l the listener to remove
+     */
     public void removeModbusPalListener(ModbusPalListener l)
     {
         synchronized(listeners)
@@ -1529,6 +1754,10 @@ implements ModbusPalXML
         }
     }
 
+    /**
+     * Adds a ScriptListener to the list of listeners
+     * @param l the listener to add
+     */    
     public void addScriptListener(ScriptListener l)
     {
         synchronized(scriptListeners)
@@ -1540,6 +1769,10 @@ implements ModbusPalXML
         }
     }
 
+    /**
+     * Removes a ScriptListener from the list of listeners
+     * @param l the listener to remove
+     */
     public void removeScriptListener(ScriptListener l)
     {
         synchronized(scriptListeners)
@@ -1559,16 +1792,28 @@ implements ModbusPalXML
     //
     //==========================================================================
 
+    /**
+     * Enables or disables the "learn mode"
+     * @param en true to enable the "learn mode", false to disable it.
+     */
     public void setLearnModeEnabled(boolean en)
     {
         learnModeEnabled = en;
     }
 
+    /**
+     * Checks if the "learn mode" is enabled or disabled
+     * @return true if it is currently enabled, false otherwise.
+     */
     public boolean isLeanModeEnabled()
     {
         return learnModeEnabled;
     }
 
+    /**
+     * Triggers the ModbusPalListeners to notify them
+     * that a PDU was not serviced.
+     */
     public void notifyPDUnotServiced()
     {
         synchronized(listeners)
@@ -1580,6 +1825,10 @@ implements ModbusPalXML
         }
     }
 
+    /**
+     * Triggers the ModbusPalListeners to notify them
+     * that a PDU was processed.
+     */
     public void notifyPDUprocessed()
     {
         synchronized(listeners)
@@ -1591,6 +1840,11 @@ implements ModbusPalXML
         }
     }
 
+    /**
+     * Triggers the ModbusPalListeners to notify them
+     * that an exception reply has been sent instead
+     * of a normal reply.
+     */
     public void notifyExceptionResponse()
     {
         synchronized(listeners)
@@ -1607,7 +1861,7 @@ implements ModbusPalXML
      * @param slaveID
      * @param functionCode
      * @return
-     * @deprecated
+     * @deprecated this method was never implemented
      */
     @Deprecated
     public boolean isFunctionEnabled(int slaveID, byte functionCode)
@@ -1616,12 +1870,27 @@ implements ModbusPalXML
         return true;
     }
 
-
+    /**
+     * Optimize the DOM document (expected to contain modbuspal project
+     * information). 
+     * @param doc the DOM document to optimize
+     * @param fix if true, removes from the DOM document any faulty elements.
+     */
     public static void optimize(Document doc, boolean fix)
     {
         optimizeBindingsVsAutomations(doc,fix);
     }
 
+    /**
+     * this method will scan the content of the DOM document, which
+     * is expected to contain modbuspal project information. It will
+     * remove from the DOM document any automation that is not referenced
+     * by any binding. Then, if "fix" is true, it will removed any bindings
+     * that refer to an automation that is not defined in the DOM document.
+     * @param doc the DOM document to optimize
+     * @param fix if true, fix the DOM document by removing any binding
+     * refering to a non-existing automation.
+     */
     private static void optimizeBindingsVsAutomations(Document doc, boolean fix)
     {
         // get list of bindings:
@@ -1684,6 +1953,12 @@ implements ModbusPalXML
         }
     }
 
+    /**
+     * Returns the name of the project. Actually, the project
+     * is named after the file from which it has been loaded, or into
+     * which it has been saved.
+     * @return name of the project.
+     */
     public String getName()
     {
         if( projectFile==null )

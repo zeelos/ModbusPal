@@ -1,7 +1,8 @@
-ModbusPal v1.6 - beta release
+ModbusPal v1.6a - beta release
 
-This release of ModbusPal v1.6 is a beta version.
-The software is operational but not fully tested.
+This release of ModbusPal v1.6a is a release candidate version.
 
 Known limitations:
-- The documentation is incomplete
+- "Tuning" features are not documented yet
+- "Chart" feature is not documented yet
+- Javadoc very incomplete

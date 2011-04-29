@@ -28,11 +28,22 @@ public class ModbusSerialLink
 extends ModbusSlaveProcessor
 implements ModbusLink, Runnable, SerialPortEventListener
 {
+    /** identifier to specify that there is no parity for the serial communication */
     public static final int PARITY_NONE = 0;
+    
+    /** identifier to specify that the odd parity must be used for the serial communication */
     public static final int PARITY_ODD = 1;
+    
+    /** identifier to specify that the even parity must be used for the serial communication */
     public static final int PARITY_EVEN = 2;
+    
     private static ArrayList<CommPortIdentifier> commPorts = new ArrayList<CommPortIdentifier>();
 
+    /**
+     * This method will check that the specified com port actually exists.
+     * @param comId a string containing a COM port name.
+     * @return true if the COM port exists.
+     */
     public static boolean exists(String comId)
     {
         for(int i=0; i<commPorts.size(); i++)
@@ -46,6 +57,9 @@ implements ModbusLink, Runnable, SerialPortEventListener
         return false;
     }
 
+    /**
+     * 
+     */
     public static class CommPortList
     implements ComboBoxModel
     {
@@ -57,35 +71,48 @@ implements ModbusLink, Runnable, SerialPortEventListener
                 selectedItem = commPorts.get(0).getName();
             }
         }
+        @Override
         public int getSize() 
         {
             return commPorts.size();
         }
+        @Override
         public Object getElementAt(int index)
         {
             return commPorts.get(index).getName();
         }
+        @Override
         public void addListDataListener(ListDataListener l)
         {
         }
+        @Override
         public void removeListDataListener(ListDataListener l)
         {
         }
+        @Override
         public void setSelectedItem(Object anItem)
         {
             selectedItem = anItem;
         }
+        @Override
         public Object getSelectedItem()
         {
             return selectedItem;
         }
     }
 
+    /**
+     * Returns the list of available COM ports on the host system.
+     * @return list of available COM ports
+     */
     public static CommPortList getListOfCommPorts()
     {
         return new CommPortList();
     }
 
+    /**
+     * Setup the RXTX library and scan the available COM ports
+     */
     public static void install()
     {
         Enumeration portList = CommPortIdentifier.getPortIdentifiers();
@@ -110,6 +137,17 @@ implements ModbusLink, Runnable, SerialPortEventListener
     private int flowControl;
     private ModbusLinkListener listener = null;
 
+    /**
+     * Creates a new instance of ModbusSerialLink.
+     * @param mpp the modbuspal project that holds the slaves information
+     * @param index index of the COM port to sue for communication
+     * @param speed baudrate of the COM port
+     * @param parity parity of the communication
+     * @param xonxoff enables or disables XON/XOFF 
+     * @param rtscts enables or disables RTS/CTS
+     * @throws PortInUseException
+     * @throws ClassCastException 
+     */
     public ModbusSerialLink(ModbusPalProject mpp, int index, int speed, int parity, boolean xonxoff, boolean rtscts)
     throws PortInUseException, ClassCastException
     {
@@ -175,6 +213,7 @@ implements ModbusLink, Runnable, SerialPortEventListener
     }
 
 
+    @Override
     public void stop()
     {
         executeThread = false;
@@ -214,6 +253,7 @@ implements ModbusLink, Runnable, SerialPortEventListener
         }
     }
 
+    @Override
     public void serialEvent(SerialPortEvent arg0)
     {
         synchronized(input)
@@ -249,6 +289,7 @@ implements ModbusLink, Runnable, SerialPortEventListener
         return CRC;
     }
 
+    @Override
     public void run()
     {
         byte buffer[] = new byte[256];
@@ -336,6 +377,7 @@ implements ModbusLink, Runnable, SerialPortEventListener
 
 
 
+    @Override
     public void execute(ModbusRequest req)
     {
         throw new UnsupportedOperationException("Not supported yet.");

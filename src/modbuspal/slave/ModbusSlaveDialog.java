@@ -53,7 +53,7 @@ implements ModbusConst, ModbusSlaveListener
         modbusSlave = s;
         
         setTitle( String.valueOf(s.getSlaveId()) + ":" + s.getName() );
-        Image img = Toolkit.getDefaultToolkit().createImage( getClass().getResource("../main/img/icon32.png") );
+        Image img = Toolkit.getDefaultToolkit().createImage( getClass().getResource("/modbuspal/main/img/icon32.png") );
         setIconImage(img);
         
         modbusSlave.addModbusSlaveListener(this);

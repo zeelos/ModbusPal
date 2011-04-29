@@ -47,7 +47,10 @@ public class ModbusPalPane
 extends JPanel
 implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
 {
+    /** Name and version of this application */
     public static final String APP_STRING = "ModbusPal 1.6a";
+    
+    /** Base registry key for the configuration of the application. */
     public static final String BASE_REGISTRY_KEY = "modbuspal";
 
     private ArrayList<ModbusPalProjectListener> listeners = new ArrayList<ModbusPalProjectListener>();
@@ -272,7 +275,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
 
     }
 
-    private boolean verifyRXTX()
+    public static boolean verifyRXTX()
     {
         // try to load the CommPortVerifier class
         ClassLoader cl = ClassLoader.getSystemClassLoader();
@@ -287,13 +290,28 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         }
     }
 
-    private boolean verifyPython()
+    public static boolean verifyPython()
     {
         // try to load the CommPortVerifier class
         ClassLoader cl = ClassLoader.getSystemClassLoader();
         try
         {
             Class c = cl.loadClass("org.python.util.PythonInterpreter");
+            return true;
+        }
+        catch (ClassNotFoundException ex)
+        {
+            return false;
+        }
+    }
+
+    public static boolean verifyJFreeChart()
+    {
+        // try to load the CommPortVerifier class
+        ClassLoader cl = ClassLoader.getSystemClassLoader();
+        try
+        {
+            Class c = cl.loadClass("org.jfree.chart.JFreeChart");
             return true;
         }
         catch (ClassNotFoundException ex)

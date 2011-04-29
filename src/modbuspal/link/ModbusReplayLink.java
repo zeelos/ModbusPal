@@ -29,6 +29,11 @@ implements ModbusLink, Runnable
     private Thread serverThread;
     private ModbusLinkListener listener = null;
 
+    /**
+     * Creates a new instance of ModbusReplayLink.
+     * @param mpp the project this link should run
+     * @param source the file where the data to replay was recorded.
+     */
     public ModbusReplayLink(ModbusPalProject mpp, File source)
     {
         super(mpp);

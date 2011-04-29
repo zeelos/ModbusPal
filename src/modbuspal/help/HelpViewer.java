@@ -32,10 +32,10 @@ implements HyperlinkListener
     private final HashMap<String,HelpViewerPane> panes = new HashMap<String,HelpViewerPane>();
 
     /** Creates new form HelpViewer */
-    public HelpViewer() {
-
+    public HelpViewer() 
+    {
         initComponents();
-        Image img = Toolkit.getDefaultToolkit().createImage( getClass().getResource("../main/img/icon32.png") );
+        Image img = Toolkit.getDefaultToolkit().createImage( getClass().getResource("/modbuspal/main/img/icon32.png") );
         setIconImage(img);
 
         try

@@ -26,6 +26,12 @@ implements ModbusLink, Runnable
     private ModbusLinkListener listener = null;
     private final ModbusPalProject modbusPalProject;
 
+    /**
+     * Creates a new instance of ModbusTcpIpLink
+     * @param mpp the modbuspal project that holds MODBUS slaves information
+     * @param port the TCP port to listen to for incoming connections
+     * @throws IOException 
+     */
     public ModbusTcpIpLink(ModbusPalProject mpp, int port)
     throws IOException
     {

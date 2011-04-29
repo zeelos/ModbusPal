@@ -54,14 +54,17 @@ extends javax.swing.JDialog
     }
 */
 
-    /** Creates new form WorkInProgressDialog */
+    /** Creates new form WorkInProgressDialog 
+     * @param title Title of the dialog
+     * @param message message displayed inside the dialog
+     */
     public WorkInProgressDialog(String title, String message)
     {
         setModalityType(ModalityType.DOCUMENT_MODAL);
         setTitle(title);
         initComponents();
         messageLabel.setText(message);
-        Image img = Toolkit.getDefaultToolkit().createImage( getClass().getResource("img/icon32.png") );
+        Image img = Toolkit.getDefaultToolkit().createImage( getClass().getResource("/modbuspal/main/img/icon32.png") );
         setIconImage(img);
 
         //TODO: GUITools.align(parent, this);
