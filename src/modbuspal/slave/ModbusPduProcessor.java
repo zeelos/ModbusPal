@@ -40,6 +40,12 @@ extends Instantiable<ModbusPduProcessor>
      */
     public int processPDU(byte functionCode, int slaveID, byte[] buffer, int offset, boolean createIfNotExist);
 
+    /**
+     * Returns a JPanel that is designed to graphically reflect the settings
+     * of the PduProcessor. Those settings will be, most of the time, various
+     * values that will compose the reply to the request. 
+     * @return a JPanel to edit the settings of the PduProcessor
+     */
     public JPanel getPduPane();
 
     /**

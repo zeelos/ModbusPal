@@ -42,27 +42,6 @@ extends Generator
     }
 
     
-    /**
-     * The setIcon method has to be exposed with the "public" modifier,
-     * because Jython doesn't handle protected methods.
-     * @param iconUrl
-     */
-    /*@Override
-    public boolean setIcon(String iconUrl)
-    {
-        // try the standard method:
-        if( super.setIcon(iconUrl)==false )
-        {
-            // if standard method failed, try this
-            String fullpath = instanciator.getScriptFile().getAbsolutePath();
-            String filename = instanciator.getScriptFile().getName();
-            iconUrl = fullpath.replace(filename, iconUrl);
-            return super.setIcon(iconUrl);
-        }
-        return false;
-    }*/
-
-
     @Override
     public Generator newInstance()
     throws InstantiationException, IllegalAccessException
@@ -77,6 +56,12 @@ extends Generator
         saveSettings(out);
     }
 
+    /**
+     * @see #saveGeneratorSettings(java.io.OutputStream) 
+     * @param out the output stream where the settings must be saved
+     * @throws IOException
+     * @deprecated ambiguous name
+     */
     @Deprecated
     public void saveSettings(OutputStream out) throws IOException {
     }
@@ -86,6 +71,11 @@ extends Generator
         loadSettings(list);
     }
 
+    /**
+     * @see #loadGeneratorSettings(org.w3c.dom.NodeList) 
+     * @param list the nodes containing the settings to load
+     * @deprecated ambiguous name
+     */
     @Deprecated
     public void loadSettings(NodeList list) {
     }

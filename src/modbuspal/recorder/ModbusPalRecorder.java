@@ -24,16 +24,37 @@ public class ModbusPalRecorder
     private static ModbusPalRecorder uniqInst = new ModbusPalRecorder();
     private Date start = null;
 
+    /**
+     * Adds a record into the file. The record is marked as being "incoming",
+     * which means of type RECORD_IN.
+     * @param slaveID the slave number that is the target of the incoming request
+     * @param buffer buffer containing the incoming data (pdu request)
+     * @param offset offset where the actua data starts in the buffer
+     * @param pduLength the length of the incoming pdu
+     */
     public static void recordIncoming(int slaveID, byte[] buffer, int offset, int pduLength)
     {
         uniqInst.record("in", slaveID, buffer, offset, pduLength);
     }
 
+    
+    /**
+     * Adds a record into the file. The record is marked as being "incoming",
+     * which means of type RECORD_IN.
+     * @param slaveID the slave number that is the target of the incoming request
+     * @param buffer buffer containing the incoming data (pdu request)
+     * @param offset offset where the actua data starts in the buffer
+     * @param pduLength the length of the incoming pdu
+     */
     public static void recordOutgoing(int slaveID, byte[] buffer, int offset, int pduLength)
     {
         uniqInst.record("out", slaveID, buffer, offset, pduLength);
     }
 
+    /**
+     * Dummy function that ModbusPalPane will call to force the runtime
+     * to load this class.
+     */
     public static void touch()
     {
         return;
@@ -124,6 +145,12 @@ public class ModbusPalRecorder
     }
     */
 
+    /**
+     * Starts the recording of a session. This method will summon a FileChooser
+     * so that the user can specify the file where the data will be written.
+     * The actual recording only becomes effective after the file has been selected.
+     * @throws IOException 
+     */
     public static void start()
     throws IOException
     {
@@ -137,7 +164,10 @@ public class ModbusPalRecorder
         }
     }
 
-
+    /**
+     * Stops the recording.
+     * @throws IOException 
+     */
     public static void stop()
     throws IOException
     {

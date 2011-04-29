@@ -39,8 +39,21 @@ extends javax.swing.JDialog
 implements ScriptListener, FileTransferHandler.FileTransferTarget
 {
     private static final String REGISTRY_KEY = ModbusPalPane.BASE_REGISTRY_KEY + "/instanciators";
+    
+    /**
+     * identifies the tab where the "generator scripts" used to be
+     * @deprecated "generator scripts" do not exist anymore. check documentation.
+     */
+    @Deprecated
     public static final int TAB_GENERATORS = 2;
+    
+    /**
+     * identifies the tab where the "binding scripts" used to be
+     * @deprecated "binding scripts" do not exist anymore. check documentation.
+     */
+    @Deprecated
     public static final int TAB_BINDINGS = 3;
+    
     private ModbusPalProject modbusPalProject;
     
     /** Creates new form ScriptManagerDialog */
@@ -126,6 +139,13 @@ implements ScriptListener, FileTransferHandler.FileTransferTarget
     }//GEN-LAST:event_addScriptButtonActionPerformed
 
 
+    /**
+     * Displays a FileChoose to let the user select a script file.
+     * The directory is saved in the registry. The dialog in centered
+     * by reference to the component given in argument
+     * @param parent component that will give hints for centering the dialog
+     * @return the selected script file, or null
+     */
     public static File chooseScriptFile(Component parent)
     {
         // get last used directory
@@ -244,6 +264,11 @@ implements ScriptListener, FileTransferHandler.FileTransferTarget
         return true;
     }
 
+    /**
+     * TODO: get rid of this function. this class shall implement
+     * ModbusPalProjectListener instead
+     * @param mpp 
+     */
     public void setProject(ModbusPalProject mpp)
     {
         if( modbusPalProject!=null )

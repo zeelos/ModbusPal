@@ -35,7 +35,10 @@ implements ActionListener
         setIconImage(img);
     }
 
-    /** Creates new form ErrorMessage */
+    /** Creates new form ErrorMessage 
+     * @param nbButtons the number of buttons that will be created
+     * in the dialog
+     */
     public ErrorMessage(int nbButtons)
     {
         this();
@@ -44,6 +47,13 @@ implements ActionListener
     }
 
 
+    
+    /**
+     * Creates a new form ErrorMessage with only one
+     * button. The text of the button is provided by
+     * the "text" argument".
+     * @param text caption of the unique button of the dialog
+     */
     public ErrorMessage(String text)
     {
         this();
@@ -68,12 +78,22 @@ implements ActionListener
         pack();
     }
 
+    /**
+     * Appends some text to the current text displayed by the
+     * dialog.
+     * @param text the text to append to the existing text
+     */
     public void append(String text)
     {
         messageTextArea.append(text);
     }
 
-    public void setButton(int i, String text)
+    /**
+     * Defines the caption of the button of index "i".
+     * @param i the index of the button
+     * @param text the caption that the button must display
+     */
+    public final void setButton(int i, String text)
     {
         buttons[i].setText(text);
     }
@@ -114,6 +134,7 @@ implements ActionListener
     private javax.swing.JTextArea messageTextArea;
     // End of variables declaration//GEN-END:variables
 
+    @Override
     public void actionPerformed(ActionEvent e)
     {
         Object source = e.getSource();
@@ -127,6 +148,10 @@ implements ActionListener
         }
     }
 
+    /**
+     * return the index of the button that was clicked by the user.
+     * @return index of the clicked button. or -1 if no button was clicked.
+     */
     public int getButton()
     {
         return selectedButton;

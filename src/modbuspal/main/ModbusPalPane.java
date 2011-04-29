@@ -64,6 +64,10 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
     private HelpViewer helpViewer = null;
 
 
+    /**
+     * Adds a ModbusPalProjectListener listener to the list of listeners.
+     * @param l the listener to add
+     */
     public void addModbusPalProjectListener(ModbusPalProjectListener l)
     {
         if(listeners.contains(l)==false)
@@ -72,6 +76,10 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         }
     }
 
+    /**
+     * Removes a ModbusPalProjectListener from the list of listeners
+     * @param l the listener to remove
+     */
     public void removeModbusPalProjectListener(ModbusPalProjectListener l)
     {
         if(listeners.contains(l)==true)
@@ -82,6 +90,10 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
 
 
 
+    /**
+     * Defines the project that ModbusPal must execute.
+     * @param project the project to execute.
+     */
     public void setProject(ModbusPalProject project)
     {
         System.out.printf("Set project %s\r\n", project.getName());
@@ -275,6 +287,11 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
 
     }
 
+    /**
+     * Checks if 3rd-party RXTX library is available. It will
+     * try to load the "gnu.io.CommPortIdentifier" class.
+     * @return true if RXTX has been detected (the class could be loaded)
+     */
     public static boolean verifyRXTX()
     {
         // try to load the CommPortVerifier class
@@ -290,6 +307,11 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         }
     }
 
+    /**
+     * Checks if 3rd-party Jython library is available. It will
+     * try to load the "org.python.util.PythonInterpreter" class.
+     * @return true if Jython has been detected (the class could be loaded)
+     */
     public static boolean verifyPython()
     {
         // try to load the CommPortVerifier class
@@ -305,6 +327,11 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         }
     }
 
+    /**
+     * Checks if 3rd-party JFreeChart library is available. It will
+     * try to load the "org.jfree.chart.JFreeChart" class.
+     * @return true if JFreeChart has been detected (the class could be loaded)
+     */
     public static boolean verifyJFreeChart()
     {
         // try to load the CommPortVerifier class
@@ -382,20 +409,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
     }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -991,7 +1005,10 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         }
     }
 
-
+    /**
+     * Starts the currently selected link, as if the user has clicked
+     * on the "Run" button.
+     */
     public void startLink()
     {
         System.out.printf("[%s] Start link\r\n", modbusPalProject.getName());
@@ -1022,6 +1039,10 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
     }
 
 
+    /**
+     * Stops the currently running link, as if the user has clicked on the
+     * "Run" button.
+     */
     public void stopLink()
     {
         System.out.printf("[%s] Stop link\r\n", modbusPalProject.getName());
@@ -1127,6 +1148,20 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         }
 }//GEN-LAST:event_saveProjectButtonActionPerformed
 
+    /**
+     * This method will load the specified project file by creating a new
+     * ModbusPalProject instance, will set it as the current project by calling
+     * setProject(), and return it.
+     * This method is not used internally, but it is handy for the scripts.
+     * @param path complete pathname of the project file to load
+     * @return the instance of ModbusPalProject, created after the specified
+     * project file, that has been set as the current project.
+     * @throws ParserConfigurationException
+     * @throws SAXException
+     * @throws IOException
+     * @throws InstantiationException
+     * @throws IllegalAccessException 
+     */
     public ModbusPalProject loadProject(String path)
     throws ParserConfigurationException, SAXException, IOException, InstantiationException, IllegalAccessException
     {
@@ -1217,6 +1252,11 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         }
 }//GEN-LAST:event_masterToggleButtonActionPerformed
 
+    /**
+     * Enables or disables the specified slave.
+     * @param id the MODBUS id of the slave
+     * @param enabled true to enable the slave, false to disable it
+     */
     public void setModbusSlaveEnabled(int id, boolean enabled)
     {
         ModbusSlave slave = modbusPalProject.getModbusSlave(id);
@@ -1261,6 +1301,9 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         stopAllAutomations();
     }//GEN-LAST:event_stopAllAutomationsButtonActionPerformed
 
+    /**
+     * Starts all the automations of the project
+     */
     public void startAllAutomations()
     {
         System.out.printf("[%s] Start all automations\r\n", modbusPalProject.getName());
@@ -1271,6 +1314,9 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         }
     }
 
+    /**
+     * Stops all the automations of the project
+     */
     public void stopAllAutomations()
     {
         System.out.printf("[%s] Stop all automations\r\n", modbusPalProject.getName());
@@ -1415,6 +1461,9 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
     }//GEN-LAST:event_jButton1ActionPerformed
 
 
+    /**
+     * Starts all automations and starts the currently selected link
+     */
     public void startAll()
     {
         System.out.printf("[%s] Start everything\r\n",modbusPalProject.getName());
@@ -1422,6 +1471,9 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         startLink();
     }
 
+    /**
+     * Stops all the automations and stops the currently running link
+     */
     public void stopAll()
     {
         stopLink();
@@ -1644,6 +1696,11 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
 
 
 
+    /**
+     * This method must be called when the instance of ModbusPalPane is
+     * disposed of, because it will do some cleaning:
+     * - stopping the running threads (automations, link)
+     */
     public void exit()
     {
         stopAll();
@@ -1658,12 +1715,21 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         // close all windows
     }
 
+    /**
+     * @see #showScrpitManagerDialog()
+     * @param tabIndex the index of the tab to display
+     * @deprecated tabIndex is ignored. now there is only one list of scripts
+     */
     @Deprecated
     public void showScriptManagerDialog(int tabIndex)
     {
         showScriptManagerDialog();
     }
 
+    /**
+     * Summons the Script Manager Dialog, as if the user has just
+     * clicked on the "Script" button.
+     */
     public void showScriptManagerDialog()
     {
         scriptManagerDialog.setModalExclusionType(ModalExclusionType.APPLICATION_EXCLUDE);
@@ -1671,12 +1737,21 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         scriptsToggleButton.setSelected(true);
     }
 
-    public ModbusPalProject getProject()
+    /**
+     * Gets the ModbusPalProject currently being managed by this ModbusPalPane.
+     * @return the current ModbusPalPane
+     */public ModbusPalProject getProject()
     {
         return modbusPalProject;
     }
 
-    public void setSlavesListVisible(boolean b) {
+    /**
+      * Shows or hides the the Slaves list. Some applications that embbeds 
+      * ModbusPal might find it nice to hide this list.
+      * @param b true to show the slaves list. false to hide it.
+      */
+    public void setSlavesListVisible(boolean b) 
+    {
         slavesListView.setVisible(b);
     }
 

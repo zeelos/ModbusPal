@@ -64,13 +64,18 @@ public class ModbusPalGui
 
 
 
-
+    /**
+     * A JinternalFrame that contains a ModbusPalPane.
+     */
     public static class ModbusPalInternalFrame
     extends JInternalFrame
     implements InternalFrameListener
     {
         final ModbusPalPane modbusPal;
 
+        /**
+         * Creates a new instance of ModbusPalInternalFrame
+         */
         public ModbusPalInternalFrame()
         {
             setTitle(ModbusPalPane.APP_STRING);
@@ -119,12 +124,17 @@ public class ModbusPalGui
         }
     }
 
-
+    /**
+     * A JFrame with a ModbusPalPane inside
+     */
     public static class ModbusPalFrame
     extends JFrame
     {
         final ModbusPalPane modbusPal;
 
+        /**
+         * Creates a new instance of ModbusPalFrame
+         */
         public ModbusPalFrame()
         {
             setTitle(ModbusPalPane.APP_STRING);
@@ -145,24 +155,48 @@ public class ModbusPalGui
     }
 
 
+    /**
+     * Creates a ModbusPalFrame. The internal
+     * console of ModbusPal is enabled.
+     * @return a new ModbusPalFrame
+     */
     public static JFrame newFrame()
     {
         ModbusPalFrame frame = new ModbusPalFrame();
         return frame;
     }
 
+    /**
+     * Creates a ModbusPalInternalFrame. The internal
+     * console of ModbusPal is enabled.
+     * @return a new ModbusPalInternalFrame
+     */
     public static JInternalFrame newInternalFrame()
     {
         ModbusPalInternalFrame iframe = new ModbusPalInternalFrame();
         return iframe;
     }
 
+    /**
+     * Creates a ModbusPalPane instance. The internal
+     * console of ModbusPal is disabled.
+     * @return a new ModbusPalPane instance
+     */
     public static ModbusPalPane newInstance()
     {
         return new ModbusPalPane(false);
     }
 
 
+    /** 
+     * Returns a ModbusPalPane instance that is associated with
+     * the specified key, as in a HashMap. If there is no ModusPalPane
+     * associated with that key, a new one is created. Otherwise, the existing
+     * one is returned
+     * @param key any object that can be used to uniquely identified a particular
+     * ModbusPalPane instance. usually a String.
+     * @return The ModbusPalPane instance identified by the key
+     */
     public static ModbusPalPane getInstance(Object key)
     {
         if( key==null )

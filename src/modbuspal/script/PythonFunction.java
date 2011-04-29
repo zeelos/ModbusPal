@@ -67,6 +67,12 @@ implements ModbusPduProcessor
         saveSettings(out);
     }
 
+    /**
+     * @see #savePduProcessorSettings(java.io.OutputStream) 
+     * @param out the output stream where the settings must be saved
+     * @throws IOException
+     * @deprecated ambiguous name
+     */
     @Deprecated
     public void saveSettings(OutputStream out) throws IOException {
     }
@@ -76,7 +82,11 @@ implements ModbusPduProcessor
         loadSettings(list);
     }
 
-
+  /**
+     * @see #loadPduProcessorSettings(org.w3c.dom.NodeList) 
+     * @param list the nodes containing the settings to load
+     * @deprecated ambiguous name
+     */
     @Deprecated
     public void loadSettings(NodeList list) {
     }

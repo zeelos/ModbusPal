@@ -144,6 +144,11 @@ implements LayoutManager2
         //parent.setSize( (int)maxWidth+2*borderThickness, (int)currentHeight);
     }
 
+    /**
+     * Swaps two components in the list, identified by their indexes.
+     * @param i1 the index of the first component involved in the swap
+     * @param i2 the index of the second component involved in the swap
+     */
     public void swapComponents(int i1, int i2)
     {
         Component comp1 = indexedList[i1];
@@ -152,6 +157,11 @@ implements LayoutManager2
         indexedList[i1] = comp2;
     }
 
+    /**
+     * Swaps two components in the list
+     * @param r1 the first component involved in the swap
+     * @param r2 the second component involved in the swap
+     */
     public void swapComponents(Component r1, Component r2)
     {
         int i1 = indexOf(r1);
@@ -193,6 +203,12 @@ implements LayoutManager2
         return(-1);
     }
 
+    /**
+     * Gets the component in the layout that has the specified index
+     * in the list
+     * @param index index of the component to return
+     * @return the component at the specified index
+     */
     public Component getComponent(int index)
     {
         return indexedList[index];

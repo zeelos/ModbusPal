@@ -29,8 +29,19 @@ public class FileTransferHandler
 extends TransferHandler
 implements DropTargetListener
 {
+    /**
+     * interface that a Component should implement to 
+     * import files from a drag and drop operation involving
+     * the FileTransferHandler class.
+     */
     public interface FileTransferTarget
     {
+        /**
+         * Import the files from  the current drag and drop gesture.
+         * @param target component where the files were dropped
+         * @param files list of the files dropped on the component
+         * @return true if import successful.
+         */
         public boolean importFiles(Component target, List<File> files);
     }
     

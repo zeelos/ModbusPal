@@ -89,7 +89,9 @@ extends javax.swing.JDialog
     }
 
 
-    /** Creates new form AppConsole */
+    /** Creates new form AppConsole
+     * @throws IOException 
+     */
     public AppConsole() throws IOException
     {
         super();
