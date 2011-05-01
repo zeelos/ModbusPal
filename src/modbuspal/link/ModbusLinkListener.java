@@ -6,7 +6,7 @@
 package modbuspal.link;
 
 /**
- *
+ * objects interested in events from a ModbusLink must implement this interface
  * @author nnovic
  */
 public interface ModbusLinkListener

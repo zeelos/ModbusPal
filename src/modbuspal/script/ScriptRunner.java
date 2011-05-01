@@ -22,6 +22,7 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 
 /**
+ * an object encapsulating the script file
  * @author nnovic
  */
 public class ScriptRunner
@@ -36,6 +37,18 @@ implements ModbusPalXML
 
     private static final String SCRIPT_UPDATED_COMMENT ="#---Added by MODBUSPAL, please do not remove---";
     
+    /**
+     * Creates a ScriptRunner instance by analyzing the settings provided in
+     * the DOM node. If the script type cannot be determined from
+     * the settings, "ON DEMAND" is used as a default value.
+     * @param node the DOM node from which the settings must be loaded
+     * @param mpp the modbuspal project that is currently running
+     * @param projectFile the file associated with the modbuspal project, necessary
+     * to resolve relative paths.
+     * @param promptUser if true, when the script cannot be found then a dialog
+     * will appear to let the user locate the missing script.
+     * @return A ScriptRunner object encapsulating the script.
+     */    
     public static ScriptRunner create(Node node, ModbusPalProject mpp, File projectFile, boolean promptUser)
     {
         return create(node,mpp,projectFile,promptUser,SCRIPT_TYPE_ON_DEMAND);
@@ -71,6 +84,19 @@ implements ModbusPalXML
         }
     }
 
+    /**
+     * Creates a ScriptRunner instance by analyzing the settings provided in
+     * the DOM node.
+     * @param node the DOM node from which the settings must be loaded
+     * @param mpp the modbuspal project that is currently running
+     * @param projectFile the file associated with the modbuspal project, necessary
+     * to resolve relative paths.
+     * @param promptUser if true, when the script cannot be found then a dialog
+     * will appear to let the user locate the missing script.
+     * @param assumedScriptType if the script type cannot be determined from
+     * the settings, that this type will be used as a default value.
+     * @return A ScriptRunner object encapsulating the script.
+     */
     public static ScriptRunner create(Node node, ModbusPalProject mpp, File projectFile, boolean promptUser, int assumedScriptType)
     {
         File scriptFile = null;
@@ -147,11 +173,28 @@ implements ModbusPalXML
 
     }
 
+    /**
+     * Encapsulates the specified script file into a ScriptRunner object.
+     * The resulting ScriptRunner is not associated with the current
+     * ModbusPal project.
+     * @param scriptFile the script file to load
+     * @return an object encapsulating the script file
+     */
     public static ScriptRunner create(File scriptFile)
     {
         return create(null, scriptFile, SCRIPT_TYPE_ON_DEMAND);
     }
     
+    /**
+     * Creates a ScriptRunner object to encapsulate the specified script file.
+     * The ScriptRunner is associated with the specified mobuspal project,
+     * which means that it will be listed in the Script Manager dialog.
+     * @param mpp the modbuspal project
+     * @param file the script file
+     * @param type the script type. one of SCRIPT_TYPE_ON_DEMAND,
+     * SCRIPT_TYPE_BEFORE_INIT or SCRIPT_TYPE_AFTER_INIT.
+     * @return an object encapsulating the script file
+     */
     public static ScriptRunner create(ModbusPalProject mpp, File file, int type)
     {
         String extension = FileTools.getExtension(file);
@@ -174,7 +217,14 @@ implements ModbusPalXML
     private int scriptType;
 
     
-    public ScriptRunner(ModbusPalProject mpp, File file, int type)
+    /**
+     * Creates a new ScriptRunner instance, associated with the specified
+     * modbuspal project, script file, and script type.
+     * @param mpp the modbuspal project
+     * @param file the script file
+     * @param type the script type
+     */
+    ScriptRunner(ModbusPalProject mpp, File file, int type)
     {
         modbusPalProject = mpp;
         scriptFile = file;
@@ -182,7 +232,14 @@ implements ModbusPalXML
     }
 
 
-
+    /**
+     * Saves the settings of this script into the output stream, in XML format.
+     * @param out output file where to write into
+     * @param projectFile the project file associated with the output stream. It
+     * is necessary so that the path of this script can be saved relatively to
+     * the path of the project file.
+     * @throws IOException 
+     */
     public void save(OutputStream out, File projectFile)
     throws IOException
     {
@@ -256,6 +313,9 @@ implements ModbusPalXML
         pi.set("ModbusPal", modbusPalProject);
     }
 
+    /**
+     * Executes this script.
+     */
     public void execute()
     {
         FileInputStream in = null;
@@ -286,11 +346,21 @@ implements ModbusPalXML
     }
 
 
+    /**
+     * Gets the file extension of the script file, which serves to identify the
+     * language in which it is written. Currently, only Python is supported.
+     * @return "py", the standard extension for Python scripts.
+     */
     public String getFileExtension()
     {
         return "py";
     }
 
+    /**
+     * Gets the name of the script. It actually is the filename without the
+     * file extension. 
+     * @return The name of the script?.
+     */
     public String getName()
     {
         String filename = scriptFile.getName();
@@ -310,32 +380,59 @@ implements ModbusPalXML
     }
 
 
+    /**
+     * Returns the full pathname of the script file.
+     * @return the pathname of the script file.
+     */
     public String getPath()
     {
         return scriptFile.getPath();
     }
 
+    /**
+     * Requests that the script is interrupted if its currently running.
+     * Not implemented yet, this method does nothing.
+     */
     public void interrupt()
     {
         
     }
 
+    /**
+     * Gets the current type of the script.
+     * @return the current type of the script
+     */
     public int getType()
     {
         return scriptType;
     }
 
+    /**
+     * Defines the type of the script. One of SCRIPT_TYPE_ON_DEMAND,
+     * SCRIPT_TYPE_AFTER_INIT or SCRIPT_TYPE_BEFORE_INIT
+     * @param type the new script type.
+     */
     public void setType(int type)
     {
         scriptType = type;
     }
 
 
+    /**
+     * Returns the file from which this script was loaded.
+     * @return the script file
+     */
     public File getScriptFile()
     {
         return scriptFile;
     }
 
+    /**
+     * ModbusPal will call this method when loading a script this is referenced
+     * in the old way as a "binding script". The script will be updated: the 
+     * binding class will be instanciated and then registered with the
+     * ModbusPalProject#addBindingInstantiator() method.
+     */
     public void updateForOldBindings()
     {
         try
@@ -363,6 +460,12 @@ implements ModbusPalXML
         }
     }
 
+    /**
+     * ModbusPal will call this method when loading a script this is referenced
+     * in the old way as a "generator script". The script will be updated: the 
+     * generator class will be instanciated and then registered with the
+     * ModbusPalProject#addGeneratorInstantiator() method.
+     */
     public void updateForOldGenerators()
     {
         try

@@ -10,12 +10,15 @@ import modbuspal.link.ModbusSlaveProcessor;
 import modbuspal.toolkit.ModbusTools;
 
 /**
- *
+ * Storage for the coils of a modbus slave
  * @author nnovic
  */
 public class ModbusCoils
 extends ModbusRegisters
 {
+    /**
+     * Creates a new instance of ModbusCoils
+     */
     public ModbusCoils()
     {
         super();

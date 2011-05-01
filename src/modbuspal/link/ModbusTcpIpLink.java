@@ -14,7 +14,7 @@ import modbuspal.main.ModbusPalProject;
 import modbuspal.main.ModbusRequest;
 
 /**
- *
+ * This link waits for incoming requests on a particular TCP port
  * @author nnovic
  */
 public class ModbusTcpIpLink

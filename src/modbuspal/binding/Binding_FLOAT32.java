@@ -6,7 +6,7 @@
 package modbuspal.binding;
 
 /**
- *
+ * The FLOAT32 binding class
  * @author nnovic
  */
 public class Binding_FLOAT32

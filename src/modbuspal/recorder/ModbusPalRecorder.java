@@ -15,7 +15,7 @@ import modbuspal.toolkit.HexaTools;
 import modbuspal.toolkit.XFileChooser;
 
 /**
- *
+ * Records incoming and outgoing data
  * @author nnovic
  */
 public class ModbusPalRecorder

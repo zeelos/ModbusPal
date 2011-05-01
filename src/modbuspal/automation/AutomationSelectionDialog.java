@@ -15,8 +15,8 @@ import java.awt.Image;
 import java.awt.Toolkit;
 
 /**
- *
- * @author avincon
+ * A dialog for the user to select an automation from a list
+ * @author nnovic
  */
 public class AutomationSelectionDialog
 extends javax.swing.JDialog

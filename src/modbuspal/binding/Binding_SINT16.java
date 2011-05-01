@@ -6,7 +6,7 @@
 package modbuspal.binding;
 
 /**
- *
+ * The SINT16 binding class
  * @author nnovic
  */
 public class Binding_SINT16

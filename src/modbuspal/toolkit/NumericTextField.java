@@ -12,52 +12,88 @@ import javax.swing.text.Document;
 import javax.swing.text.PlainDocument;
 
 /**
- *
+ * a textfield that only accepts numeric values
  * @author nnovic
  */
 public class NumericTextField
 extends JTextField
 {
+    /**
+     * Creates a new instance of NumericTextField without
+     * an initial value
+     */
     public NumericTextField()
     {
 
     }
 
+    /**
+     * Creates a new instance of NumericTextField.
+     * @param value the initial value
+     */
     public NumericTextField(int value)
     {
         setText( String.valueOf(value) );
     }
 
+    /**
+     * Creates a new instance of NumericTextField.
+     * @param value the initial value
+     */
     public NumericTextField(double value)
     {
         setText( String.valueOf(value) );
     }
 
+    /**
+     * Gets the value as an Integer.
+     * @return the value as an Integer
+     */
     public int getInteger()
     {
         return (int)getDouble();
     }
 
+    /**
+     * Gets the value as a Long.
+     * @return the value as a Long
+     */
     public long getLong()
     {
         return (long)getDouble();
     }
 
+    /**
+     * Sets the value of the text field
+     * @param i the value
+     */
     public void setValue(int i)
     {
         setText( String.valueOf(i) );
     }
 
+    /**
+     * Sets the value of the text field
+     * @param i the value
+     */
     public void setValue(long i)
     {
         setText( String.valueOf(i) );
     }
 
+    /**
+     * Sets the value of the text field
+     * @param d the value
+     */
     public void setValue(double d)
     {
         setText( String.valueOf(d) );
     }
 
+    /**
+     * Gets the value as a Double.
+     * @return the value as a Double
+     */
     public double getDouble()
     {
         String txt = getText();

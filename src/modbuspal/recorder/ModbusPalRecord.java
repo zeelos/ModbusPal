@@ -29,6 +29,12 @@ public class ModbusPalRecord
     private int recordDataLength = 0;
 
     
+    /**
+     * Creates a new record, with the data provided in argument.
+     * The object will parse the String in order to extract the meaningful
+     * data.
+     * @param line entry from the record file, containing the data of ther record.
+     */
     public ModbusPalRecord(String line)
     {
         line = line.trim();

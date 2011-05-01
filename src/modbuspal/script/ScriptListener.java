@@ -6,7 +6,8 @@
 package modbuspal.script;
 
 /**
- *
+ * objects interested in receiving notifications about scripts
+ * must implement this interface
  * @author nnovic
  */
 public interface ScriptListener

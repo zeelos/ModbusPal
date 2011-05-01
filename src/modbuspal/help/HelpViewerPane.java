@@ -17,8 +17,8 @@ import javax.swing.JEditorPane;
 import javax.swing.event.HyperlinkListener;
 
 /**
- *
- * @author avincon
+ * A very basic HTMl renderer for browsing the help of modbuspal
+ * @author nnovic
  */
 public class HelpViewerPane
 extends javax.swing.JPanel

@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.net.URI;
 
 /**
- *
+ * various file-related utilities
  * @author nnovic
  */
 public class FileTools
@@ -51,13 +51,32 @@ public class FileTools
     }
 
 
-
+    /**
+     * Creates an absolute path name for the "target" file. The "target" file
+     * is a relative path, and it is made absolute by resolving the "target" relative
+     * path against the "reference" absolute path.
+     * @param reference a file with absolute path that is the root for building
+     * an absolute pathname for "target"
+     * @param target a file with a relative path.
+     * @return a string containing the absolute pathname for "target", using
+     * "reference" as the root directory.
+     */
     public static String makeAbsolute(File reference, File target)
     {
         return makeAbsolute(reference, target.getPath() );
     }
 
 
+    /**
+     * Creates an absolute path name for the "target" file. The "target" string
+     * is a relative path, and it is made absolute by resolving the "target" relative
+     * path against the "reference" absolute path.
+     * @param reference a file with absolute path that is the root for building
+     * an absolute pathname for "target"
+     * @param target a string with a relative path.
+     * @return a string containing the absolute pathname for "target", using
+     * "reference" as the root directory.
+     */
     public static String makeAbsolute(File reference, String target)
     {
         // if reference is a file, extract the directory of that file:
@@ -86,6 +105,13 @@ public class FileTools
     }
 
 
+    /**
+     * This method will return the path of "target" relatively to "reference".
+     * @param reference the reference 
+     * @param target the file for which a relative path is requested
+     * @return a string containing the relative path of target in comparison
+     * with reference.
+     */
     public static String makeRelative(File reference, File target)
     {
         // if reference is a file, extract the directory of that file:
@@ -112,6 +138,13 @@ public class FileTools
         return result.getPath();
     }
 
+    /**
+     * Appends the provided string into the specified file, by creating
+     * a temporary FileWriter. 
+     * @param file the file to write into
+     * @param s the string to write into the file
+     * @throws IOException 
+     */
     public static void append(File file, String s)
     throws IOException
     {
@@ -120,6 +153,14 @@ public class FileTools
         fw.close();
     }
 
+    /**
+     * Scans the content of a file and look for the specified string.
+     * @param file the file to scan
+     * @param line the string to look for
+     * @return true if the string was found in the file. false otherwise
+     * @throws FileNotFoundException
+     * @throws IOException 
+     */
     public static boolean containsLine(File file, String line)
     throws FileNotFoundException, IOException
     {

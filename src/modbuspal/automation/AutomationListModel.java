@@ -14,8 +14,8 @@ import javax.swing.event.ListDataListener;
 import modbuspal.main.ModbusPalProject;
 
 /**
- *
- * @author avincon
+ * Defines a list of automations
+ * @author nnovic
  */
 public class AutomationListModel
 implements ListModel, ComboBoxModel

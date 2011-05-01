@@ -12,13 +12,19 @@ import java.net.URL;
 import java.net.URLClassLoader;
 
 /**
- *
+ * tools for adding files and directories dynamically to the classpath
  * @author Antony Miguel aem@themoog.net
  */
 public class ClassPathHacker
 {
     private static final Class[] parameters = new Class[]{URL.class};
 
+    /**
+     * Adds a file (usually a JAR file then) or a directory to the classpath
+     * of the java virtual machine running the application.
+     * @param s the full path and name of the file or directory to add into the classpath
+     * @throws IOException 
+     */
     public static void addFile(String s)
     throws IOException
     {
@@ -26,13 +32,24 @@ public class ClassPathHacker
 	addFile(f);
     }
 
+    /**
+     * Adds a file (usually a JAR file then) or a directory to the classpath
+     * of the java virtual machine running the application.
+     * @param f the file or directory to add into the classpath
+     * @throws IOException 
+     */
     public static void addFile(File f)
     throws IOException
     {
 	addURL(f.toURI().toURL());
     }
 
-
+    /**
+     * Adds a file (usually a JAR file then) or a directory to the classpath
+     * of the java virtual machine running the application.
+     * @param u the url of the file or directory to add into the classpath
+     * @throws IOException 
+     */
     public static void addURL(URL u)
     throws IOException
     {

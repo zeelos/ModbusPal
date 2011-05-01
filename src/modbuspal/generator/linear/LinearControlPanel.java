@@ -12,7 +12,7 @@
 package modbuspal.generator.linear;
 
 /**
- *
+ * the control panel for the linear generator
  * @author nnovic
  */
 public class LinearControlPanel

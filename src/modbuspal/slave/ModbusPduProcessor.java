@@ -12,7 +12,8 @@ import modbuspal.instanciator.Instantiable;
 import org.w3c.dom.NodeList;
 
 /**
- *
+ * The interface that a class must implement in order to
+ * create a new modbus function manager
  * @author nnovic
  */
 public interface ModbusPduProcessor

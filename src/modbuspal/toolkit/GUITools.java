@@ -15,11 +15,19 @@ import javax.swing.JFileChooser;
 import modbuspal.main.ErrorMessage;
 
 /**
- *
+ * various tools for Swing
  * @author nnovic
  */
 public class GUITools
 {
+    
+    /**
+     * Calls the setEnabled() method of the specified component. Then, if the
+     * component is actually a Container, this method will descend into the
+     * container's hierarchy to do the same recursively on all the children.
+     * @param comp the component to enable or disabled
+     * @param b true to enable, false to disable
+     */
     public static void setAllEnabled(Component comp, boolean b)
     {
         comp.setEnabled(b);
@@ -51,6 +59,13 @@ public class GUITools
         child.setLocation(p.x+w/2, p.y+h/2);
     }
 
+    /**
+     * Searches up all the parents of the specifed component until a Frame
+     * is found and returns null. If the root component is reached and no Frame was found,
+     * returns nulls.
+     * @param c the component for which a Frame must be searched
+     * @return the parent Frame or null.
+     */
     public static Frame findFrame(Component c)
     {
         while( c!=null )
@@ -65,6 +80,14 @@ public class GUITools
     }
 
 
+    /**
+     * Displays a dialog warning the user that a required file was not found
+     * at the excepted location. The user has the possibility to ignore the
+     * warning, or to open a FileChooser to locate the file manually.
+     * @param parent the parent of the dialogs
+     * @param f the missing file
+     * @return the replacement file selected by the user, or null.
+     */
     public static File promptUserFileNotFound(Component parent, File f)
     {
         ErrorMessage msg = new ErrorMessage(2);

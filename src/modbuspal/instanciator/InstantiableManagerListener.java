@@ -6,7 +6,8 @@
 package modbuspal.instanciator;
 
 /**
- *
+ * object interseted in notifications from an InstantiableManager must
+ * implement this interface
  * @author nnovic
  */
 public interface InstantiableManagerListener

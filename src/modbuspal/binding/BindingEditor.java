@@ -27,7 +27,8 @@ import modbuspal.main.ModbusPalPane;
 import modbuspal.main.ModbusPalProject;
 
 /**
- *
+ * dialog in which the user specifies which automation and which binding class
+ * to associate to a register or coil.
  * @author nnovic
  */
 public class BindingEditor

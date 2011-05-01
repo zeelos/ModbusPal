@@ -6,7 +6,8 @@
 package modbuspal.automation;
 
 /**
- *
+ * An automation that does nothing, to be used when the binding
+ * does the job a generating values.
  * @author nnovic
  */
 public class NullAutomation

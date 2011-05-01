@@ -17,7 +17,7 @@ import modbuspal.main.ModbusPalProject;
 import modbuspal.toolkit.ModbusTools;
 
 /**
- *
+ * Processes an incoming tcp/ip connection received by the ModbusTcpIpLink
  * @author nnovic
  */
 public class ModbusTcpIpSlaveDispatcher

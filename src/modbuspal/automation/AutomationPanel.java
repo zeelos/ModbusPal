@@ -22,7 +22,7 @@ import modbuspal.generator.Generator;
 import modbuspal.instanciator.InstantiableManager;
 
 /**
- *
+ * Represents the automation in the main interface
  * @author nnovic
  */
 public class AutomationPanel

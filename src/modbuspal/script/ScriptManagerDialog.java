@@ -31,7 +31,7 @@ import modbuspal.toolkit.FileTransferHandler;
 
 
 /**
- *
+ * the dialog displaying the list of scripts defined in the project
  * @author nnovic
  */
 public class ScriptManagerDialog

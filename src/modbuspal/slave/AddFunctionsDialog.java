@@ -23,7 +23,8 @@ import javax.swing.DefaultComboBoxModel;
 import modbuspal.instanciator.InstantiableManager;
 
 /**
- *
+ * the dialog where the user selects a ModbusPduProcessor to associate with
+ * a function code
  * @author nnovic
  */
 public class AddFunctionsDialog
@@ -94,7 +95,11 @@ extends javax.swing.JDialog
         }
     }
 
-    /** Creates new form AddFunctionsDialog */
+    /** Creates new form AddFunctionsDialog 
+     * @param parent the parent frame
+     * @param ff the library of instantiable ModbusPduProcessors
+     * @param slave the modbus slave into which the function will be added
+     */
     public AddFunctionsDialog(Frame parent, InstantiableManager<ModbusPduProcessor> ff, ModbusSlave slave)
     {
         super(parent, true);

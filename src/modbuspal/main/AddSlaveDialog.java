@@ -15,7 +15,7 @@ import modbuspal.slave.*;
 import javax.swing.DefaultListModel;
 
 /**
- *
+ * a dialog in which the user defines new modbus slave to add into the project
  * @author nnovic
  */
 public class AddSlaveDialog

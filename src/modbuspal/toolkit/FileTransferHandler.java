@@ -22,7 +22,7 @@ import java.util.logging.Logger;
 import javax.swing.TransferHandler;
 
 /**
- *
+ * a ready-to-use file drag and drop support
  * @author nnovic
  */
 public class FileTransferHandler
@@ -49,11 +49,21 @@ implements DropTargetListener
     private FileTransferTarget target;
     private boolean allowMultipleFiles = true;
 
+    /**
+     * Creates a new FileTransferHandler.
+     * @param obj  the object that will process the importing of the files
+     * when the drag and drop succeeds.
+     */
     public FileTransferHandler(FileTransferTarget obj)
     {
         target = obj;
     }
 
+    /**
+     * Specifies if multiple files are supported for the drag and drop operation.
+     * The default is yes. 
+     * @param enable true to allow multiple files, false to forbid it.
+     */
     public void allowMultipleFiles(boolean enable)
     {
         allowMultipleFiles = enable;
@@ -124,6 +134,7 @@ implements DropTargetListener
         return target.importFiles(comp,files);
     }
 
+    @Override
     public void dragEnter(DropTargetDragEvent dtde)
     {
         // can import data ?
@@ -137,6 +148,7 @@ implements DropTargetListener
         }
     }
 
+    @Override
     public void dragOver(DropTargetDragEvent dtde)
     {
         // can import data ?
@@ -150,14 +162,17 @@ implements DropTargetListener
         }
     }
 
+    @Override
     public void dropActionChanged(DropTargetDragEvent dtde)
     {
     }
 
+    @Override
     public void dragExit(DropTargetEvent dte)
     {
     }
 
+    @Override
     public void drop(DropTargetDropEvent dtde)
     {
         dtde.acceptDrop( DnDConstants.ACTION_COPY );

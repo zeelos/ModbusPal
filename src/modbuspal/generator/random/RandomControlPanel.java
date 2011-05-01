@@ -12,7 +12,7 @@
 package modbuspal.generator.random;
 
 /**
- *
+ * the control panel for the random generator
  * @author nnovic
  */
 public class RandomControlPanel

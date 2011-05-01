@@ -21,7 +21,7 @@ import modbuspal.main.ModbusRequest;
 import modbuspal.toolkit.ModbusTools;
 
 /**
- *
+ * The serial link waits for incoming requests from a COM port
  * @author nnovic
  */
 public class ModbusSerialLink

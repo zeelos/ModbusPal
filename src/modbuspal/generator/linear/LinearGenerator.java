@@ -14,7 +14,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- *
+ * The Linear generator
  * @author nnovic
  */
 public class LinearGenerator

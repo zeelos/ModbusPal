@@ -15,7 +15,7 @@ import modbuspal.slave.ModbusSlave;
 
 
 /**
- *
+ * the abstract class for processing incoming PDU 
  * @author nnovic
  */
 public abstract class ModbusSlaveProcessor

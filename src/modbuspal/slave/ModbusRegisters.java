@@ -26,7 +26,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 /**
- *
+ * Storage for the holding registers of a modbus slave
  * @author nnovic
  */
 public class ModbusRegisters
@@ -48,18 +48,27 @@ implements ModbusPduProcessor, TableModel, ModbusPalXML, ModbusConst
         }
     }
 
+    /** name of the column displaying the address of the registers in the TableModel. */
     public static final String ADDRESS_COLUMN_NAME = "Address";
-
+    
+    /** index of the column displaying the address of the registers in the TableModel. */
     public static final int ADDRESS_COLUMN_INDEX = 0;
+    
+    /** index of the column displaying the value of the registers in the TableModel. */
     public static final int VALUE_COLUMN_INDEX = 1;
+    
+    /** index of the column displaying the name of the registers in the TableModel. */
     public static final int NAME_COLUMN_INDEX = 2;
+    
+    /** index of the column displaying the binding of the registers in the TableModel. */
     public static final int BINDING_COLUMN_INDEX = 3;
 
+    /** defines how should be called a single value from the TableModel. */
     protected String TXT_REGISTER = "register";
+    
+    /** defines the plural form of the TXT_REGISTER word. */
     protected String TXT_REGISTERS = "registers";
 
-    //private Vector<Integer> registers = new Vector<Integer>(65536);
-    //private Hashtable<Integer,Integer> values = new Hashtable<Integer,Integer>(65536);
     private ModbusValuesMap values = new ModbusValuesMap();
     private HashMap<Integer,String> names = new HashMap<Integer,String>(65536);
     private ArrayList<TableModelListener> tableModelListeners = new ArrayList<TableModelListener>();
@@ -250,25 +259,38 @@ implements ModbusPduProcessor, TableModel, ModbusPalXML, ModbusConst
 
     /**
      * Creates and initialize several registers with default value.
-     * @param startingAddress
+     * @param startingIndex
      * @param quantity
      */
-    public void create(int startingAddress, int quantity)
+    public void create(int startingIndex, int quantity)
     {
-        values.addIndexes(startingAddress, quantity);
+        values.addIndexes(startingIndex, quantity);
         notifyTableChanged();
     }
 
+
+    /**
+     * @see #getValueImpl(int) 
+     * @param address
+     * @return the value of the specified register
+     * @deprecated modify method name because it is overridden by ModbusCoils
+     */
     @Deprecated
     public int getRegisterImpl(int address)
     {
         return getValueImpl(address);
     }
 
+    /**
+     * @see #getValue(int) 
+     * @param index
+     * @return the value of the specified register
+     * @deprecated modify method name because it is overridden by ModbusCoils
+     */
     @Deprecated
-    public int getRegister(int address)
+    public int getRegister(int index)
     {
-        return getValueImpl(address);
+        return getValue(index);
     }
 
     /**
@@ -286,38 +308,51 @@ implements ModbusPduProcessor, TableModel, ModbusPalXML, ModbusConst
     }
 
     /**
-     * Returns the value of the register, whose address is provided
-     * in argument. Note that address is indexed starting from 0, with no
+     * Returns the value of the register, whose index is provided
+     * in argument. Note that index always starts from 0, with no
      * consideration for the implementation offset (modbus/jbus). If the
      * register is bound to an automation, returns the current value of the
      * automation.
-     * @param address the address of the register, indexed starting from 0
+     * @param index the index of the register, starting from 0
      * @return value of the register. If the register doesn't exist, returns 0
      * by default.
      */
-    public int getValue(int address)
+    public int getValue(int index)
     {
-        Binding binding = bindings.get(address);
+        Binding binding = bindings.get(index);
         if( binding != null )
         {
             return getValue(binding);
         }
         else
         {
-            return values.getByIndex(address);
+            return values.getByIndex(index);
         }
     }
 
+    /**
+     * Returns the value provided by the binding.
+     * @param binding the binding that provides the value
+     * @return the value given by the binding.
+     */
     protected int getValue(Binding binding)
     {
         return binding.getRegister();
     }
 
-    public byte getValues(int startingAddress, int quantity, byte[] buffer, int offset)
+    /**
+     * Writes a range of values into the provided byte buffer.
+     * @param startingIndex the starting index of the values to write
+     * @param quantity the number of values to write
+     * @param buffer the byte buffer where to write the values
+     * @param offset the offset where to start writing in the byte buffer
+     * @return XC_SUCCESSFUL if operation is successful
+     */
+    public byte getValues(int startingIndex, int quantity, byte[] buffer, int offset)
     {
         for(int i=0; i<quantity; i++)
         {
-            Integer reg = getValue(startingAddress+i);
+            Integer reg = getValue(startingIndex+i);
             ModbusTools.setUint16(buffer, offset+(2*i), reg);
         }
         return XC_SUCCESSFUL;
@@ -344,27 +379,34 @@ implements ModbusPduProcessor, TableModel, ModbusPalXML, ModbusConst
 
 
     /**
-     * Sets the value of the register identified by the specified address. Note that
-     * address is indexed starting from 0, whatever the slave's modbus implementation
+     * Sets the value of the register identified by the specified index. Note that
+     * indexes start from 0, whatever the slave's modbus implementation
      * is (modbus,jbus,...). If the register is bound to an automation, this method
      * has no effect on the current value of the automation.
-     * If address does not exist, an error code is returned and no action is performed.
+     * If index does not exist, an error code is returned and no action is performed.
      * This method does not trigger events to refresh the GUI.
-     * @param address
+     * @param index
      * @param val
      * @return
      */
-    byte setValueSilent(int address, int val)
+    byte setValueSilent(int index, int val)
     {
-        if( values.indexExists(address) == false )
+        if( values.indexExists(index) == false )
         {
             return XC_ILLEGAL_DATA_ADDRESS;
         }
-        values.putByIndex(address,val);
+        values.putByIndex(index,val);
         return XC_SUCCESSFUL;
     }
 
 
+    /**
+     * @see #setValueImpl(int, int) 
+     * @param address
+     * @param val
+     * @return XC_SUCCESSFUL if successful
+     * @deprecated name changed because this method is overridden by ModbusCoils
+     */
     @Deprecated
     public byte setRegisterImpl(int address, int val)
     {
@@ -372,11 +414,12 @@ implements ModbusPduProcessor, TableModel, ModbusPalXML, ModbusConst
     }
 
     /**
-     * * Sets the value of the register identified by the specified address.
+     * Sets the value of the register identified by the specified address.
      * Note that depending on the implementation (modbus/jbus),
      * an offset is applied to address.
      * After the offset has been applied, returns the same result as setValue()
      * @param address the address of the register
+     * @param val the value of the register
      * @return see setValue() for info.
      */
     public byte setValueImpl(int address, int val)
@@ -385,34 +428,49 @@ implements ModbusPduProcessor, TableModel, ModbusPalXML, ModbusConst
         return setValue(address,val);
     }
 
+    /**
+     * @see #setValue(int, int) 
+     * @param index
+     * @param val
+     * @return XC_SUCCESSFUL if successful
+     * @deprecated name changed because this method is overridden by ModbusCoils
+     */
     @Deprecated
-    public byte setRegister(int address, int val)
+    public byte setRegister(int index, int val)
     {
-        return setValue(address,val);
+        return setValue(index,val);
     }
 
     /**
-     * Sets the value of the register identified by the specified address. Note that
-     * address is indexed starting from 0, whatever the slave's modbus implementation
+     * Sets the value of the register identified by the specified index. Note that
+     * indexEs start from 0, whatever the slave's modbus implementation
      * is (modbus,jbus,...). If the register is bound to an automation, this method
      * has no effect on the current value of the automation.
-     * If address does not exist, an error code is returned and no action is performed.
+     * If index does not exist, an error code is returned and no action is performed.
      * This method will trigger a TableEvent event, so that the GUI is refreshed.
-     * @param address
+     * @param index
      * @param val
      * @return the modbus error code indicating the success of the failure of the
      * action. In case of success, the returned value is XC_SUCCESSFUL (0x00).
      */
-    public byte setValue(int address, int val)
+    public byte setValue(int index, int val)
     {
-        byte retval = setValueSilent(address,val);
+        byte retval = setValueSilent(index,val);
         if( retval==XC_SUCCESSFUL )
         {
-            notifyTableChanged(rowIndexOf(address), VALUE_COLUMN_INDEX);
+            notifyTableChanged(rowIndexOf(index), VALUE_COLUMN_INDEX);
         }
         return retval;
     }
 
+    /**
+     * Reads the content of the byte buffer, which contains a range of values to update
+     * @param startingAddress the starting address of the range
+     * @param quantity the number of values to update
+     * @param buffer the byte buffer containing the values
+     * @param offset the offset in the buffer where the values start
+     * @return XC_SUCCESSFUL if operation successful
+     */
     public byte setValues(int startingAddress, int quantity, byte[] buffer, int offset)
     {
         byte retval = XC_SUCCESSFUL;
@@ -429,64 +487,80 @@ implements ModbusPduProcessor, TableModel, ModbusPalXML, ModbusConst
         return retval;
     }
 
-    public int rowIndexOf(int address)
+    /**
+     * Convert the index of a value into the index of the row where this 
+     * value is displayed in the TableModel.
+     * @param index index of the value
+     * @return index of the row where the value is displayed
+     */
+    public int rowIndexOf(int index)
     {
-        return values.getOrderOf(address);
+        return values.getOrderOf(index);
     }
 
-    private void set(int address, Integer value, String name, Binding binding)
+    private void set(int index, Integer value, String name, Binding binding)
     {
         // set the value of the register
         if( value == null )
         {
             value = 0;
         }
-        values.putByIndex(address, value);
+        values.putByIndex(index, value);
 
         // set the name of the register
         if( name != null )
         {
-            names.put(address, name );
+            names.put(index, name );
         }
 
         // set the binding of the register
         if( binding != null )
         {
-            Binding old = bindings.get(address);
+            Binding old = bindings.get(index);
             if( old!=null )
             {
                 old.detach();
             }
-            binding.attach(this,address);
-            bindings.put(address, binding );
+            binding.attach(this,index);
+            bindings.put(index, binding );
         }
 
-        notifyTableChanged( values.getOrderOf(address) );
+        notifyTableChanged( values.getOrderOf(index) );
     }
 
 
-    public boolean exist(int startingAddress, int quantity)
+    /**
+     * Checks if the given values are defined, but do not create them
+     * if they don't exist.
+     * @see #exist(int, int, boolean) 
+     * @param startingIndex
+     * @param quantity
+     * @return true if all values exist, false otherwise.
+     */
+    public boolean exist(int startingIndex, int quantity)
     {
-        return exist(startingAddress, quantity, false);
+        return exist(startingIndex, quantity, false);
     }
 
     /**
-     * Check if a range of registers, defined by the starting address
+     * Check if a range of registers, defined by the starting index
      * and the quantity of registers in the range, is already defined
-     * or not.
-     * @param startingAddress
-     * @param quantity
+     * or not. This method does not take the selected implementation into
+     * account. The first value is always at index 0. 
+     * @param startingIndex the index of the first value in the range,
+     * @param quantity the number of values to check.
+     * @param createIfNotExist if true, the values are created if they don't exist
      * @return true if all registers comprised in the range are already defined;
-     * @return false if any register in the range is not defined yet.
+     * false if any register in the range is not defined yet.
      */
-    public boolean exist(int startingAddress, int quantity, boolean createIfNotExist)
+    public boolean exist(int startingIndex, int quantity, boolean createIfNotExist)
     {
-        assert( startingAddress >= 0 );
+        assert( startingIndex >= 0 );
         assert( quantity >= 0 );
 
         for( int i=0; i<quantity; i++ )
         {
-            int address = startingAddress + i;
+            int address = startingIndex + i;
             if( exist(address) == false )
             {
                 if( createIfNotExist==true )
@@ -504,17 +578,17 @@ implements ModbusPduProcessor, TableModel, ModbusPalXML, ModbusConst
 
 
     /**
-     * Check if a particular register, defined by its address,
+     * Check if a particular register, defined by its index,
      * is already defined or not.
-     * @param address
-     * @return true if the register is already defined
-     * @return false otherwise
+     * @param index
+     * @return true if the register is already defined,
+     * false otherwise
      */
-    public boolean exist(int address)
+    public boolean exist(int index)
     {
-        assert( address >= 0 );
+        assert( index >= 0 );
 
-        if( values.indexExists(address) == false )
+        if( values.indexExists(index) == false )
         {
             return false;
         }
@@ -522,35 +596,40 @@ implements ModbusPduProcessor, TableModel, ModbusPalXML, ModbusConst
     }
 
 
-    public void remove(int address)
+    /**
+     * Removes a value from this object. The index is not sensitive to the
+     * selected implementation. The first index is always 0.
+     * @param index index of the value to remove
+     */
+    public void remove(int index)
     {
         // check if a binding exists
-        Binding binding = bindings.get( address );
+        Binding binding = bindings.get( index );
         if( binding != null )
         {
             binding.detach();
-            bindings.remove(address);
+            bindings.remove(index);
         }
 
         // delete register
-        values.delete( address );
-        names.remove( address );
+        values.delete( index );
+        names.remove( index );
         notifyTableChanged();
     }
 
 
 
 
-    void replace(ModbusRegisters source, int srcAddress, int dstAddress)
+    void replace(ModbusRegisters source, int srcIndex, int dstIndex)
     {
-        Integer value = source.values.getByIndex(srcAddress);
-        String name = source.names.get(srcAddress);
-        Binding binding = source.bindings.get(srcAddress);
-        set(dstAddress, value, name, binding);
+        Integer value = source.values.getByIndex(srcIndex);
+        String name = source.names.get(srcIndex);
+        Binding binding = source.bindings.get(srcIndex);
+        set(dstIndex, value, name, binding);
     }
 
 
-    void paste(int destAddress, RegisterCopy src)
+    void paste(int destIndex, RegisterCopy src)
     {
         try
         {
@@ -559,7 +638,7 @@ implements ModbusPduProcessor, TableModel, ModbusPalXML, ModbusConst
             {
                 b = (Binding) src.registerBinding.clone();
             }
-            set( destAddress, src.registerValue, src.registerName, b);
+            set( destIndex, src.registerValue, src.registerName, b);
         }
         catch(CloneNotSupportedException ex)
         {
@@ -567,18 +646,18 @@ implements ModbusPduProcessor, TableModel, ModbusPalXML, ModbusConst
         }
     }
 
-    RegisterCopy copy (ModbusRegisters source, int sourceAddress)
+    RegisterCopy copy (ModbusRegisters source, int sourceIndex)
     {
         // AddIndexes the register if necessary
-        if( values.indexExists(sourceAddress) == false )
+        if( values.indexExists(sourceIndex) == false )
         {
             return null;
         }
 
-        Integer value = source.values.getByIndex(sourceAddress);
-        String name = source.names.get(sourceAddress);
-        Binding binding = source.bindings.get(sourceAddress);
-        return new RegisterCopy( sourceAddress, value, name, binding );
+        Integer value = source.values.getByIndex(sourceIndex);
+        String name = source.names.get(sourceIndex);
+        Binding binding = source.bindings.get(sourceIndex);
+        return new RegisterCopy( sourceIndex, value, name, binding );
     }
 
 
@@ -589,28 +668,33 @@ implements ModbusPduProcessor, TableModel, ModbusPalXML, ModbusConst
     //==========================================================================
 
     /**
-     * Associates the register identified by its address with the
-     * provided binding. Note that address is indexed starting from 0,
+     * Associates the register identified by its index with the
+     * provided binding. Note that indexes start from 0,
      * whatever the slave's modbus implementation is (modbus,jbus,...). If a binding
      * already exists, it is replaced by the new.
-     * @param address
+     * @param index
      * @param binding
      */
-    public void bind(int address, Binding binding)
+    public void bind(int index, Binding binding)
     {
-        bindings.put(address, binding);
-        int row = values.getOrderOf(address);
+        bindings.put(index, binding);
+        int row = values.getOrderOf(index);
         notifyTableChanged(row);
-        binding.attach(this,address);
+        binding.attach(this,index);
     }
 
-    public void unbind(int address)
+    /**
+     * Removes the binding for the value (identified by its index) and whatever
+     * automation it is linked to.
+     * @param index index of the value from which the binding must be removed.
+     */
+    public void unbind(int index)
     {
-        Binding removed = bindings.remove(address);
+        Binding removed = bindings.remove(index);
         if( removed!=null )
         {
             removed.detach();
-            notifyTableChanged( values.getOrderOf(address) );
+            notifyTableChanged( values.getOrderOf(index) );
         }
     }
 
@@ -625,12 +709,21 @@ implements ModbusPduProcessor, TableModel, ModbusPalXML, ModbusConst
         return (bindings.size()>0);
     }
 
-    public boolean isBound(int address)
+    /**
+     * Checks if the value, identified by its index, has a binding or not.
+     * @param index index of the register to check
+     * @return true if the register is bound to an automation.
+     */
+    public boolean isBound(int index)
     {
-        Binding binding = bindings.get(address);
+        Binding binding = bindings.get(index);
         return (binding!=null);
     }
 
+    /**
+     * Removes any bindings that is of the specified class name.
+     * @param classname the class name of the bindings to remove
+     */
     public void removeAllBindings(String classname)
     {
         Set<Integer> addressesSet = bindings.keySet();
@@ -654,16 +747,19 @@ implements ModbusPduProcessor, TableModel, ModbusPalXML, ModbusConst
     //
     //==========================================================================
 
+    @Override
     public int getRowCount()
     {
         return values.getCount();
     }
 
+    @Override
     public int getColumnCount()
     {
         return 4;
     }
 
+    @Override
     public String getColumnName(int columnIndex)
     {
         switch(columnIndex)
@@ -676,6 +772,7 @@ implements ModbusPduProcessor, TableModel, ModbusPalXML, ModbusConst
         }
     }
 
+    @Override
     public Class<?> getColumnClass(int columnIndex)
     {
         switch(columnIndex)
@@ -688,6 +785,7 @@ implements ModbusPduProcessor, TableModel, ModbusPalXML, ModbusConst
         }
     }
 
+    @Override
     public boolean isCellEditable(int rowIndex, int columnIndex)
     {
         switch(columnIndex)
@@ -700,6 +798,7 @@ implements ModbusPduProcessor, TableModel, ModbusPalXML, ModbusConst
         }
     }
 
+    @Override
     public Object getValueAt(int rowIndex, int columnIndex)
     {
         int index = values.getIndexOf(rowIndex);
@@ -736,6 +835,12 @@ implements ModbusPduProcessor, TableModel, ModbusPalXML, ModbusConst
     }
 
 
+    /**
+     * Checks if the specified value is within the allowed boundaries. For a 
+     * MODBUS register, the allowed range is [0-65535]. For a coil, it is [0-1].
+     * @param value the value to check
+     * @return true if the value is within boundaries.
+     */
     protected Integer checkValueBoundaries(Integer value)
     {
         if( value<0 )
@@ -751,6 +856,7 @@ implements ModbusPduProcessor, TableModel, ModbusPalXML, ModbusConst
 
 
 
+    @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex)
     {
         int index = values.getIndexOf(rowIndex);
@@ -780,11 +886,13 @@ implements ModbusPduProcessor, TableModel, ModbusPalXML, ModbusConst
         }
     }
 
+    @Override
     public void addTableModelListener(TableModelListener l)
     {
         tableModelListeners.add(l);
     }
 
+    @Override
     public void removeTableModelListener(TableModelListener l)
     {
         tableModelListeners.remove(l);
@@ -797,17 +905,34 @@ implements ModbusPduProcessor, TableModel, ModbusPalXML, ModbusConst
     //==========================================================================
 
 
-    public String getName(int address)
+    /**
+     * Gets the name that has been defined for the specified value, identified
+     * by its index.
+     * @param index index of the value
+     * @return name given to the specified value
+     */
+    public String getName(int index)
     {
-        return names.get(address);
+        return names.get(index);
     }
 
+    /**
+     * Converts the row from the TableModel into the corresponding value index
+     * @param row the row index from the table model
+     * @return the value index
+     */
     public int getAddressOf(int row)
     {
         int index = values.getIndexOf(row);
         return index;
     }
 
+    /**
+     * Gets a list of all the automations that are being used by this
+     * object, through the declared bindings.
+     * @return a collection of strings containing the classnames of the automations
+     * in use in this object.
+     */
     Collection<String> getRequiredAutomations()
     {
         ArrayList<String> automationNames = new ArrayList<String>();
@@ -844,6 +969,14 @@ implements ModbusPduProcessor, TableModel, ModbusPalXML, ModbusConst
     //
     //==========================================================================
 
+    
+    /** 
+     * Saves the values and settings of this object.
+     * @param out the output stream where to write the values and settings
+     * @param withBindings if true, the bindings of each value are also
+     * described in the output stream.
+     * @throws IOException
+     */
     public void save(OutputStream out, boolean withBindings)
     throws IOException
     {
@@ -851,7 +984,7 @@ implements ModbusPduProcessor, TableModel, ModbusPalXML, ModbusConst
         {
             int index = values.getIndexOf(i);
 
-            StringBuffer tag = new StringBuffer("<"+TXT_REGISTER+" "+ XML_ADDRESS_ATTRIBUTE +"=\"");
+            StringBuilder tag = new StringBuilder("<"+TXT_REGISTER+" "+ XML_ADDRESS_ATTRIBUTE +"=\"");
             tag.append(String.valueOf(index));
             tag.append("\" value=\"");
             
@@ -884,6 +1017,10 @@ implements ModbusPduProcessor, TableModel, ModbusPalXML, ModbusConst
         }
     }
 
+    /**
+     * Loads the values and settings from the provided DOM node.
+     * @param node the node containing the values and settings to load.
+     */
     public void load(Node node)
     {
         NodeList nodes = node.getChildNodes();
@@ -966,6 +1103,9 @@ implements ModbusPduProcessor, TableModel, ModbusPalXML, ModbusConst
     //==========================================================================
 
 
+    /**
+     * Triggers a "tableChanged" event for the registered TableModelListeners.
+     */
     public void notifyTableChanged()
     {
         TableModelEvent event = new TableModelEvent(this);
@@ -975,9 +1115,15 @@ implements ModbusPduProcessor, TableModel, ModbusPalXML, ModbusConst
         }
     }
 
-    public void notifyRegisterChanged(int registerAddress)
+    /**
+     * Triggers a "tableChanged" event for the registered TableModelListeners.
+     * The event specifically addresses the row where the modified value is
+     * displayed.
+     * @param valueIndex index of the modified value (register/coil)
+     */
+    public void notifyRegisterChanged(int valueIndex)
     {
-        int index = rowIndexOf(registerAddress);
+        int index = rowIndexOf(valueIndex);
         notifyTableChanged(index);
     }
 

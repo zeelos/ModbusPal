@@ -9,7 +9,7 @@ import java.io.IOException;
 import modbuspal.main.ModbusRequest;
 
 /**
- *
+ * The interface that any link must implement
  * @author nnovic
  */
 public interface ModbusLink

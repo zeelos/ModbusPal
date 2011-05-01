@@ -21,8 +21,8 @@ import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
 /**
- *
- * @author avincon
+ * The JFrame that contains the HelpViewerPane
+ * @author nnovic
  */
 public class HelpViewer
 extends javax.swing.JFrame

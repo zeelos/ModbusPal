@@ -21,7 +21,7 @@ import javax.swing.event.AncestorListener;
 import modbuspal.main.ModbusPalProject;
 
 /**
- *
+ * the component representing a script in the script manager dialog
  * @author nnovic
  */
 public class ScriptRunnerPanel
@@ -31,7 +31,10 @@ implements AncestorListener
     private final ScriptRunner runner;
     private final ModbusPalProject project;
 
-    /** Creates new form ScriptRunnerPanel */
+    /** Creates new form ScriptRunnerPanel 
+     * @param mpp the current project
+     * @param def the script
+     */
     public ScriptRunnerPanel(ModbusPalProject mpp, ScriptRunner def)
     {
         runner = def;
@@ -41,11 +44,19 @@ implements AncestorListener
     }
 
 
+    /**
+     * Returns the script runner object that represents the script displayed
+     * by this panel.
+     * @return the script object
+     */
     public ScriptRunner getScriptRunner()
     {
         return runner;
     }
     
+    /**
+     * Removes this script from the project.
+     */
     public void deleteScript()
     {
         System.out.println("Deleting script " + runner.getName() + "..." );
@@ -53,6 +64,11 @@ implements AncestorListener
 
     }
     
+    /**
+     * Checks if this panel is the front-end for the specified script
+     * @param sr the script to test
+     * @return true if this panel is the front-end for the specified script
+     */
     boolean contains(ScriptRunner sr)
     {
         return (sr==runner);

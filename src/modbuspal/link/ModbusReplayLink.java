@@ -17,7 +17,8 @@ import modbuspal.main.ModbusRequest;
 import modbuspal.recorder.ModbusPalRecord;
 
 /**
- *
+ * The replay link reproduces the incoming requests from a previously recorded
+ * session
  * @author nnovic
  */
 public class ModbusReplayLink

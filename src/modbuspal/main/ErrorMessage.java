@@ -18,7 +18,7 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 
 /**
- *
+ * A dialog for displaying error messages or important warnings
  * @author nnovic
  */
 public class ErrorMessage

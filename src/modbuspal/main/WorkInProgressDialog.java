@@ -15,7 +15,7 @@ import java.awt.Image;
 import java.awt.Toolkit;
 
 /**
- *
+ * a dialog that appears for lengthy operations.
  * @author nnovic
  */
 public class WorkInProgressDialog

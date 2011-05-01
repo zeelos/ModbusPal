@@ -14,7 +14,7 @@ package modbuspal.generator.sine;
 import modbuspal.toolkit.NumericTextField;
 
 /**
- *
+ * the control panel for the sine generator
  * @author nnovic
  */
 public class SineControlPanel

@@ -22,8 +22,9 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
 /**
- *
- * @author avincon
+ * A panel that contains a chart, tracking the values of
+ * an automation
+ * @author nnovic
  */
 public class AutomationChart
 extends javax.swing.JPanel

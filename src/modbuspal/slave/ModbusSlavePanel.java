@@ -20,7 +20,7 @@ import java.awt.event.WindowListener;
 import javax.swing.event.AncestorListener;
 
 /**
- *
+ * represents a modbus slave in the slaves list of the main interface
  * @author nnovic
  */
 public class ModbusSlavePanel
@@ -33,7 +33,10 @@ implements WindowListener, ModbusSlaveListener,AncestorListener
     private final ModbusPalProject modbusPalProject;
     private final ModbusPalPane modbusPalPane;
 
-    /** Creates new form listOfSlavesCellRenderer */
+    /** Creates new form listOfSlavesCellRenderer 
+     * @param p the modbuspalpane to which this panel is connected
+     * @param s the modbus slave being displayed by this panel
+     */
     public ModbusSlavePanel(ModbusPalPane p, ModbusSlave s)
     {
         modbusSlave = s;
@@ -46,12 +49,18 @@ implements WindowListener, ModbusSlaveListener,AncestorListener
         addAncestorListener(this);
     }
 
-
+    /**
+     * Gets the slave number of the modbus slave displayed by this panel
+     * @return the slave id
+     */
     public int getSlaveId()
     {
         return modbusSlave.getSlaveId();
     }
 
+    /**
+     * Removes this modbus slave from the project.
+     */
     public void delete()
     {
        if( modbusSlaveDialog != null )

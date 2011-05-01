@@ -34,7 +34,8 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
- *
+ * the dialog where the user edits the values and parameters of a particular
+ * modbus slave
  * @author nnovic
  */
 public class ModbusSlaveDialog
@@ -45,7 +46,10 @@ implements ModbusConst, ModbusSlaveListener
     final ModbusPalPane modbusPalPane;
     final ModbusPalProject modbusPalProject;
 
-    /** Creates new form ModbusSlaveDialog */
+    /** Creates new form ModbusSlaveDialog 
+     * @param p the modbuspalpane to which this dialog is connected
+     * @param s the modbus slave being displayed by this dialog
+     */
     public ModbusSlaveDialog(ModbusPalPane p, ModbusSlave s)
     {
         modbusPalPane = p;

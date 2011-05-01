@@ -9,12 +9,18 @@ import org.python.core.PyObject;
 import org.python.util.PythonInterpreter;
 
 /**
- * \page jython
- * \section Jythools, a toolkit class
+ * various tools for Jython
  * @author nnovic
  */
 public class Jythools
 {
+    /**
+     * Execute the specified python script and gets the named object from the
+     * interpreter
+     * @param fileName the script file
+     * @param objectName the name of the object to obtain
+     * @return the designated object, or null
+     */
     public static PyObject getFromFile(String fileName, String objectName)
     {
         System.out.println("jythools: get "+objectName+" from file "+fileName);

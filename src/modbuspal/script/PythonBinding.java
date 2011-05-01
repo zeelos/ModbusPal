@@ -8,7 +8,7 @@ package modbuspal.script;
 import modbuspal.binding.Binding;
 
 /**
- *
+ * the class that should be used in python script to create new bindings
  * @author nnovic
  */
 public class PythonBinding

@@ -13,7 +13,7 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 /**
- *
+ * a file chooser that keeps track of the last visited directory
  * @author nnovic
  */
 public class XFileChooser

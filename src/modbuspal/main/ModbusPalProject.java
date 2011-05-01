@@ -33,7 +33,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
- *
+ * contains all the data related to a modbuspal project
  * @author nnovic
  */
 public final class ModbusPalProject
@@ -1860,7 +1860,7 @@ implements ModbusPalXML
      * 
      * @param slaveID
      * @param functionCode
-     * @return
+     * @return always true
      * @deprecated this method was never implemented
      */
     @Deprecated

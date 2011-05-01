@@ -24,7 +24,7 @@ import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 
 /**
- *
+ * Utilitary methods for creating new instances of ModbusPal
  * @author nnovic
  */
 public class ModbusPalGui

@@ -8,7 +8,8 @@ package modbuspal.main;
 import modbuspal.slave.ModbusSlave;
 
 /**
- *
+ * takes care of some particularies of the management of the modbus slaves
+ * in the project
  * @author nnovic
  */
 public abstract class ModbusPalProject2

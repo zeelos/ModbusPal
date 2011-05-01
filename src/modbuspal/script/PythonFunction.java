@@ -12,8 +12,8 @@ import modbuspal.slave.ModbusPduProcessor;
 import org.w3c.dom.NodeList;
 
 /**
- *
- * @author avincon
+ * the class that should be used in python script to create new ModbusPduProcessors
+ * @author nnovic
  */
 public class PythonFunction
 implements ModbusPduProcessor

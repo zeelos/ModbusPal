@@ -24,7 +24,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.StyledDocument;
 
 /**
- *
+ * displays the content of the Java console into a dialog
  * @author nnovic
  */
 public class AppConsole

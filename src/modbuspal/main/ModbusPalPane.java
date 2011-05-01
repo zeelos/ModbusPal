@@ -40,7 +40,7 @@ import modbuspal.toolkit.XFileChooser;
 import org.xml.sax.SAXException;
 
 /**
- *
+ * The core of the application
  * @author nnovic
  */
 public class ModbusPalPane
@@ -1716,7 +1716,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
     }
 
     /**
-     * @see #showScrpitManagerDialog()
+     * @see #showScriptManagerDialog()
      * @param tabIndex the index of the tab to display
      * @deprecated tabIndex is ignored. now there is only one list of scripts
      */

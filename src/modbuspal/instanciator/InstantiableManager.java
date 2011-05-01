@@ -7,11 +7,10 @@ package modbuspal.instanciator;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map.Entry;
-import java.util.Set;
 
 
 /**
+ * This object contains a list of objects that can be instantiated.
  * @param <T> the class of Instantiable that this manager will hold
  * @author nnovic
  */

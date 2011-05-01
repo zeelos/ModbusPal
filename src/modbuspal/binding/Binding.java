@@ -13,7 +13,7 @@ import modbuspal.instanciator.Instantiable;
 import modbuspal.slave.ModbusRegisters;
 
 /**
- *
+ * Defines a binding
  * @author nnovic
  */
 public abstract class Binding

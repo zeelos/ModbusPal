@@ -6,8 +6,9 @@
 package modbuspal.main;
 
 /**
- *
- * @author avincon
+ * objects interested in receiving notifications from the modbuspal project
+ * must implement this interface
+ * @author nnovic
  */
 public interface ModbusPalProjectListener
 {

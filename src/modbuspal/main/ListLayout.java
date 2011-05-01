@@ -12,7 +12,7 @@ import java.awt.LayoutManager2;
 import java.util.ArrayList;
 
 /**
- *
+ * the swing layout for displaying lists of Components
  * @author nnovic
  */
 public class ListLayout
