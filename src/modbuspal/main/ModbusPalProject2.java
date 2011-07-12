@@ -26,7 +26,7 @@ public abstract class ModbusPalProject2
      * @return the instance of ModbusSlave associated with the slave number
      * or null if no slave is associated with this number.
      */
-    protected ModbusSlave getModbusSlave(int id, boolean createIfNotExist)
+    public ModbusSlave getModbusSlave(int id, boolean createIfNotExist)
     {
         if( knownSlaves[id]!=null )
         {

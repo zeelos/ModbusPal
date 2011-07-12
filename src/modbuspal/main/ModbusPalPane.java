@@ -1021,7 +1021,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         }
 
         // if lnk is serial
-        else if( linksTabbedPane.getSelectedComponent()==serialSettingsPanel )
+        else if( linksTabbedPane.getSelectedComponent()==jPanel1 )
         {
             startSerialLink();
         }
@@ -1259,8 +1259,11 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
      */
     public void setModbusSlaveEnabled(int id, boolean enabled)
     {
-        ModbusSlave slave = modbusPalProject.getModbusSlave(id);
-        slave.setEnabled(enabled);
+        ModbusSlave slave = modbusPalProject.getModbusSlave(id, modbusPalProject.isLeanModeEnabled());
+        if( slave!=null )
+        {
+            slave.setEnabled(enabled);
+        }
     }
 
 
