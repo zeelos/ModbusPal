@@ -36,6 +36,12 @@ implements ModbusLink, Runnable, SerialPortEventListener
     
     /** identifier to specify that the even parity must be used for the serial communication */
     public static final int PARITY_EVEN = 2;
+
+    public static final int STOP_BITS_1 = 0;
+
+    public static final int STOP_BITS_1_5 = 1;
+
+    public static final int STOP_BITS_2 = 2;
     
     private static ArrayList<CommPortIdentifier> commPorts = new ArrayList<CommPortIdentifier>();
 
@@ -56,6 +62,7 @@ implements ModbusLink, Runnable, SerialPortEventListener
         }
         return false;
     }
+
 
     /**
      * 
@@ -126,7 +133,7 @@ implements ModbusLink, Runnable, SerialPortEventListener
             }
         }
     }
-
+    private int serialStopBits;
     private SerialPort serialPort;
     private int baudrate;
     private InputStream input;
@@ -148,7 +155,7 @@ implements ModbusLink, Runnable, SerialPortEventListener
      * @throws PortInUseException
      * @throws ClassCastException 
      */
-    public ModbusSerialLink(ModbusPalProject mpp, int index, int speed, int parity, boolean xonxoff, boolean rtscts)
+    public ModbusSerialLink(ModbusPalProject mpp, int index, int speed, int parity, int stopBits, boolean xonxoff, boolean rtscts)
     throws PortInUseException, ClassCastException
     {
         super(mpp);
@@ -156,6 +163,7 @@ implements ModbusLink, Runnable, SerialPortEventListener
         CommPortIdentifier comm = commPorts.get(index);
         serialPort = (SerialPort)(comm.open("MODBUSPAL",3000));
         baudrate = speed;
+
         switch(parity)
         {
             case PARITY_NONE:
@@ -167,6 +175,20 @@ implements ModbusLink, Runnable, SerialPortEventListener
             default:
             case PARITY_EVEN:
                 serialParity=SerialPort.PARITY_EVEN;
+                break;
+        }
+
+        switch(stopBits)
+        {
+            default:
+            case STOP_BITS_1:
+                serialStopBits=SerialPort.STOPBITS_1;
+                break;
+            case STOP_BITS_1_5:
+                serialStopBits=SerialPort.STOPBITS_1;
+                break;
+            case STOP_BITS_2:
+                serialStopBits=SerialPort.STOPBITS_1;
                 break;
         }
         
@@ -191,7 +213,7 @@ implements ModbusLink, Runnable, SerialPortEventListener
 
         try
         {
-            serialPort.setSerialPortParams(baudrate, SerialPort.DATABITS_8, SerialPort.STOPBITS_1, serialParity);
+            serialPort.setSerialPortParams(baudrate, SerialPort.DATABITS_8, serialStopBits, serialParity);
             input = serialPort.getInputStream();
             output = serialPort.getOutputStream();
             serialPort.addEventListener(this);

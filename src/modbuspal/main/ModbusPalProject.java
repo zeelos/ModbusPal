@@ -58,6 +58,7 @@ implements ModbusPalXML
     String linkSerialComId = "none";
     String linkSerialBaudrate = "9600";
     int linkSerialParity = ModbusSerialLink.PARITY_EVEN;
+    int linkSerialStopBits = ModbusSerialLink.STOP_BITS_1;
     boolean linkSerialXonXoff = false;
     boolean linkSerialRtsCts = false;
     File linkReplayFile = null;
@@ -96,7 +97,7 @@ implements ModbusPalXML
 
 
 
-    ModbusPalProject()
+    public ModbusPalProject()
     {
         bindingFactory.add( new modbuspal.binding.Binding_SINT16() );
         bindingFactory.add( new modbuspal.binding.Binding_SINT32() );
@@ -224,6 +225,19 @@ implements ModbusPalXML
                 linkSerialParity = ModbusSerialLink.PARITY_ODD;
             } else {
                 linkSerialParity = ModbusSerialLink.PARITY_EVEN;
+            }
+        }
+
+        // load "stop bits" attribute
+        String stops = XMLTools.getAttribute("stops", root);
+        if( stops!=null )
+        {
+            if( stops.compareTo("1.5")==0 ) {
+                linkSerialStopBits = ModbusSerialLink.STOP_BITS_1_5;
+            } else if( parity.compareTo("2")==0 ) {
+                linkSerialStopBits = ModbusSerialLink.STOP_BITS_2;
+            } else {
+                linkSerialStopBits = ModbusSerialLink.STOP_BITS_1;
             }
         }
 
@@ -637,8 +651,17 @@ implements ModbusPalXML
             default:
             case ModbusSerialLink.PARITY_EVEN: openTag.append("parity=\"even\" "); break;
         }
+        switch(linkSerialStopBits)
+        {
+            default:
+            case ModbusSerialLink.STOP_BITS_1: openTag.append("stops=\"1\" "); break;
+            case ModbusSerialLink.STOP_BITS_1_5: openTag.append("stops=\"1.5\" "); break;
+            case ModbusSerialLink.STOP_BITS_2: openTag.append("stops=\"2\" "); break;
+        }
         openTag.append(">\r\n");
         out.write( openTag.toString().getBytes() );
+
+
 
         StringBuilder flowControl = new StringBuilder("<flowcontrol ");
         flowControl.append("xonxoff=\"").append(String.valueOf(linkSerialXonXoff)).append("\" ");

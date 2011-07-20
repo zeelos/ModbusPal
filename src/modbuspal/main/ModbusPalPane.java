@@ -63,6 +63,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
     ModbusPalProject modbusPalProject;
     private HelpViewer helpViewer = null;
 
+    private ProjectPanelController projectPanelController = new ProjectPanelController();
 
     /**
      * Adds a ModbusPalProjectListener listener to the list of listeners.
@@ -135,6 +136,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         comPortComboBox.setSelectedItem( project.linkSerialComId );
         baudRateComboBox.setSelectedItem( project.linkSerialBaudrate );
         parityComboBox.setSelectedIndex( project.linkSerialParity );
+        stopBitsComboBox.setSelectedIndex( project.linkSerialStopBits );
         xonxoffCheckBox.setSelected( project.linkSerialXonXoff );
         rtsctsCheckBox.setSelected( project.linkSerialRtsCts );
 
@@ -213,6 +215,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         modbusPalProject.linkSerialComId = (String)comPortComboBox.getSelectedItem();
         modbusPalProject.linkSerialBaudrate = (String)baudRateComboBox.getSelectedItem();
         modbusPalProject.linkSerialParity = parityComboBox.getSelectedIndex();
+        modbusPalProject.linkSerialStopBits = stopBitsComboBox.getSelectedIndex();
         modbusPalProject.linkSerialXonXoff = xonxoffCheckBox.isSelected();
         modbusPalProject.linkSerialRtsCts = rtsctsCheckBox.isSelected();
 
@@ -433,6 +436,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         parityComboBox = new javax.swing.JComboBox();
         xonxoffCheckBox = new javax.swing.JCheckBox();
         rtsctsCheckBox = new javax.swing.JCheckBox();
+        stopBitsComboBox = new javax.swing.JComboBox();
         jPanel5 = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
@@ -534,6 +538,14 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(2, 2, 5, 5);
         serialSettingsPanel.add(rtsctsCheckBox, gridBagConstraints);
+
+        stopBitsComboBox.setEditable(true);
+        stopBitsComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "1 stop bit", "1.5 stop bits", "2 stop bits" }));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.insets = new java.awt.Insets(5, 2, 2, 5);
+        serialSettingsPanel.add(stopBitsComboBox, gridBagConstraints);
 
         jPanel1.add(serialSettingsPanel, "enabled");
 
@@ -898,6 +910,12 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         int parity = parityComboBox.getSelectedIndex();
 
         //- - - - - - - - - - -
+        // GET STOP BITS
+        //- - - - - - - - - - -
+
+        int stopBits = stopBitsComboBox.getSelectedIndex();
+
+        //- - - - - - - - - - -
         // GET FLOW CONTROL
         //- - - - - - - - - - -
 
@@ -911,7 +929,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         try
         {
             int commPortIndex = comPortComboBox.getSelectedIndex();
-            currentLink = new ModbusSerialLink(modbusPalProject, commPortIndex, baudrate, parity, xonxoff, rtscts);
+            currentLink = new ModbusSerialLink(modbusPalProject, commPortIndex, baudrate, parity, stopBits, xonxoff, rtscts);
             currentLink.start(this);
             modbusMaster.setLink(currentLink);
 
@@ -1058,6 +1076,17 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         GUITools.setAllEnabled(linksTabbedPane,true);
     }
 
+
+    public void setSerialLinkParameters(String port, int baudrate, int parity, boolean xonxoff, boolean rtscts)
+    {
+        comPortComboBox.setSelectedItem( port );
+        baudRateComboBox.setSelectedItem( String.valueOf(baudrate) );
+        parityComboBox.setSelectedIndex(parity);
+        xonxoffCheckBox.setSelected(xonxoff);
+        rtsctsCheckBox.setSelected(rtscts);
+    }
+
+
     /**
      * this event is triggered when the user toggle the "run" button.
      * @param evt
@@ -1173,39 +1202,16 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
 
     private void loadButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadButtonActionPerformed
 
-        // create loadGenerators dialog
-        JFileChooser loadDialog = new XFileChooser(XFileChooser.PROJECT_FILE);
-        loadDialog.showOpenDialog(this);
-        final File projectFile = loadDialog.getSelectedFile();
-
+        File projectFile = projectPanelController.selectProjectFileToOpen();
         if( projectFile == null )
         {
             return;
         }
 
-        final WorkInProgressDialog dialog = new WorkInProgressDialog("Load project","Loading project...");
-        Thread loader = new Thread( new Runnable()
-        {
-            @Override
-            public void run()
-            {
-                try
-                {
-                    ModbusPalProject mpp = ModbusPalProject.load(projectFile);
-                    setProject(mpp);
-                    //TODO: setTitle(APP_STRING+" ("+projectFile.getName()+")");
-                }
-                catch (Exception ex)
-                {
-                    Logger.getLogger(ModbusPalPane.class.getName()).log(Level.SEVERE, null, ex);
-                }
+        WorkInProgressDialog dialog = new WorkInProgressDialog("Load project","Loading project...");
+        Runnable loadTask = projectPanelController.createProjectLoadingTask(this, projectFile, dialog);
 
-                if( dialog.isVisible() )
-                {
-                    dialog.setVisible(false);
-                }
-            }
-        });
+        Thread loader = new Thread( loadTask );
         loader.setName("loader");
         loader.start();
         GUITools.align(this, dialog);
@@ -1532,6 +1538,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
     private javax.swing.JPanel slavesListView;
     private javax.swing.JButton startAllAutomationsButton;
     private javax.swing.JButton stopAllAutomationsButton;
+    private javax.swing.JComboBox stopBitsComboBox;
     private javax.swing.JPanel tcpIpSettingsPanel;
     private javax.swing.JLabel tiltLabel;
     private javax.swing.JPanel toolsPanel;
@@ -1758,5 +1765,47 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         slavesListView.setVisible(b);
     }
 
+    public void setProjectPanelController(ProjectPanelController ppc)
+    {
+        projectPanelController = ppc;
+    }
 
+
+    public static class ProjectPanelController
+    {
+
+        public File selectProjectFileToOpen()
+        {
+            JFileChooser loadDialog = new XFileChooser(XFileChooser.PROJECT_FILE);
+            loadDialog.showOpenDialog(null);
+            File projectFile = loadDialog.getSelectedFile();
+            return projectFile;
+        }
+
+        public Runnable createProjectLoadingTask(final ModbusPalPane caller, final File project, final WorkInProgressDialog dialog)
+        {
+            return new Runnable()
+            {
+                @Override
+                public void run()
+                {
+                    try
+                    {
+                        ModbusPalProject mpp = ModbusPalProject.load(project);
+                        caller.setProject(mpp);
+                        //TODO: setTitle(APP_STRING+" ("+projectFile.getName()+")");
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.getLogger(ModbusPalPane.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+
+                    if( dialog.isVisible() )
+                    {
+                        dialog.setVisible(false);
+                    }
+                }
+            };
+        }
+    }
 }

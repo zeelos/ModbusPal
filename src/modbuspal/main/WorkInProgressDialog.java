@@ -63,12 +63,19 @@ extends javax.swing.JDialog
         setModalityType(ModalityType.DOCUMENT_MODAL);
         setTitle(title);
         initComponents();
-        messageLabel.setText(message);
+        setMessage(message);
         Image img = Toolkit.getDefaultToolkit().createImage( getClass().getResource("/modbuspal/main/img/icon32.png") );
         setIconImage(img);
 
         //TODO: GUITools.align(parent, this);
     }
+
+
+    public void setMessage(String message)
+    {
+        messageLabel.setText(message);
+    }
+
 
     /** This method is called from within the constructor to
      * initialize the form.

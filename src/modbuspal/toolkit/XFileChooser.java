@@ -26,9 +26,14 @@ implements ActionListener
     public static final int AUTOMATION_FILE = 2;
     public static final int RECORDER_FILE = 3;
 
+    public static final String PROJECT_EXT = "xmpp";
+    public static final String SLAVE_EXT = "xmps";
+    public static final String AUTOMATION_EXT = "xmpa";
+    public static final String RECORDER_EXT = "xmpr";
+
     private static final String REG_KEYS[] =   {"project_file", "slave_file",        "automation_file",        "recorder_file"};
     private static final String PROF_TYPES[] = {"Project file", "Slave export file", "Automation export file", "Recorder file"};
-    private static final String PROF_EXT[] =   {"xmpp",         "xmps",              "xmpa",                   "xmpr"};
+    private static final String PROF_EXT[] =   {PROJECT_EXT,    SLAVE_EXT,           AUTOMATION_EXT,           RECORDER_EXT};
 
     private Preferences preferences;
     private int selectedProfile;
