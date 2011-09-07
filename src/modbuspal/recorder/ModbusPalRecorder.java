@@ -79,6 +79,7 @@ public class ModbusPalRecorder
     {
         if( fileWriter!=null )
         {
+            fileWriter.flush();
             fileWriter.close();
         }
         fileWriter = writer;

@@ -185,10 +185,10 @@ implements ModbusLink, Runnable, SerialPortEventListener
                 serialStopBits=SerialPort.STOPBITS_1;
                 break;
             case STOP_BITS_1_5:
-                serialStopBits=SerialPort.STOPBITS_1;
+                serialStopBits=SerialPort.STOPBITS_1_5;
                 break;
             case STOP_BITS_2:
-                serialStopBits=SerialPort.STOPBITS_1;
+                serialStopBits=SerialPort.STOPBITS_2;
                 break;
         }
         

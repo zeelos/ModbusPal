@@ -547,6 +547,12 @@ implements ModbusPalXML
     //
     //==========================================================================
 
+    public void save(File file)
+    throws FileNotFoundException, IOException
+    {
+        projectFile = file;
+        save();
+    }
 
     /**
      * Saves the current project into the project file. Implies that this

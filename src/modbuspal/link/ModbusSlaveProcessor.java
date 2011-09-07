@@ -75,6 +75,7 @@ implements ModbusConst
         ModbusPduProcessor mspp = slave.getPduProcessor(functionCode);
         if( mspp == null )
         {
+            System.err.println("Unsupported function code "+functionCode);
             int length = makeExceptionResponse(functionCode,XC_ILLEGAL_FUNCTION, buffer, offset);
             ModbusPalRecorder.recordOutgoing(slaveID,buffer,offset,length);
             modbusPalProject.notifyExceptionResponse();

@@ -48,7 +48,7 @@ extends JPanel
 implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
 {
     /** Name and version of this application */
-    public static final String APP_STRING = "ModbusPal 1.6a";
+    public static final String APP_STRING = "ModbusPal 1.6b";
     
     /** Base registry key for the configuration of the application. */
     public static final String BASE_REGISTRY_KEY = "modbuspal";
@@ -62,8 +62,6 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
     private AppConsole console = null;
     ModbusPalProject modbusPalProject;
     private HelpViewer helpViewer = null;
-
-    private ProjectPanelController projectPanelController = new ProjectPanelController();
 
     /**
      * Adds a ModbusPalProjectListener listener to the list of listeners.
@@ -200,7 +198,14 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
     }
 
 
-    void saveProject() throws FileNotFoundException, IOException
+    public void saveProject()
+    throws FileNotFoundException, IOException
+    {
+        saveProject(modbusPalProject.projectFile);
+    }
+
+    public void saveProject(File projectFile)
+    throws FileNotFoundException, IOException
     {
         System.out.printf("[%s] Save project\r\n", modbusPalProject.getName());
 
@@ -222,7 +227,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         // update record/replay settings
         modbusPalProject.linkReplayFile = (File)chosenRecordFileTextField.getClientProperty("record file");
 
-        modbusPalProject.save();
+        modbusPalProject.save(projectFile);
     }
 
 
@@ -253,10 +258,13 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
 
 
 
+    public ModbusPalPane()
+    {
+        this(false);
+    }
 
-
-    /** Creates new form ModbusPalGui */
-    ModbusPalPane(boolean useInternalConsole)
+    /** Creates new form ModbusPalPane */
+    public ModbusPalPane(boolean useInternalConsole)
     {
         initComponents();
 
@@ -1137,9 +1145,9 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         //
         if( (modbusPalProject.projectFile==null) || (evt.getSource()==saveProjectAsButton) )
         {
-            JFileChooser saveDialog = new XFileChooser(XFileChooser.PROJECT_FILE);
-            saveDialog.showSaveDialog(this);
-            File projectFile = saveDialog.getSelectedFile();
+            //JFileChooser saveDialog = new XFileChooser(XFileChooser.PROJECT_FILE);
+            //saveDialog.showSaveDialog(this);
+            File projectFile = selectProjectFileToSave(); //saveDialog.getSelectedFile();
 
             // if no project file is selected, do not save
             // the project (leave method)
@@ -1157,14 +1165,20 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
             modbusPalProject.projectFile = projectFile;
         }
 
+        WorkInProgressDialog dialog = new WorkInProgressDialog("Save project","Saving project...");
+        Runnable loadTask = createProjectSavingTask(modbusPalProject.projectFile, dialog);
 
+        Thread saver = new Thread( loadTask );
+        saver.setName("saver");
+        saver.start();
+        GUITools.align(this, dialog);
+        dialog.setVisible(true);
+        /*
         try
         {
-            saveProject();
+            saveProject(modbusPalProject.projectFile);
             // TODO: setTitle(APP_STRING+" ("+projectFile.getName()+")");
         }
-
-
         catch (FileNotFoundException ex)
         {
             // TODO: display an error message
@@ -1174,14 +1188,13 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         {
             // TODO: diplay an error message
             Logger.getLogger(ModbusPalPane.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        }*/
 }//GEN-LAST:event_saveProjectButtonActionPerformed
 
     /**
      * This method will load the specified project file by creating a new
      * ModbusPalProject instance, will set it as the current project by calling
      * setProject(), and return it.
-     * This method is not used internally, but it is handy for the scripts.
      * @param path complete pathname of the project file to load
      * @return the instance of ModbusPalProject, created after the specified
      * project file, that has been set as the current project.
@@ -1195,6 +1208,25 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
     throws ParserConfigurationException, SAXException, IOException, InstantiationException, IllegalAccessException
     {
         File projectFile = new File(path);
+        return loadProject(projectFile);
+    }
+
+    /**
+     * This method will load the specified project file by creating a new
+     * ModbusPalProject instance, will set it as the current project by calling
+     * setProject(), and return it.
+     * @param projectFile the project file to load
+     * @return the instance of ModbusPalProject, created after the specified
+     * project file, that has been set as the current project.
+     * @throws ParserConfigurationException
+     * @throws SAXException
+     * @throws IOException
+     * @throws InstantiationException
+     * @throws IllegalAccessException
+     */
+    public ModbusPalProject loadProject(File projectFile)
+    throws ParserConfigurationException, SAXException, IOException, InstantiationException, IllegalAccessException
+    {
         ModbusPalProject mpp = ModbusPalProject.load(projectFile);
         setProject(mpp);
         return mpp;
@@ -1202,14 +1234,14 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
 
     private void loadButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_loadButtonActionPerformed
 
-        File projectFile = projectPanelController.selectProjectFileToOpen();
+        File projectFile = selectProjectFileToOpen();
         if( projectFile == null )
         {
             return;
         }
 
         WorkInProgressDialog dialog = new WorkInProgressDialog("Load project","Loading project...");
-        Runnable loadTask = projectPanelController.createProjectLoadingTask(this, projectFile, dialog);
+        Runnable loadTask = createProjectLoadingTask(projectFile, dialog);
 
         Thread loader = new Thread( loadTask );
         loader.setName("loader");
@@ -1765,47 +1797,71 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         slavesListView.setVisible(b);
     }
 
-    public void setProjectPanelController(ProjectPanelController ppc)
+    protected File selectProjectFileToOpen()
     {
-        projectPanelController = ppc;
+        JFileChooser loadDialog = new XFileChooser(XFileChooser.PROJECT_FILE);
+        loadDialog.showOpenDialog(null);
+        File projectFile = loadDialog.getSelectedFile();
+        return projectFile;
     }
 
-
-    public static class ProjectPanelController
+    protected File selectProjectFileToSave()
     {
+        JFileChooser loadDialog = new XFileChooser(XFileChooser.PROJECT_FILE);
+        loadDialog.showSaveDialog(null);
+        File projectFile = loadDialog.getSelectedFile();
+        return projectFile;
+    }
 
-        public File selectProjectFileToOpen()
+    private Runnable createProjectLoadingTask(final File projectFile, final WorkInProgressDialog dialog)
+    {
+        return new Runnable()
         {
-            JFileChooser loadDialog = new XFileChooser(XFileChooser.PROJECT_FILE);
-            loadDialog.showOpenDialog(null);
-            File projectFile = loadDialog.getSelectedFile();
-            return projectFile;
-        }
-
-        public Runnable createProjectLoadingTask(final ModbusPalPane caller, final File project, final WorkInProgressDialog dialog)
-        {
-            return new Runnable()
+            @Override
+            public void run()
             {
-                @Override
-                public void run()
+                try
                 {
-                    try
-                    {
-                        ModbusPalProject mpp = ModbusPalProject.load(project);
-                        caller.setProject(mpp);
-                        //TODO: setTitle(APP_STRING+" ("+projectFile.getName()+")");
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.getLogger(ModbusPalPane.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-
-                    if( dialog.isVisible() )
-                    {
-                        dialog.setVisible(false);
-                    }
+                    loadProject(projectFile);
+                    //TODO: setTitle(APP_STRING+" ("+projectFile.getName()+")");
                 }
-            };
-        }
+                catch (Exception ex)
+                {
+                    Logger.getLogger(ModbusPalPane.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+                if( dialog.isVisible() )
+                {
+                    dialog.setVisible(false);
+                }
+            }
+        };
     }
+
+
+    private Runnable createProjectSavingTask(final File projectFile, final WorkInProgressDialog dialog)
+    {
+        return new Runnable()
+        {
+            @Override
+            public void run()
+            {
+                try
+                {
+                    saveProject(projectFile);
+                    //TODO: setTitle(APP_STRING+" ("+projectFile.getName()+")");
+                }
+                catch (Exception ex)
+                {
+                    Logger.getLogger(ModbusPalPane.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+                if( dialog.isVisible() )
+                {
+                    dialog.setVisible(false);
+                }
+            }
+        };
+    }
+
 }
