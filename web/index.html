@@ -1,0 +1,107 @@
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>ModbusPal - Java MODBUS simulator</title>
+    <link rel="stylesheet" type="text/css" href="styles.css" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="description" content="Home of ModbusPal, the Java MODBUS simulator" />
+    <meta name="keywords" content="MODBUS slave simulator simulation Java Jyhton Python RXTX free opensource open source RTU TCP/IP serial script scripts" /> 
+  </head>
+  <body>
+
+      <div class="title">
+          <h1>ModbusPal - Java MODBUS simulator</h1>
+          <p><img src="modbuspal_logo_big.jpg" class="img-stand-alone" alt="ModbusPal Logo" />
+      </div>
+      
+      <div class="hotstuff">
+        <span class="hotbutton"><a href="http://sourceforge.net/projects/modbuspal/files/modbuspal/RC%20version%201.6b/" title="Download ModbusPal v1.6b">Download v1.6b</a></span>
+        <span class="hotbutton"><a href="http://sourceforge.net/apps/mediawiki/modbuspal/index.php?title=Main_Page" title="ModbusPal wiki is dedicated to sharing pieces of code">ModbusPal Wiki</a></span>
+        <span class="hotbutton"><a href="http://sourceforge.net/projects/modbuspal/" title="ModbusPal project on SourceForge">SourceForge.net</a></span>
+        <span class="hotbutton"><a href="https://sourceforge.net/apps/mantisbt/modbuspal/" title="ModbusPal but tracker on SourceForge">Bug Tracker</a></span>
+        <span class="hotbutton"><a href="https://sourceforge.net/project/memberlist.php?group_id=248558" title="Contact the author of ModbusPal">Contact</a></span>
+      </div>
+      
+    <h2>What is ModbusPal?</h2>
+    
+      <p>ModbusPal is a MODBUS slave simulator. Its purpose is to offer an easy
+      to use interface with the capabilities to reproduce complex and realistic MODBUS
+      environments.</p>
+
+      <p>The core of ModbusPal is written in Java. TCP/IP is supported
+      natively, and the serial communication is supported if RxTx library is
+      installed on the computer.</p>
+
+      <p>Other simulation tools offer built-in functions to &quot;animate&quot; the data
+      of the virtual MODBUS slaves. But there are always situations where
+      predefined functions cannot reproduce the reality. The approach of
+      ModbusPal is to let the user write external scripts: what predefined
+      functions can't do, scripts will.</p>
+
+      <p>The second key feature of ModbusPal is the &quot;Learn&quot; mode. As ModbusPal
+      receives MODBUS requests from the master, it will dynamically create
+      the missing resources: slaves, registers and coils are generated
+      on-the-fly.</p>
+      
+      <p>ModbusPal is free and open source, released under the GPL license.</p>
+
+    <h2>What does ModbusPal do?</h2>
+    
+    <p>In its latest version, ModbusPal simulates only MODBUS slaves. The
+    MODBUS protocol is not fully implemented (RTU, Serial, TCP/IP, 
+    registers, coils), but its getting better and better.</p>
+    
+    <p>ModbusPal can simulate up to 247 MODBUS slaves. Each slave can
+    has holding registers and coils. Each register or coil can be
+    animated by being associated to a dynamic value generator, called
+    "automation".</p>
+    
+    <p>There are so many different devices in the field using MODBUs in 
+    so many different ways that it is impossible to create a universal similator.
+    Unless, like ModbusPal, the user is encouraged to create scripts that implement
+    the specifities of the simulated devices. ModbusPal lets the user create 
+    Python scripts of many different kinds:</p>
+    <ul title="Examples of scripts">
+    <li>customized value generators
+    <li>customized bindings to associate an automation to a register or coil
+    <li>customized MODBUS function code, in the "user-defined" range (65-75 and 100-110)
+    <li>generating a project-specific user-interface (using Swing, for example)
+    <li>creating a time-based script: activate this, disable that, add a new element in the project, ...
+    </ul>
+    
+    <p>ModbusPal can be embedded in another Java application
+    as a third-party library. Most of the source code is commented,
+    and the Javadoc is also available for download.</p>
+    
+    <p>Also introduced in v1.6, each MODBUS slave has behavioral settings such as:>/p>
+    <ul title="Examples of the tuning parameters">
+    <li>response time (random value within a configurable range)
+    <li>simulated random errors (currently, only the "no reply" error type exists)
+    </ul>
+
+    <h2>What's new in v1.6?</h2>
+
+    <ul title="Summary of changes in the ModbusPal v1.6">
+        <li>Add support for 1, 1.5 or 2 stop bits (serial link)
+        <li>Add automation chart (requires jfreechart)
+        <li>Fix tcp/ip link when reply is length=0
+        <li>Disambiguation of the various &quot;saveSettings&quot; and &quot;loadSettings&quot; methods
+        <li>Introduce the &quot;Tuning&quot; tab in slave dialog.
+        <li>New embedded help browser
+        <li>Fix bug with list of existing instances in AddFunctionDialog
+        <li>Add SINT16 binding
+        <li>Simplification of script support. Only one &quot;kind&quot; of script is offered
+        <li>The user can define scripted PDU processors for the &quot;user-defined&quot; MODBUS functions
+        <li>Add &quot;stay on top&quot; checkbox in some dialogs
+        <li>ModbusPal can be executed without a GUI.
+        <li>ModbusPal can be embedded into another java application
+        <li>Add a sine generator
+        <li>Change name of slave address selection dialog when duplicating
+    </ul>
+    
+  </body>
+</html>
