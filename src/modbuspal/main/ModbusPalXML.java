@@ -13,6 +13,7 @@ public interface ModbusPalXML
 {
     /* SLAVE */
     public static final String XML_SLAVE_ID_ATTRIBUTE = "id";
+    public static final String XML_SLAVE_ID2_ATTRIBUTE = "id2";
     public static final String XML_SLAVE_ENABLED_ATTRIBUTE = "enabled";
     public static final String XML_SLAVE_NAME_ATTRIBUTE = "name";
     public static final String XML_SLAVE_IMPLEMENTATION_ATTRIBUTE = "implementation";

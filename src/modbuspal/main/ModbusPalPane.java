@@ -35,6 +35,7 @@ import modbuspal.master.ModbusMasterDialog;
 import modbuspal.recorder.ModbusPalRecorder;
 import modbuspal.script.ScriptManagerDialog;
 import modbuspal.slave.ModbusSlave;
+import modbuspal.slave.ModbusSlaveAddress;
 import modbuspal.toolkit.GUITools;
 import modbuspal.toolkit.XFileChooser;
 import org.xml.sax.SAXException;
@@ -147,12 +148,9 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         //- - - - - - - - - - - - - -
 
         slavesListPanel.removeAll();
-        for(int i=0; i<ModbusConst.MAX_MODBUS_SLAVE; i++)
+        for(ModbusSlave s : project.getModbusSlaves())
         {
-            if( project.getModbusSlave(i)!=null )
-            {
-                modbusSlaveAdded(project.getModbusSlave(i));
-            }
+            modbusSlaveAdded(s);
         }
 
         //- - - - - - - - - - - - - -
@@ -278,9 +276,9 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
             consoleToggleButton.setToolTipText("Console is disabled");
         }
 
-        installRecorder();
-        installCommPorts();
-        installScriptEngine();
+        //installRecorder();
+        //installCommPorts();
+        //installScriptEngine();
 
         setProject( new ModbusPalProject() );
 
@@ -746,7 +744,6 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         toolsPanel.setLayout(new java.awt.GridBagLayout());
 
         masterToggleButton.setText("Master");
-        masterToggleButton.setEnabled(false);
         masterToggleButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 masterToggleButtonActionPerformed(evt);
@@ -1126,7 +1123,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
             //slave.setName(name);
             //ModbusPal.addModbusSlave(slave);
 
-            int ids[] = dialog.getSlaveIds();
+            ModbusSlaveAddress ids[] = dialog.getSlaveIds();
             String name = dialog.getSlaveName();
             for( int i=0; i<ids.length; i++ )
             {
@@ -1295,7 +1292,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
      * @param id the MODBUS id of the slave
      * @param enabled true to enable the slave, false to disable it
      */
-    public void setModbusSlaveEnabled(int id, boolean enabled)
+    public void setModbusSlaveEnabled(ModbusSlaveAddress id, boolean enabled)
     {
         ModbusSlave slave = modbusPalProject.getModbusSlave(id, modbusPalProject.isLeanModeEnabled());
         if( slave!=null )
@@ -1631,13 +1628,13 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
     {
         // add slave panel into the gui and refresh gui
         ModbusSlavePanel panel = new ModbusSlavePanel(this,slave);
-        slavesListPanel.add( panel, new Integer(slave.getSlaveId()) );
+        slavesListPanel.add( panel /*, new Integer(slave.getSlaveId())*/ );
         slave.addModbusSlaveListener(panel);
         slaveListScrollPane.validate();
     }
 
 
-    private ModbusSlavePanel findModbusSlavePanel(int slaveId)
+    private ModbusSlavePanel findModbusSlavePanel(ModbusSlaveAddress slaveId)
     {
         Component panels[] = slavesListPanel.getComponents();
         for( int i=0; i<panels.length; i++ )
@@ -1645,7 +1642,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
             if( panels[i] instanceof ModbusSlavePanel )
             {
                 ModbusSlavePanel panel = (ModbusSlavePanel)panels[i];
-                if( panel.getSlaveId()==slaveId )
+                if( panel.getSlaveId().equals(slaveId) )
                 {
                     return panel;
                 }
@@ -1657,7 +1654,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
     @Override
     public void modbusSlaveRemoved(ModbusSlave slave)
     {
-        int slaveID = slave.getSlaveId();
+        ModbusSlaveAddress slaveID = slave.getSlaveId();
 
         ModbusSlavePanel panel = findModbusSlavePanel(slaveID);
         

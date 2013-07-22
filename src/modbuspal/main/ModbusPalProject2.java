@@ -5,7 +5,10 @@
 
 package modbuspal.main;
 
+import java.util.Collection;
+import java.util.HashMap;
 import modbuspal.slave.ModbusSlave;
+import modbuspal.slave.ModbusSlaveAddress;
 
 /**
  * takes care of some particularies of the management of the modbus slaves
@@ -14,7 +17,8 @@ import modbuspal.slave.ModbusSlave;
  */
 public abstract class ModbusPalProject2
 {
-    final private ModbusSlave[] knownSlaves = new ModbusSlave[ModbusConst.MAX_MODBUS_SLAVE];
+    //final private ModbusSlave[] knownSlaves = new ModbusSlave[ModbusConst.MAX_MODBUS_SLAVE];
+    final private HashMap<ModbusSlaveAddress, ModbusSlave> knownSlaves = new HashMap<ModbusSlaveAddress, ModbusSlave>();
 
      /**
      * Returns the MODBUS slave identified by its slave number. If the slave
@@ -26,16 +30,16 @@ public abstract class ModbusPalProject2
      * @return the instance of ModbusSlave associated with the slave number
      * or null if no slave is associated with this number.
      */
-    public ModbusSlave getModbusSlave(int id, boolean createIfNotExist)
+    public ModbusSlave getModbusSlave(ModbusSlaveAddress id, boolean createIfNotExist)
     {
-        if( knownSlaves[id]!=null )
+        if( knownSlaves.get(id)!=null )
         {
-            return knownSlaves[id];
+            return knownSlaves.get(id);
         }
         else if( createIfNotExist==true )
         {
             setModbusSlave( id, new ModbusSlave(id) );
-            return knownSlaves[id];
+            return knownSlaves.get(id);
         }
         else
         {
@@ -51,10 +55,10 @@ public abstract class ModbusPalProject2
      * or null if there was no modbus slave previously defined for this slave
      * number.
      */
-    protected ModbusSlave setModbusSlave(int id, ModbusSlave s)
+    protected ModbusSlave setModbusSlave(ModbusSlaveAddress id, ModbusSlave s)
     {
-        ModbusSlave old = knownSlaves[id];
-        knownSlaves[id]=s;
+        ModbusSlave old = knownSlaves.get(id);
+        knownSlaves.put(id, s);
         if(s!=null)
         {
             notifySlaveAdded(s);
@@ -87,9 +91,9 @@ public abstract class ModbusPalProject2
      * @return the instance of ModbusSlave associated with the slave number
      * or null if no slave is associated with this number.
      */
-    public ModbusSlave getModbusSlave(int id)
+    public ModbusSlave getModbusSlave(ModbusSlaveAddress id)
     {
-        return getModbusSlave(id,false);
+        return getModbusSlave(id, false);
     }
 
     /**
@@ -99,7 +103,8 @@ public abstract class ModbusPalProject2
      */
     public ModbusSlave[] getModbusSlaves()
     {
-        return knownSlaves.clone();
+        ModbusSlave[] output = new ModbusSlave[0];
+        return knownSlaves.values().toArray(output);
     }
 
     /**
@@ -108,15 +113,7 @@ public abstract class ModbusPalProject2
      */
     public int getModbusSlaveCount()
     {
-        int count = 0;
-        for(int i=0; i<knownSlaves.length; i++)
-        {
-            if( knownSlaves[i]!=null )
-            {
-                count++;
-            }
-        }
-        return count;
+        return knownSlaves.size();
     }
 
 }

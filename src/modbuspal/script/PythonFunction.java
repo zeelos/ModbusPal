@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import javax.swing.JPanel;
 import modbuspal.slave.ModbusPduProcessor;
+import modbuspal.slave.ModbusSlaveAddress;
 import org.w3c.dom.NodeList;
 
 /**
@@ -20,7 +21,7 @@ implements ModbusPduProcessor
 {
 
     @Override
-    public int processPDU(byte functionCode, int slaveID, byte[] buffer, int offset, boolean createIfNotExist) {
+    public int processPDU(byte functionCode, ModbusSlaveAddress slaveID, byte[] buffer, int offset, boolean createIfNotExist) {
         return -1;
     }
 

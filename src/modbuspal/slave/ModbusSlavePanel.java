@@ -53,7 +53,7 @@ implements WindowListener, ModbusSlaveListener,AncestorListener
      * Gets the slave number of the modbus slave displayed by this panel
      * @return the slave id
      */
-    public int getSlaveId()
+    public ModbusSlaveAddress getSlaveId()
     {
         return modbusSlave.getSlaveId();
     }
@@ -91,9 +91,9 @@ implements WindowListener, ModbusSlaveListener,AncestorListener
         setBorder(javax.swing.BorderFactory.createEtchedBorder());
         setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 3, 3));
 
-        slaveIdLabel.setFont(new java.awt.Font("Tahoma", 1, 11));
+        slaveIdLabel.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         slaveIdLabel.setText(String.valueOf(modbusSlave.getSlaveId()));
-        slaveIdLabel.setPreferredSize(new java.awt.Dimension(30, 14));
+        slaveIdLabel.setPreferredSize(new java.awt.Dimension(120, 14));
         add(slaveIdLabel);
 
         nameTextField.setText(modbusSlave.getName());
@@ -204,7 +204,7 @@ implements WindowListener, ModbusSlaveListener,AncestorListener
 
         if( dialog.isAdded() )
         {
-            int ids[] = dialog.getSlaveIds();
+            ModbusSlaveAddress ids[] = dialog.getSlaveIds();
             String name = dialog.getSlaveName();
             for( int i=0; i<ids.length; i++ )
             {

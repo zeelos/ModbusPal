@@ -82,16 +82,17 @@ extends javax.swing.JDialog
      * slave numbers
      * @return list of the modbus slave numbers to create in the project
      */
-    public int[] getSlaveIds()
+    public ModbusSlaveAddress[] getSlaveIds()
     {
-        Object sel[] = slaveIdList.getSelectedValues();
+        /*Object sel[] = slaveIdList.getSelectedValues();
         int ids[] = new int[sel.length];
 
         for( int i=0; i<sel.length; i++)
         {
             ids[i] = (Integer)sel[i];
         }
-        return ids;
+        return ids;*/
+        throw new UnsupportedOperationException("not yet supported");
     }
 
     /**

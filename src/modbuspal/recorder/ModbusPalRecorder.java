@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import modbuspal.slave.ModbusSlaveAddress;
 import modbuspal.toolkit.HexaTools;
 import modbuspal.toolkit.XFileChooser;
 
@@ -32,7 +33,7 @@ public class ModbusPalRecorder
      * @param offset offset where the actua data starts in the buffer
      * @param pduLength the length of the incoming pdu
      */
-    public static void recordIncoming(int slaveID, byte[] buffer, int offset, int pduLength)
+    public static void recordIncoming(ModbusSlaveAddress slaveID, byte[] buffer, int offset, int pduLength)
     {
         uniqInst.record("in", slaveID, buffer, offset, pduLength);
     }
@@ -46,7 +47,7 @@ public class ModbusPalRecorder
      * @param offset offset where the actua data starts in the buffer
      * @param pduLength the length of the incoming pdu
      */
-    public static void recordOutgoing(int slaveID, byte[] buffer, int offset, int pduLength)
+    public static void recordOutgoing(ModbusSlaveAddress slaveID, byte[] buffer, int offset, int pduLength)
     {
         uniqInst.record("out", slaveID, buffer, offset, pduLength);
     }
@@ -175,7 +176,7 @@ public class ModbusPalRecorder
         uniqInst.setOutput(null);
     }
 
-    private synchronized void record(String tag, int slaveID, byte[] buffer, int offset, int pduLength)
+    private synchronized void record(String tag, ModbusSlaveAddress slaveID, byte[] buffer, int offset, int pduLength)
     {
         Date now = new Date();
         if( start==null )

@@ -18,6 +18,7 @@ import javax.swing.ComboBoxModel;
 import javax.swing.event.ListDataListener;
 import modbuspal.main.ModbusPalProject;
 import modbuspal.main.ModbusRequest;
+import modbuspal.slave.ModbusSlaveAddress;
 import modbuspal.toolkit.ModbusTools;
 
 /**
@@ -351,7 +352,7 @@ implements ModbusLink, Runnable, SerialPortEventListener
                     if( receivedCRC == computedCRC )
                     {
                         //System.out.println("read "+ totalLen + " bytes");
-                        pduLength = processPDU(slaveID, buffer, 1, pduLength);
+                        pduLength = processPDU(new ModbusSlaveAddress(slaveID), buffer, 1, pduLength);
                     }
 
                     else

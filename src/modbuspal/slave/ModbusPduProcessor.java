@@ -39,7 +39,7 @@ extends Instantiable<ModbusPduProcessor>
      * forget that the reply is at least one byte long, because the first byte
      * contains the function code.
      */
-    public int processPDU(byte functionCode, int slaveID, byte[] buffer, int offset, boolean createIfNotExist);
+    public int processPDU(byte functionCode, ModbusSlaveAddress slaveID, byte[] buffer, int offset, boolean createIfNotExist);
 
     /**
      * Returns a JPanel that is designed to graphically reflect the settings

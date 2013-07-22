@@ -27,7 +27,7 @@ extends ModbusRegisters
     }
 
     @Override
-    public int processPDU(byte functionCode, int slaveID, byte[] buffer, int offset, boolean createIfNotExist)
+    public int processPDU(byte functionCode, ModbusSlaveAddress slaveID, byte[] buffer, int offset, boolean createIfNotExist)
     {
         switch( functionCode )
         {

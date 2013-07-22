@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import modbuspal.main.ModbusPalProject;
+import modbuspal.slave.ModbusSlaveAddress;
 import modbuspal.toolkit.ModbusTools;
 
 /**
@@ -146,7 +147,7 @@ implements Runnable
                 }
 
                 // interpret PDU and get result:
-                pduLength = processPDU(uID,buffer,7,pduLength);
+                pduLength = processPDU( new ModbusSlaveAddress(slaveSocket.getInetAddress(), uID), buffer, 7, pduLength);
 
                 if( pduLength > 0 )
                 {

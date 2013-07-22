@@ -12,6 +12,7 @@ import modbuspal.main.ModbusConst;
 import modbuspal.recorder.ModbusPalRecorder;
 import modbuspal.slave.ModbusPduProcessor;
 import modbuspal.slave.ModbusSlave;
+import modbuspal.slave.ModbusSlaveAddress;
 
 
 /**
@@ -47,7 +48,7 @@ implements ModbusConst
      * @return the size of the reply. if less than 1, modbuspal considers that
      * there is no reply to the request.
      */
-    protected int processPDU(int slaveID, byte[] buffer, int offset, int pduLength)
+    protected int processPDU(ModbusSlaveAddress slaveID, byte[] buffer, int offset, int pduLength)
     {
         // record the request
         ModbusPalRecorder.recordIncoming(slaveID,buffer,offset,pduLength);

@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 import modbuspal.main.ModbusPalProject;
 import modbuspal.main.ModbusRequest;
 import modbuspal.recorder.ModbusPalRecord;
+import modbuspal.slave.ModbusSlaveAddress;
 
 /**
  * The replay link reproduces the incoming requests from a previously recorded
@@ -122,7 +123,7 @@ implements ModbusLink, Runnable
                         }
                         prev_timestamp = timestamp;
 
-                        int slaveId = record.getSlaveID();
+                        ModbusSlaveAddress slaveId = record.getSlaveID();
                         byte[] data = record.getData();
                         int pduLength = processPDU(slaveId, data, 0, record.getDataLength() );
                     }

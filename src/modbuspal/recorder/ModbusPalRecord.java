@@ -7,6 +7,7 @@ package modbuspal.recorder;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import modbuspal.slave.ModbusSlaveAddress;
 import modbuspal.toolkit.HexaTools;
 
 /**
@@ -99,9 +100,10 @@ public class ModbusPalRecord
      * request.
      * @return slave id associated with this record
      */
-    public int getSlaveID()
+    public ModbusSlaveAddress getSlaveID()
     {
-        return recordSlave;
+        throw new UnsupportedOperationException("not yet implemented");
+        //return recordSlave;
     }
 
     /**

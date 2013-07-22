@@ -18,6 +18,7 @@ import modbuspal.instanciator.InstantiableManager;
 import modbuspal.main.ModbusConst;
 import modbuspal.main.ModbusPalProject;
 import modbuspal.main.ModbusPalXML;
+import static modbuspal.main.ModbusPalXML.XML_SLAVE_ID_ATTRIBUTE;
 import modbuspal.toolkit.InstanceCounter;
 import modbuspal.toolkit.XMLTools;
 import org.w3c.dom.Node;
@@ -30,7 +31,7 @@ import org.w3c.dom.NodeList;
 public final class ModbusSlave
 implements ModbusPalXML, ModbusConst
 {
-    private int slaveId;
+    private ModbusSlaveAddress slaveId;
     private boolean enabled;
     private ModbusRegisters holdingRegisters = new ModbusRegisters();
     private ModbusCoils coils = new ModbusCoils();
@@ -58,11 +59,11 @@ implements ModbusPalXML, ModbusConst
      * Creates a new ModbusSlave, with the specified slave address.
      * @param id slave address assigned to this ModbusSlave.
      */
-    public ModbusSlave(int id)
+    public ModbusSlave(ModbusSlaveAddress a)
     {
         this();
-        slaveId = id;
-        customName = "Slave " + id;
+        slaveId = a;
+        customName = "Slave " + a.toString();
         enabled = true;
 
     }
@@ -607,8 +608,17 @@ implements ModbusPalXML, ModbusConst
 
         if( importMode==false )
         {
-            String id = XMLTools.getAttribute(XML_SLAVE_ID_ATTRIBUTE, node);
-            slaveId = Integer.valueOf(id);
+            String id2 = XMLTools.getAttribute(XML_SLAVE_ID2_ATTRIBUTE, node);
+            if( id2 != null )
+            {
+                //slaveId = Integer.valueOf(id2);
+                throw new UnsupportedOperationException("not yet implemented");
+            }
+            else
+            {
+                String id = XMLTools.getAttribute(XML_SLAVE_ID_ATTRIBUTE, node);
+                slaveId = new ModbusSlaveAddress(Integer.valueOf(id));
+            }
 
             String en = XMLTools.getAttribute(XML_SLAVE_ENABLED_ATTRIBUTE, node);
             enabled = Boolean.parseBoolean(en);
@@ -757,7 +767,7 @@ implements ModbusPalXML, ModbusConst
      * returns the MODBUS id associated with this slave
      * @return id of this slave.
      */
-    public int getSlaveId()
+    public ModbusSlaveAddress getSlaveId()
     {
         return slaveId;
     }

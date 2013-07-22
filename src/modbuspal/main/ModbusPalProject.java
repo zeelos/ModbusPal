@@ -24,6 +24,7 @@ import modbuspal.script.ScriptListener;
 import modbuspal.script.ScriptRunner;
 import modbuspal.slave.ModbusSlave;
 import modbuspal.slave.ModbusPduProcessor;
+import modbuspal.slave.ModbusSlaveAddress;
 import modbuspal.toolkit.FileTools;
 import modbuspal.toolkit.XMLTools;
 import org.w3c.dom.Document;
@@ -454,9 +455,20 @@ implements ModbusPalXML
         {
             // retrieve the slave that is the parent of this register
             Node parentSlave = XMLTools.findParent(parentRegister, "slave");
-            String slaveAddress = XMLTools.getAttribute(ModbusPalXML.XML_SLAVE_ID_ATTRIBUTE, parentSlave);
-            int slaveId = Integer.parseInt(slaveAddress);
-            slave = getModbusSlave(slaveId);
+            
+            String slaveAddress = XMLTools.getAttribute(ModbusPalXML.XML_SLAVE_ID2_ATTRIBUTE, parentSlave);
+            if( slaveAddress!= null )
+            {
+                ModbusSlaveAddress msa = ModbusSlaveAddress.parse(slaveAddress);
+                slave = getModbusSlave(msa);
+            }
+            else
+            {
+                slaveAddress = XMLTools.getAttribute(ModbusPalXML.XML_SLAVE_ID_ATTRIBUTE, parentSlave);
+                int slaveId = Integer.parseInt(slaveAddress);
+                ModbusSlaveAddress msa = new ModbusSlaveAddress(slaveId);
+                slave = getModbusSlave(msa);
+            }
         }
 
         // bind the register and the automation
@@ -719,13 +731,9 @@ implements ModbusPalXML
     private void saveSlaves(OutputStream out)
     throws IOException
     {
-        for( int i=0; i<ModbusConst.MAX_MODBUS_SLAVE; i++ )
+        for(ModbusSlave slave:getModbusSlaves())
         {
-            ModbusSlave slave = getModbusSlave(i);
-            if( slave != null )
-            {
-                slave.save(out,true);
-            }
+            slave.save(out, true);
         }
     }
 
@@ -1084,13 +1092,9 @@ implements ModbusPalXML
      */
     void removeAllBindings(String classname)
     {
-        for( int i=0; i<ModbusConst.MAX_MODBUS_SLAVE; i++ )
+        for(ModbusSlave slave:getModbusSlaves())
         {
-            ModbusSlave slave = getModbusSlave(i);
-            if( slave != null )
-            {
-                slave.removeAllBindings(classname);
-            }
+            slave.removeAllBindings(classname);
         }
     }
 
@@ -1160,13 +1164,9 @@ implements ModbusPalXML
      */
     void removeAllFunctions(String classname)
     {
-        for( int i=0; i<ModbusConst.MAX_MODBUS_SLAVE; i++ )
+        for(ModbusSlave slave:getModbusSlaves())
         {
-            ModbusSlave slave = getModbusSlave(i);
-            if( slave != null )
-            {
-                slave.removeAllFunctions(classname);
-            }
+            slave.removeAllFunctions(classname);
         }
     }
 
@@ -1235,7 +1235,7 @@ implements ModbusPalXML
      */
     public boolean addModbusSlave(ModbusSlave slave)
     {
-        int slaveID = slave.getSlaveId();
+        ModbusSlaveAddress slaveID = slave.getSlaveId();
 
         // check if slaveID is already assigned:
         if( getModbusSlave(slaveID) != null )
@@ -1271,16 +1271,12 @@ implements ModbusPalXML
     {
         ArrayList<ModbusSlave> found = new ArrayList<ModbusSlave>();
 
-        for( int i=0; i<ModbusConst.MAX_MODBUS_SLAVE; i++ )
+        for(ModbusSlave slave : getModbusSlaves())
         {
-            ModbusSlave slave = getModbusSlave(i);
-            if( slave != null )
+            if( slave.getName().compareTo(name)==0 )
             {
-                if( slave.getName().compareTo(name)==0 )
-                {
-                    found.add(slave);
-                }
-            }
+                found.add(slave);
+            }  
         }
 
         if( found.isEmpty() )
@@ -1306,7 +1302,7 @@ implements ModbusPalXML
      */
     public ModbusSlave submitModbusSlave(ModbusSlave slave)
     {
-        int slaveID = slave.getSlaveId();
+        ModbusSlaveAddress slaveID = slave.getSlaveId();
 
         // check if slaveID is already assigned:
         if( getModbusSlave(slaveID) != null )
@@ -1345,7 +1341,7 @@ implements ModbusPalXML
      * Removes the specified MODBUS  slave from the project.
      * @param slaveID the slave number of the MODBUS slave to remove
      */
-    public void removeModbusSlave(int slaveID)
+    public void removeModbusSlave(ModbusSlaveAddress slaveID)
     {
         ModbusSlave slave = getModbusSlave(slaveID);
         if( slave!=null )
@@ -1362,7 +1358,7 @@ implements ModbusPalXML
      */
     public void removeModbusSlave(ModbusSlave slave)
     {
-        int slaveID = slave.getSlaveId();
+        ModbusSlaveAddress slaveID = slave.getSlaveId();
         removeModbusSlave(slaveID);
     }
 
@@ -1385,7 +1381,7 @@ implements ModbusPalXML
      * @param idDst the slave number of the copy 
      * @param name the name to give to the copy
      */
-    public void duplicateModbusSlave(int idSrc, int idDst, String name)
+    public void duplicateModbusSlave(ModbusSlaveAddress idSrc, ModbusSlaveAddress idDst, String name)
     {
         ModbusSlave newSlave = new ModbusSlave(idDst);
         newSlave.setName(name);
@@ -1423,7 +1419,7 @@ implements ModbusPalXML
      * @param b if true, enables the MODBUS slave. if false, disables the
      * MODBUS slave.
      */
-    public void setSlaveEnabled(int slaveID, boolean b)
+    public void setSlaveEnabled(ModbusSlaveAddress slaveID, boolean b)
     {
         ModbusSlave ms = getModbusSlave(slaveID, learnModeEnabled);
         if( ms!=null )
@@ -1441,12 +1437,12 @@ implements ModbusPalXML
      * @param slaveID
      * @return true if the slave is enabled; false otherwise.
      */
-    public boolean isSlaveEnabled(int slaveID)
+    public boolean isSlaveEnabled(ModbusSlaveAddress slaveID)
     {
-        if( (slaveID<0) || (slaveID>=ModbusConst.MAX_MODBUS_SLAVE) )
+        /*if( (slaveID<0) || (slaveID>=ModbusConst.MAX_MODBUS_SLAVE) )
         {
             return false;
-        }
+        }*/
 
         ModbusSlave ms = getModbusSlave(slaveID,learnModeEnabled);
         if( ms!=null )
@@ -1465,7 +1461,7 @@ implements ModbusPalXML
      * @throws FileNotFoundException
      * @throws IOException 
      */
-    public void exportSlave(File exportFile, int modbusID, boolean withBindings, boolean withAutomations)
+    public void exportSlave(File exportFile, ModbusSlaveAddress modbusID, boolean withBindings, boolean withAutomations)
     throws FileNotFoundException, IOException
     {
         ModbusSlave exportedSlave = getModbusSlave(modbusID);
@@ -1516,7 +1512,7 @@ implements ModbusPalXML
      * @throws InstantiationException
      * @throws IllegalAccessException 
      */
-    public void importSlave(File importFile, int idDst, boolean withBindings, boolean withAutomations)
+    public void importSlave(File importFile, ModbusSlaveAddress idDst, boolean withBindings, boolean withAutomations)
     throws ParserConfigurationException, SAXException, IOException, InstantiationException, IllegalAccessException
     {
         Document doc = XMLTools.ParseXML(importFile);
@@ -1544,7 +1540,7 @@ implements ModbusPalXML
      * @throws InstantiationException
      * @throws IllegalAccessException 
      */
-    public void importSlave(Document doc, int idDst, boolean withBindings, boolean withAutomations)
+    public void importSlave(Document doc, ModbusSlaveAddress idDst, boolean withBindings, boolean withAutomations)
     throws ParserConfigurationException, SAXException, IOException, InstantiationException, IllegalAccessException
     {
         ModbusSlave target = getModbusSlave(idDst,true);
@@ -1602,7 +1598,7 @@ implements ModbusPalXML
      * @return the ModbusPduProcessor, or null if none is assigned for the
      * specified MODBUS slave and function code.
      */
-    public ModbusPduProcessor getSlavePduProcessor(int slaveID, byte functionCode)
+    public ModbusPduProcessor getSlavePduProcessor(ModbusSlaveAddress slaveID, byte functionCode)
     {
         ModbusSlave ms = getModbusSlave(slaveID, learnModeEnabled);
         if( ms != null )
@@ -1627,7 +1623,7 @@ implements ModbusPalXML
      * reference with ModbusPalProject#getModbusSlave(), then call 
      * ModbusSlave#getHoldingRegisters(), and then ModbusRegisters#exist()
      */
-    @Deprecated
+    /*@Deprecated
     public boolean holdingRegistersExist(int slaveID, int startingAddress, int quantity)
     {
         ModbusSlave ms = getModbusSlave(quantity, learnModeEnabled);
@@ -1636,7 +1632,7 @@ implements ModbusPalXML
             return false;
         }
         return ms.getHoldingRegisters().exist(startingAddress, quantity, learnModeEnabled);
-    }
+    }*/
     
     /**
      * Checks if the modbus coils exist. If they don't and if the "lear mode"
@@ -1651,7 +1647,7 @@ implements ModbusPalXML
      * reference with ModbusPalProject#getModbusSlave(), then call 
      * ModbusSlave#getCoils(), and then ModbusCoils#exist()
      */
-    @Deprecated
+    /*@Deprecated
     public boolean coilsExist(int slaveID, int startingAddress, int quantity)
     {
         ModbusSlave ms = getModbusSlave(quantity, learnModeEnabled);
@@ -1660,7 +1656,7 @@ implements ModbusPalXML
             return false;
         }
         return ms.getCoils().exist(startingAddress, quantity, learnModeEnabled);
-    }
+    }*/
 
 
 
