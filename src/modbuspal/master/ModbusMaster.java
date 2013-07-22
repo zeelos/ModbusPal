@@ -22,7 +22,6 @@ implements Runnable
     private Thread thread = null;
     private boolean quit = false;
     private double reqPeriod = 1.0;
-    private ArrayList<MasterListener> masterListeners = new ArrayList<MasterListener>();
     private ModbusLink modbusLink = null;
 
 
@@ -43,11 +42,11 @@ implements Runnable
         if( modbusLink==null )
         {
             stop();
-            notifyLinkIsLost();
+            //notifyLinkIsLost();
         }
         else
         {
-            notifyLinkHasBeenSetup();
+            //notifyLinkHasBeenSetup();
         }
     }
 
@@ -112,7 +111,7 @@ implements Runnable
         // init:
         int currentIndex = 0;
 
-        notifyMasterHasStarted();
+        //notifyMasterHasStarted();
 
         while( quit==false )
         {
@@ -121,7 +120,7 @@ implements Runnable
 
             // send request
             modbusLink.execute(currentReq);
-            notifyRequestTransmitted(currentReq);
+            //notifyRequestTransmitted(currentReq);
             
             try {
                 // receive reply
@@ -129,7 +128,7 @@ implements Runnable
             } catch (InterruptedException ex) {
                 Logger.getLogger(ModbusMaster.class.getName()).log(Level.SEVERE, null, ex);
             }
-            notifyReplyReceived(currentReq);
+            //notifyReplyReceived(currentReq);
 
             if( quit == false )
             {
@@ -163,75 +162,6 @@ implements Runnable
         {
             thread=null;
         }
-        notifyMasterHasEnded();
+        //notifyMasterHasEnded();
     }
-
-
-    //
-    //
-    // EVENTS
-    //
-    //
-
-
-    public void addMasterListener(MasterListener l)
-    {
-        assert( masterListeners.contains(l) == false );
-        masterListeners.add(l);
-    }
-
-    public void removeMasterListener(MasterListener l)
-    {
-        masterListeners.remove(l);
-    }
-
-    private void notifyLinkHasBeenSetup()
-    {
-        for(MasterListener l:masterListeners)
-        {
-            l.masterLinkHasBeenSetup(this);
-        }
-    }
-
-    private void notifyLinkIsLost()
-    {
-        for(MasterListener l:masterListeners)
-        {
-            l.masterLinkIsLost(this);
-        }
-    }
-
-
-    private void notifyMasterHasEnded()
-    {
-        for(MasterListener l:masterListeners)
-        {
-            l.masterHasEnded(this);
-        }
-    }
-
-    private void notifyMasterHasStarted()
-    {
-        for(MasterListener l:masterListeners)
-        {
-            l.masterHasStarted(this);
-        }
-    }
-
-    private void notifyReplyReceived(ModbusRequest request)
-    {
-        for(MasterListener l:masterListeners)
-        {
-            l.replyReceived(request);
-        }
-    }
-
-    private void notifyRequestTransmitted(ModbusRequest request)
-    {
-        for(MasterListener l:masterListeners)
-        {
-            l.requestTransmitted(request);
-        }
-    }
-
 }
