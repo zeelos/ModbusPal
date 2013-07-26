@@ -14,11 +14,13 @@ package modbuspal.master;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
+import modbuspal.main.AddSlaveDialog;
 import modbuspal.main.ModbusPalProject;
 import modbuspal.main.ModbusRequest;
 import modbuspal.main.ErrorMessage;
 import modbuspal.main.ListLayout;
 import modbuspal.main.ModbusPalPane;
+import modbuspal.slave.ModbusSlaveAddress;
 
 /**
  *
@@ -82,6 +84,48 @@ extends javax.swing.JDialog
     }
     
 
+    private void addNewTargetWizard(ModbusMasterTask parent)
+    {
+        // create dialog for target selection
+        AddSlaveDialog asd = new AddSlaveDialog("Target slave(s)");
+        asd.setVisible(true);
+        if( asd.isAdded() == false )
+        {
+            return;
+        }
+        
+        // obtain data from the form
+        ModbusSlaveAddress[] targets = asd.getSlaveIds();
+        String targetName = asd.getSlaveName();
+        
+        // create new target node in the tree
+        ModbusMasterTarget mmt = new ModbusMasterTarget();
+        mmt.setTargetName(targetName);
+        mmt.setTargetList(targets);
+        
+        // add the new node in the tree
+        parent.add(mmt);
+        jTree1.setSelectionPath( new TreePath( mmt.getPath() ) );
+    }
+    
+    
+    
+    private void addNewRequestWizard( ModbusMasterTarget parent )
+    {
+        // create dialog for request selection
+        ModbusRequestDialog mrd = new ModbusRequestDialog();
+        mrd.setVisible(true);
+        if( mrd.isOK() == false )
+        {
+            return;
+        }
+        
+        ModbusMasterRequest mmr = mrd.getRequest();
+        parent.add(mmr);
+        jTree1.setSelectionPath( new TreePath( mmr.getPath() ) );
+    }
+    
+    
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -133,7 +177,11 @@ extends javax.swing.JDialog
             }
             else if( lastCpnt instanceof ModbusMasterTask )
             {
-                addNewTargetWizard();
+                addNewTargetWizard( (ModbusMasterTask)lastCpnt );
+            }
+            else if( lastCpnt instanceof ModbusMasterTarget )
+            {
+                addNewRequestWizard( (ModbusMasterTarget)lastCpnt );
             }
         }
         else

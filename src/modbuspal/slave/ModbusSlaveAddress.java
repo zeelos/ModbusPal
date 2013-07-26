@@ -35,6 +35,11 @@ public class ModbusSlaveAddress
         ipAddress = null;
     }
     
+    public ModbusSlaveAddress(InetAddress a)
+    {
+        ipAddress = a;
+        rtuAddress = -1;        
+    }
     
     public InetAddress getIpAddress()
     {

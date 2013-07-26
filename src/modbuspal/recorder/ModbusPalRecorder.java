@@ -185,7 +185,7 @@ public class ModbusPalRecorder
         }
         long timestamp = now.getTime() - start.getTime();
 
-        String open = String.format("<%s timestamp=%d slave=%d>", tag, timestamp, slaveID);
+        String open = String.format("<%s timestamp=%d slave=%s>", tag, timestamp, slaveID.toString());
         String hexa = HexaTools.toHexa(buffer, offset, pduLength);
         String close = String.format("</%s>\r\n",tag);
 

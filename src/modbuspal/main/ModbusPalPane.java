@@ -276,7 +276,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
             consoleToggleButton.setToolTipText("Console is disabled");
         }
 
-        //installRecorder();
+        installRecorder();
         //installCommPorts();
         //installScriptEngine();
 
@@ -1113,7 +1113,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
 
     private void addModbusSlaveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addModbusSlaveButtonActionPerformed
 
-        AddSlaveDialog dialog = new AddSlaveDialog(modbusPalProject.getModbusSlaves());
+        AddSlaveDialog dialog = new AddSlaveDialog();
         dialog.setVisible(true);
         if( dialog.isAdded() )
         {

@@ -5,6 +5,7 @@
 package modbuspal.master;
 
 import javax.swing.tree.DefaultMutableTreeNode;
+import modbuspal.slave.ModbusSlaveAddress;
 
 /**
  *
@@ -13,5 +14,18 @@ import javax.swing.tree.DefaultMutableTreeNode;
 public class ModbusMasterTarget
 extends DefaultMutableTreeNode
 {
+    private String targetName;
+    private ModbusSlaveAddress[] targetList;
+            
+    void setTargetName(String s) 
+    {
+        targetName = s;
+        setUserObject(targetName);
+    }
+
+    void setTargetList(ModbusSlaveAddress[] a) 
+    {
+        targetList = a;
+    }
     
 }

@@ -56,7 +56,9 @@ implements ModbusConst, ModbusSlaveListener
         modbusPalProject = modbusPalPane.getProject();
         modbusSlave = s;
         
-        setTitle( String.valueOf(s.getSlaveId()) + ":" + s.getName() );
+        ModbusSlaveAddress id = s.getSlaveId();
+        String name = s.getName();
+        setTitle( String.valueOf(id) + ":" + name );
         Image img = Toolkit.getDefaultToolkit().createImage( getClass().getResource("/modbuspal/main/img/icon32.png") );
         setIconImage(img);
         

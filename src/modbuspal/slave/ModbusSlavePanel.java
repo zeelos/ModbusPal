@@ -198,7 +198,7 @@ implements WindowListener, ModbusSlaveListener,AncestorListener
 
     private void duplicateButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_duplicateButtonActionPerformed
 
-        AddSlaveDialog dialog = new AddSlaveDialog(modbusSlave.getName(), modbusPalProject.getModbusSlaves() );
+        AddSlaveDialog dialog = new AddSlaveDialog(modbusSlave.getName());
         GUITools.align(this, dialog);
         dialog.setVisible(true);
 
