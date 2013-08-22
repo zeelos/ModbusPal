@@ -5,10 +5,15 @@
 
 package modbuspal.main;
 
+import java.net.SocketException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import modbuspal.slave.ModbusSlave;
 import modbuspal.slave.ModbusSlaveAddress;
+import modbuspal.toolkit.NetworkTools;
 
 /**
  * takes care of some particularies of the management of the modbus slaves
@@ -17,9 +22,159 @@ import modbuspal.slave.ModbusSlaveAddress;
  */
 public abstract class ModbusPalProject2
 {
-    //final private ModbusSlave[] knownSlaves = new ModbusSlave[ModbusConst.MAX_MODBUS_SLAVE];
     final private HashMap<ModbusSlaveAddress, ModbusSlave> knownSlaves = new HashMap<ModbusSlaveAddress, ModbusSlave>();
 
+    // The MODBUS ADDRESS we are trying to match has an InetAddress.
+    // 1/ A perfect match would be a MODBUS ADDRESS with the same InetAddress
+    // and also the same Rtu address.
+    // 2/ A very good match would be a MODBUS ADDRESS with no InetAddress but
+    // with a matching Rtu address.
+    // 3/ An acceptable match would be a MODBUS address with an
+    // InetAddress corresponding to a local network interface and a
+    // matching Rtu address.
+    // 4/ As a last resort, a MODBUS address with an InetAddress corresponding
+    // to a local network interface and no specified Rtu address would be ok.    
+    private ModbusSlaveAddress getMatchingTcpAddress(ModbusSlaveAddress id)
+    {
+        ModbusSlaveAddress bestMatch = null;
+        int matchRate = Integer.MAX_VALUE;
+        
+        Set<ModbusSlaveAddress> addresses = knownSlaves.keySet();
+        for(ModbusSlaveAddress address : addresses )
+        {
+            if(address.getIpAddress()==null)
+            {
+                if(address.getRtuAddress()==id.getRtuAddress())
+                {
+                    if( matchRate > 2 )
+                    {
+                        bestMatch = address;
+                        matchRate = 2;
+                    }
+                }
+            }
+            
+            else  if( address.getIpAddress().equals(id.getIpAddress()) == true )
+            {
+                // perfect IP address match. But now have to check the
+                // optional slave identifier.
+                if( address.getRtuAddress() == id.getRtuAddress() )
+                {
+                    if(matchRate > 1 )
+                    {
+                        bestMatch = address;
+                        matchRate = 1;
+                    }
+                }               
+            }
+            
+            else
+            {
+                try 
+                {
+                    if( NetworkTools.isLocalAddress(address.getIpAddress())==true )
+                    {
+                        if( address.getRtuAddress() == id.getRtuAddress() )
+                        {
+                            if(matchRate > 3)
+                            {
+                                bestMatch=address;
+                                matchRate = 3;
+                            }
+                        }
+                        else if( address.getRtuAddress() == -1 )
+                        {
+                            if(matchRate > 4)
+                            {
+                                bestMatch = address;
+                                matchRate = 4;
+                            }
+                        }
+                    }
+                }
+                catch (SocketException ex) 
+                {
+                    Logger.getLogger(ModbusPalProject2.class.getName()).log(Level.SEVERE, null, ex);
+                }                
+            }
+        }
+        return bestMatch;
+
+    }
+    
+    
+    
+    private ModbusSlaveAddress getMatchingRtuAddress(ModbusSlaveAddress id)
+    {
+        ModbusSlaveAddress output = null;
+        /*
+        Set<ModbusSlaveAddress> addresses = knownSlaves.keySet();
+        for(ModbusSlaveAddress address : addresses )
+        {
+            // try to find a matching address without ip address.
+            // if one is found return it immediately because it is
+            // a perfect match
+            if( address.getIpAddress()==null )
+            {
+                if (address.getRtuAddress()==id.getRtuAddress())
+                {
+                    output = address;
+                    return output;
+                }
+            }
+            else
+            {
+                try 
+                {
+                    if (address.getRtuAddress()==id.getRtuAddress())
+                    {
+                        // try to get a slave address with its ip set to
+                        // a local ip address. if one is found, it overrides
+                        // any previously found address.
+                        if( NetworkTools.isLocalAddress(address.getIpAddress())==true)
+                        {
+                            output = address;
+                        }
+                        else if(output==null)
+                        {
+                            output = address;
+                        }
+                    }
+                } 
+                catch (SocketException ex) 
+                {
+                    Logger.getLogger(ModbusPalProject2.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+
+        }
+        */
+        return output;
+        
+    }
+    
+    /**
+     * tries to retrieve an already existing ModbusSlaveAddress instance that
+     * might match the one in argument.
+     * @param id
+     * @return tries 
+     */
+    private ModbusSlaveAddress getMatchingSlaveAddress(ModbusSlaveAddress id)
+    {
+        // if the slave address in argument has no ip address
+        // (MODBUS RTU flavor)...
+        if( id.getIpAddress()==null )
+        {
+            return getMatchingRtuAddress(id);
+        }
+
+        // MODBUS TCP flavor...
+        else
+        {                
+            return getMatchingTcpAddress(id);
+        }
+    }
+    
      /**
      * Returns the MODBUS slave identified by its slave number. If the slave
      * does not exist, and if createIfNotExist is true, then the slave is created
@@ -32,9 +187,10 @@ public abstract class ModbusPalProject2
      */
     public ModbusSlave getModbusSlave(ModbusSlaveAddress id, boolean createIfNotExist)
     {
-        if( knownSlaves.get(id)!=null )
+        ModbusSlaveAddress matchedId = getMatchingSlaveAddress(id);
+        if( (matchedId!=null) && (knownSlaves.get(matchedId)!=null) )
         {
-            return knownSlaves.get(id);
+            return knownSlaves.get(matchedId);
         }
         else if( createIfNotExist==true )
         {

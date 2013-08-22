@@ -155,17 +155,45 @@ extends javax.swing.JDialog
         
     private List<ModbusSlaveAddress> tryParseIpAddress(String s)
     {
-        Pattern p = Pattern.compile("([\\d\\.]+)(?:[\\s]*-[\\s]*([\\d\\.]+))?");
-        //Pattern p = Pattern.compile("([\\d\\.]+)");
+        StringBuilder sb = new StringBuilder();
+        
+        // part of the pattern that finds an ip v4 address
+        sb.append("([\\d\\.]+)"); 
+        
+        // part of the pattern that finds the optionnal second ip v4 address.
+        // that second ip address defines a range for multiple slave creation.
+        sb.append("(?:[\\s]*-[\\s]*([\\d\\.]+))?");
+        
+        // part of the pattern that finds the optionnal rtu address
+        // associated with the ip
+        sb.append("(?:[\\s]*\\([\\s]*([\\d]+)[\\s]*\\))?");
+        
+        //Pattern p = Pattern.compile("([\\d\\.]+)(?:[\\s]*-[\\s]*([\\d\\.]+))?");
+        Pattern p = Pattern.compile(sb.toString());
         Matcher m = p.matcher(s.trim());
         if( m.find() )
         {
             int count = m.groupCount();
             String firstIp = m.group(1);
             String lastIp = m.group(2);
+            String rtuAddr = m.group(3);
+            int slaveAddress = -1;
+            
             if( lastIp==null )
             {
                 lastIp=firstIp;
+            }
+            
+            if(rtuAddr!=null)
+            {
+                try
+                {
+                    slaveAddress = Integer.parseInt(rtuAddr);
+                }
+                catch(NumberFormatException ex)
+                {
+                    slaveAddress=-1;
+                }
             }
             
             int[] startIp = parseIpv4(firstIp);
@@ -183,7 +211,7 @@ extends javax.swing.JDialog
                             {
                                 byte[] ip = new byte[]{ (byte)a, (byte)b, (byte)c, (byte)d };
                                 InetAddress addr = Inet4Address.getByAddress(ip);
-                                ModbusSlaveAddress msa = new ModbusSlaveAddress(addr);
+                                ModbusSlaveAddress msa = new ModbusSlaveAddress(addr, slaveAddress);
                                 output.add(msa);
                             } 
                             catch (UnknownHostException ex) 
