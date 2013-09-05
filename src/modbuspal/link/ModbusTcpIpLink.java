@@ -43,7 +43,7 @@ implements ModbusLink, Runnable
     public ModbusTcpIpLink(ModbusPalProject mpp, int port)
     throws IOException
     {
-        super();
+        super(mpp);
         modbusPalProject = mpp;
         tcpPort = port;
         serverSocket = new ServerSocket(port);
@@ -165,7 +165,7 @@ implements ModbusLink, Runnable
         int recv = sock.getInputStream().read(buffer);
         
         // rip MBAP header off
-        processPDU(dst, req, buffer, recv, length);
+        processPDU(req, dst, buffer, recv, length);
         
         return;
     }

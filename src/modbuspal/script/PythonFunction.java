@@ -8,6 +8,7 @@ package modbuspal.script;
 import java.io.IOException;
 import java.io.OutputStream;
 import javax.swing.JPanel;
+import modbuspal.master.ModbusMasterRequest;
 import modbuspal.slave.ModbusPduProcessor;
 import modbuspal.slave.ModbusSlaveAddress;
 import org.w3c.dom.NodeList;
@@ -23,6 +24,11 @@ implements ModbusPduProcessor
     @Override
     public int processPDU(byte functionCode, ModbusSlaveAddress slaveID, byte[] buffer, int offset, boolean createIfNotExist) {
         return -1;
+    }
+
+    @Override
+    public boolean processPDU(ModbusMasterRequest mmr, ModbusSlaveAddress slaveID, byte[] buffer, int offset, boolean createIfNotExist) {
+        return false;
     }
 
     @Override
@@ -91,6 +97,5 @@ implements ModbusPduProcessor
     @Deprecated
     public void loadSettings(NodeList list) {
     }
-
 
 }

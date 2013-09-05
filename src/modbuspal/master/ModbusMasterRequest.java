@@ -29,7 +29,33 @@ extends DefaultMutableTreeNode
     private byte functionCode;
     private int readStartAddress;
     private int quantityToRead;
+    private int writeStartAddress;
+    private int quantityToWrite;
     
+    public byte getFunctionCode()
+    {
+        return functionCode;
+    }
+    
+    public int getReadAddress()
+    {
+        return readStartAddress;
+    }
+    
+    public int getReadQuantity()
+    {
+        return quantityToRead;
+    }
+    
+    public int getWriteAddress()
+    {
+        return writeStartAddress;
+    }
+    
+    public int getWriteQuantity()
+    {
+        return quantityToWrite;
+    }
     
     public int toBytes(byte[] output, int offset)
     {
@@ -47,5 +73,17 @@ extends DefaultMutableTreeNode
         ModbusTools.setUint16(output, offset+1, readStartAddress); // starting address
         ModbusTools.setUint16(output, offset+3, quantityToRead); // quantity of registers
         return 5;
+    }
+
+    public void notifyPDUprocessed() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void notifyExceptionResponse() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    public void notifyPDUnotServiced() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

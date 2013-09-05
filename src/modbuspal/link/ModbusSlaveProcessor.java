@@ -9,6 +9,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import modbuspal.main.*;
 import modbuspal.main.ModbusConst;
+import static modbuspal.main.ModbusConst.XC_ILLEGAL_FUNCTION;
+import modbuspal.master.ModbusMasterRequest;
 import modbuspal.recorder.ModbusPalRecorder;
 import modbuspal.slave.ModbusPduProcessor;
 import modbuspal.slave.ModbusSlave;
@@ -108,6 +110,75 @@ implements ModbusConst
 
         ModbusPalRecorder.recordOutgoing(slaveID,buffer,offset,length);
         return length;
+    }
+
+    /**
+     * The subclass will call this method in order to process the content of
+     * the PDU that has been received from the slave.
+     * @param slaveID the slave identifier of the replying MODBUS device 
+     * @param buffer a byte buffer containing the MODBUS PDU
+     * @param offset the offset in the buffer where the PDU actually starts
+     * @param pduLength the length of the PDU.
+     * @return 
+     */
+    protected boolean processPDU(ModbusMasterRequest req, ModbusSlaveAddress slaveID, byte[] buffer, int offset, int pduLength)
+    {
+        // record the request
+        // ModbusPalRecorder.recordIncoming(slaveID,buffer,offset,pduLength);
+
+        // check if the slave is enabled
+        if( modbusPalProject.isSlaveEnabled(slaveID) == false )
+        {
+            System.err.println("Slave "+slaveID+" is not enabled");
+            req.notifyPDUnotServiced();
+            return false;
+        }
+
+        // get the slave:
+        ModbusSlave slave = modbusPalProject.getModbusSlave(slaveID);
+
+        byte functionCode = buffer[offset+0];
+        
+        // 
+        if( isExceptionResponse(buffer,offset)==true )
+        {
+            req.notifyExceptionResponse();
+            return false;
+        }
+
+        
+        // retrive the pdu processor for the modbus function:
+        
+        ModbusPduProcessor mspp = slave.getPduProcessor(functionCode);
+        if( mspp == null )
+        {
+            System.err.println("Unsupported function code "+functionCode);
+            //int length = makeExceptionResponse(functionCode,XC_ILLEGAL_FUNCTION, buffer, offset);
+            //ModbusPalRecorder.recordOutgoing(slaveID,buffer,offset,length);
+            req.notifyExceptionResponse();
+            return false;
+        }
+
+        boolean result = mspp.processPDU(req, slaveID, buffer, offset, modbusPalProject.isLeanModeEnabled());
+        if(result==false)
+        {
+            System.err.println("Illegal function code "+functionCode);
+            req.notifyPDUnotServiced();
+            return false;
+        }
+
+        req.notifyPDUprocessed();
+
+        // delay the reply
+        /*try {
+            Thread.sleep(slave.getReplyDelay());
+        } catch (InterruptedException ex) {
+            Logger.getLogger(ModbusSlaveProcessor.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        ModbusPalRecorder.recordOutgoing(slaveID,buffer,offset,length);
+        return length;*/
+        return true;
     }
 
     /**
