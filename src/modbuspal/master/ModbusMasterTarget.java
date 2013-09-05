@@ -4,6 +4,10 @@
  */
 package modbuspal.master;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import javax.swing.tree.DefaultMutableTreeNode;
 import modbuspal.slave.ModbusSlaveAddress;
 
@@ -26,6 +30,13 @@ extends DefaultMutableTreeNode
     void setTargetList(ModbusSlaveAddress[] a) 
     {
         targetList = a;
+    }
+    
+    public List<ModbusSlaveAddress> getTargetList()
+    {
+        ArrayList<ModbusSlaveAddress> output = new ArrayList<ModbusSlaveAddress>();
+        Collections.addAll(output, targetList);
+        return output;
     }
     
 }

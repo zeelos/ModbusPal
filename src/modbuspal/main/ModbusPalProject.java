@@ -11,6 +11,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.parsers.ParserConfigurationException;
@@ -20,6 +21,7 @@ import modbuspal.binding.Binding;
 import modbuspal.generator.Generator;
 import modbuspal.instanciator.InstantiableManager;
 import modbuspal.link.ModbusSerialLink;
+import modbuspal.master.ModbusMasterTask;
 import modbuspal.script.ScriptListener;
 import modbuspal.script.ScriptRunner;
 import modbuspal.slave.ModbusSlave;
@@ -48,6 +50,7 @@ implements ModbusPalXML
     private final ArrayList<Automation> automations = new ArrayList<Automation>();
     private final ArrayList<ScriptListener> scriptListeners = new ArrayList<ScriptListener>(); // synchronized
     private final ArrayList<ScriptRunner> scripts = new ArrayList<ScriptRunner>();
+    private final ArrayList<ModbusMasterTask> masterTasks = new ArrayList<ModbusMasterTask>();
     private boolean learnModeEnabled = false;
 
     final InstantiableManager<Generator> generatorFactory = new InstantiableManager<Generator>();
@@ -1994,4 +1997,55 @@ implements ModbusPalXML
     }
 
 
+    
+    
+    
+    
+    public void addModbusMasterTask(ModbusMasterTask mmt)
+    {
+        if( masterTasks.contains(mmt)==false )
+        {
+            masterTasks.add(mmt);
+            notifyModbusMasterTaskAdded(mmt);
+        }
+    }
+    
+    
+    private void notifyModbusMasterTaskAdded(ModbusMasterTask mmt)
+    {
+        synchronized(listeners)
+        {
+            for(ModbusPalListener l:listeners)
+            {
+                l.modbusMasterTaskAdded(mmt);
+            }
+        }
+    }
+    
+    public void removeModbusMasterTask(ModbusMasterTask mmt)
+    {
+        if( masterTasks.contains(mmt)==true )
+        {
+            masterTasks.add(mmt);
+            notifyModbusMasterTaskRemoved(mmt);
+        }
+    }
+    
+    
+    private void notifyModbusMasterTaskRemoved(ModbusMasterTask mmt)
+    {
+        synchronized(listeners)
+        {
+            for(ModbusPalListener l:listeners)
+            {
+                l.modbusMasterTaskRemoved(mmt);
+            }
+        }
+    }
+    
+    
+    public List<ModbusMasterTask> getModbusMasterTasks()
+    {
+        return masterTasks;
+    }
 }

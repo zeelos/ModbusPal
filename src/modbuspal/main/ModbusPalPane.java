@@ -30,8 +30,8 @@ import javax.swing.JPanel;
 import modbuspal.automation.Automation;
 import modbuspal.help.HelpViewer;
 import modbuspal.link.*;
-import modbuspal.master.ModbusMaster;
 import modbuspal.master.ModbusMasterDialog;
+import modbuspal.master.ModbusMasterTask;
 import modbuspal.recorder.ModbusPalRecorder;
 import modbuspal.script.ScriptManagerDialog;
 import modbuspal.slave.ModbusSlave;
@@ -56,7 +56,6 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
 
     private ArrayList<ModbusPalProjectListener> listeners = new ArrayList<ModbusPalProjectListener>();
         
-    private ModbusMaster modbusMaster = new ModbusMaster();
     private ModbusMasterDialog modbusMasterDialog = null;
     ScriptManagerDialog scriptManagerDialog = null;
     private ModbusLink currentLink = null;
@@ -171,6 +170,12 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         if(scriptManagerDialog!=null)
         {
             scriptManagerDialog.setProject(modbusPalProject);
+        }
+        
+        // Refresh MASTER
+        if( modbusMasterDialog!=null)
+        {
+            modbusMasterDialog.setProject(modbusPalProject);
         }
         
         System.out.printf("[%s] Project set\r\n", modbusPalProject.getName());
@@ -886,7 +891,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
     }// </editor-fold>//GEN-END:initComponents
 
 
-    private void startSerialLink()
+    private void startSerialLink(boolean isMaster)
     {
         //- - - - - - - - - - - -
         // GET BAUDRATE
@@ -935,9 +940,16 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         {
             int commPortIndex = comPortComboBox.getSelectedIndex();
             currentLink = new ModbusSerialLink(modbusPalProject, commPortIndex, baudrate, parity, stopBits, xonxoff, rtscts);
-            currentLink.start(this);
-            modbusMaster.setLink(currentLink);
-
+            
+            if(isMaster)
+            {
+                currentLink.startMaster(this);
+            }
+            else
+            {
+                currentLink.start(this);
+            }
+            
             ((TiltLabel)tiltLabel).start();
         }
         catch (Exception ex)
@@ -955,7 +967,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
 
     }
     
-    private void startTcpIpLink()
+    private void startTcpIpLink(boolean isMaster)
     {
         //portTextField.setEnabled(false);
         int port = -1;
@@ -979,8 +991,16 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         {
             System.out.printf("[%s] Start TCP/link (port=%d)\r\n", modbusPalProject.getName(), port);
             currentLink = new ModbusTcpIpLink(modbusPalProject, port);
-            currentLink.start(this);
-            modbusMaster.setLink(currentLink);
+            
+            if( isMaster )
+            {
+                currentLink.startMaster(this);
+            }
+            else
+            {
+                currentLink.start(this);
+            }
+            
             ((TiltLabel)tiltLabel).start();
         }
         catch (Exception ex)
@@ -997,7 +1017,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         }
     }
     
-    private void startReplayLink()
+    private void startReplayLink(boolean isMaster)
     {
         File recordFile = null;
 
@@ -1010,9 +1030,16 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         try
         {
             currentLink = new ModbusReplayLink(modbusPalProject, recordFile);
-            currentLink.start(this);
-            modbusMaster.setLink(currentLink);
-
+            
+            if(isMaster)
+            {
+                currentLink.startMaster(this);
+            }
+            else
+            {
+                currentLink.start(this);
+            }
+            
             ((TiltLabel)tiltLabel).start();
         }
         catch (Exception ex)
@@ -1037,27 +1064,35 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         System.out.printf("[%s] Start link\r\n", modbusPalProject.getName());
         GUITools.setAllEnabled(linksTabbedPane,false);
 
+        boolean isMaster = masterToggleButton.isSelected();
+        
         // if link is tcp/ip
         if( linksTabbedPane.getSelectedComponent()==tcpIpSettingsPanel )
         {
-            startTcpIpLink();
+            startTcpIpLink(isMaster);
         }
 
-        // if lnk is serial
+        // if link is serial
         else if( linksTabbedPane.getSelectedComponent()==jPanel1 )
         {
-            startSerialLink();
+            startSerialLink(isMaster);
         }
 
         // if link is replay:
         else if( linksTabbedPane.getSelectedComponent()==replaySettingsPanel )
         {
-            startReplayLink();
+            startReplayLink(isMaster);
         }
 
         else
         {
             throw new UnsupportedOperationException("not yet implemented");
+        }
+        
+        if(isMaster)
+        {
+            // start the master
+            modbusMasterDialog.start(currentLink);
         }
     }
 
@@ -1075,9 +1110,16 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
             currentLink.stop();
             ((TiltLabel)tiltLabel).stop();
             currentLink = null;
-            modbusMaster.setLink(null);
         }
-
+        
+        if(modbusMasterDialog!=null)
+        {
+            if( modbusMasterDialog.isRunning() )
+            {
+                modbusMasterDialog.stop();
+            }
+        }
+        
         GUITools.setAllEnabled(linksTabbedPane,true);
     }
 
@@ -1272,7 +1314,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         {
             if( modbusMasterDialog == null )
             {
-                modbusMasterDialog = new ModbusMasterDialog(this, modbusMaster);
+                modbusMasterDialog = new ModbusMasterDialog(this);
                 modbusMasterDialog.addWindowListener(this);
             }
             modbusMasterDialog.setVisible(true);
@@ -1859,6 +1901,18 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
                 }
             }
         };
+    }
+
+    @Override
+    public void modbusMasterTaskRemoved(ModbusMasterTask mmt) 
+    {
+        //
+    }
+
+    @Override
+    public void modbusMasterTaskAdded(ModbusMasterTask mmt) 
+    {
+        //
     }
 
 }

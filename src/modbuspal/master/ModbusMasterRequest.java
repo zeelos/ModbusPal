@@ -5,6 +5,7 @@
 package modbuspal.master;
 
 import javax.swing.tree.DefaultMutableTreeNode;
+import modbuspal.toolkit.ModbusTools;
 
 /**
  *
@@ -28,4 +29,23 @@ extends DefaultMutableTreeNode
     private byte functionCode;
     private int readStartAddress;
     private int quantityToRead;
+    
+    
+    public int toBytes(byte[] output, int offset)
+    {
+        switch(functionCode)
+        {
+            default: throw new UnsupportedOperationException();  
+            case 0x03: return generateReadHoldingRegistersRequest(output, offset);
+        }
+    }
+    
+    
+    private int generateReadHoldingRegistersRequest(byte[] output, int offset)
+    {
+        ModbusTools.setUint8(output, offset+0, 0x03); // function code
+        ModbusTools.setUint16(output, offset+1, readStartAddress); // starting address
+        ModbusTools.setUint16(output, offset+3, quantityToRead); // quantity of registers
+        return 5;
+    }
 }

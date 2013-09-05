@@ -13,7 +13,7 @@ import java.io.FileReader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import modbuspal.main.ModbusPalProject;
-import modbuspal.main.ModbusRequest;
+import modbuspal.master.ModbusMasterRequest;
 import modbuspal.recorder.ModbusPalRecord;
 import modbuspal.slave.ModbusSlaveAddress;
 
@@ -154,10 +154,17 @@ implements ModbusLink, Runnable
     }
 
 
-
-    public void execute(ModbusRequest req)
+    @Override
+    public void startMaster(ModbusLinkListener l) 
+    throws IOException 
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void execute(ModbusSlaveAddress dst, ModbusMasterRequest req, int timeout) 
+    {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
 }

@@ -11,15 +11,18 @@
 
 package modbuspal.master;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
+import modbuspal.automation.Automation;
+import modbuspal.link.ModbusLink;
 import modbuspal.main.AddSlaveDialog;
+import modbuspal.main.ModbusPalListener;
 import modbuspal.main.ModbusPalProject;
-import modbuspal.main.ModbusRequest;
-import modbuspal.main.ErrorMessage;
-import modbuspal.main.ListLayout;
 import modbuspal.main.ModbusPalPane;
+import modbuspal.slave.ModbusSlave;
 import modbuspal.slave.ModbusSlaveAddress;
 
 /**
@@ -28,24 +31,37 @@ import modbuspal.slave.ModbusSlaveAddress;
  */
 public class ModbusMasterDialog
 extends javax.swing.JDialog
+implements ModbusPalListener
 {
-    private final ModbusMaster modbusMaster;
     private final ModbusPalPane modbusPalPane;
-    private final ModbusPalProject modbusPalProject;
+    private ModbusPalProject modbusPalProject;
     private ModbusMasterRoot modbusMasterRoot;
     private DefaultTreeModel mmTreeModel;
+    private ArrayList<Thread> threads;
+    private boolean isRunning = false;
     
     /** Creates new form ModbusMasterDialog */
-    public ModbusMasterDialog(ModbusPalPane p, ModbusMaster master)
+    public ModbusMasterDialog(ModbusPalPane p)
     {
         modbusPalPane = p;
-        modbusPalProject = modbusPalPane.getProject();
-        modbusMaster = master;
+        setProject(p.getProject());
+        threads = new ArrayList<Thread>();
         initComponents();
         initTree();
     }
 
-    
+    public void setProject(ModbusPalProject p)
+    {
+        if( modbusPalProject!=null)
+        {
+            modbusPalProject.removeModbusPalListener(this);
+        }
+        modbusPalProject = p;
+        if(modbusPalProject!=null)
+        {
+            modbusPalProject.addModbusPalListener(this);
+        }
+    }
     
     private void initTree()
     {
@@ -75,11 +91,7 @@ extends javax.swing.JDialog
             ModbusMasterTask mmt = new ModbusMasterTask();
             mmt.setTaskName(taskName);
             
-            // add new task to the tree
-            modbusMasterRoot.add(mmt);
-            TreeNode[] path = mmTreeModel.getPathToRoot(mmt);
-            TreePath tp = new TreePath(path);
-            jTree1.setSelectionPath(tp);
+            modbusPalProject.addModbusMasterTask(mmt);
         }
     }
     
@@ -190,6 +202,55 @@ extends javax.swing.JDialog
         }
     }//GEN-LAST:event_addButtonActionPerformed
 
+    
+    public boolean isRunning()
+    {
+        return isRunning;
+    }
+    
+    public void start(final ModbusLink link)
+    {
+        isRunning = true;
+        
+        // retrieve the list of tasks
+        List<ModbusMasterTask> tasks = modbusPalProject.getModbusMasterTasks();
+        
+        // create a thread for eack task
+        for(final ModbusMasterTask task : tasks)
+        {
+            Thread t = new Thread( new Runnable()
+            {
+                @Override
+                public void run() 
+                {
+                    task.run(link);
+                }
+            });
+            threads.add(t);
+        }
+        
+        // start all threads
+        for(Thread t : threads)
+        {
+            t.start();
+        }
+        
+    }
+
+    public void stop()
+    {
+        // interrupt all threads
+        for(Thread t : threads)
+        {
+            t.interrupt();
+        }
+        
+        threads.clear();
+        isRunning = false;
+    }
+    
+    
+    
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addButton;
     private javax.swing.JPanel buttonsPanel;
@@ -197,5 +258,63 @@ extends javax.swing.JDialog
     private javax.swing.JTree jTree1;
     private javax.swing.JButton removeButton;
     // End of variables declaration//GEN-END:variables
+
+    @Override
+    public void modbusSlaveAdded(ModbusSlave slave)
+    {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void modbusSlaveRemoved(ModbusSlave slave)
+    {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void automationAdded(Automation automation, int index) 
+    {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void automationRemoved(Automation automation)
+    {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void pduProcessed() 
+    {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void pduException() 
+    {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void pduNotServiced() 
+    {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void modbusMasterTaskRemoved(ModbusMasterTask mmt) 
+    {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public void modbusMasterTaskAdded(ModbusMasterTask mmt) 
+    {
+        // add new task to the tree
+        modbusMasterRoot.add(mmt);
+        TreeNode[] path = mmTreeModel.getPathToRoot(mmt);
+        TreePath tp = new TreePath(path);
+        jTree1.setSelectionPath(tp);
+    }
 
 }
