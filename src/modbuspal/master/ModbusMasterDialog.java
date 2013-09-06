@@ -117,6 +117,7 @@ implements ModbusPalListener
         
         // add the new node in the tree
         parent.add(mmt);
+        mmTreeModel.nodeStructureChanged(parent);
         jTree1.setSelectionPath( new TreePath( mmt.getPath() ) );
     }
     
@@ -134,6 +135,7 @@ implements ModbusPalListener
         
         ModbusMasterRequest mmr = mrd.getRequest();
         parent.add(mmr);
+        mmTreeModel.nodeStructureChanged(parent);
         jTree1.setSelectionPath( new TreePath( mmr.getPath() ) );
     }
     
@@ -312,6 +314,7 @@ implements ModbusPalListener
     {
         // add new task to the tree
         modbusMasterRoot.add(mmt);
+        mmTreeModel.nodeStructureChanged(modbusMasterRoot);
         TreeNode[] path = mmTreeModel.getPathToRoot(mmt);
         TreePath tp = new TreePath(path);
         jTree1.setSelectionPath(tp);
