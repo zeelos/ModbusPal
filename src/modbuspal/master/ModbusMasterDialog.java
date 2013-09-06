@@ -156,6 +156,8 @@ implements ModbusPalListener
         removeButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("ModbusPal Master");
+        setMinimumSize(new java.awt.Dimension(300, 300));
 
         jScrollPane1.setViewportView(jTree1);
 
@@ -196,6 +198,11 @@ implements ModbusPalListener
             else if( lastCpnt instanceof ModbusMasterTarget )
             {
                 addNewRequestWizard( (ModbusMasterTarget)lastCpnt );
+            }
+            else if( lastCpnt instanceof ModbusMasterRequest )
+            {
+                ModbusMasterRequest req = (ModbusMasterRequest)lastCpnt;
+                addNewRequestWizard( (ModbusMasterTarget)req.getParent() );
             }
         }
         else
@@ -264,49 +271,49 @@ implements ModbusPalListener
     @Override
     public void modbusSlaveAdded(ModbusSlave slave)
     {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void modbusSlaveRemoved(ModbusSlave slave)
     {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void automationAdded(Automation automation, int index) 
     {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void automationRemoved(Automation automation)
     {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void pduProcessed() 
     {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void pduException() 
     {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void pduNotServiced() 
     {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void modbusMasterTaskRemoved(ModbusMasterTask mmt) 
     {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override

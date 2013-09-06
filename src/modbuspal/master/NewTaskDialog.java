@@ -30,6 +30,7 @@ extends javax.swing.JDialog
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
 
         buttonsPanel = new javax.swing.JPanel();
         okButton = new javax.swing.JButton();
@@ -39,6 +40,7 @@ extends javax.swing.JDialog
         jTextField1 = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setTitle("New Master Task");
 
         buttonsPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
 
@@ -63,10 +65,15 @@ extends javax.swing.JDialog
         mainPanel.setLayout(new java.awt.GridBagLayout());
 
         jLabel1.setText("Task name:");
-        mainPanel.add(jLabel1, new java.awt.GridBagConstraints());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 2);
+        mainPanel.add(jLabel1, gridBagConstraints);
 
-        jTextField1.setText("jTextField1");
-        mainPanel.add(jTextField1, new java.awt.GridBagConstraints());
+        jTextField1.setColumns(20);
+        jTextField1.setText("New master task...");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(5, 2, 5, 5);
+        mainPanel.add(jTextField1, gridBagConstraints);
 
         getContentPane().add(mainPanel, java.awt.BorderLayout.CENTER);
 

@@ -26,6 +26,18 @@ extends DefaultMutableTreeNode
         return output;
     }
     
+    public static ModbusMasterRequest getWriteMultipleRegistersRequest(int startingAddress, int quantityOfRegisters)
+    {
+        ModbusMasterRequest output = new ModbusMasterRequest();
+        output.functionCode = 0x10;
+        output.writeStartAddress = startingAddress;
+        output.quantityToWrite = quantityOfRegisters;
+        
+        String caption = String.format("16 (0x10) Write multiple registers (starting address = %d, quantity of registers = %d)", startingAddress, quantityOfRegisters);
+        output.setUserObject(caption);
+        return output;
+    }    
+    
     private byte functionCode;
     private int readStartAddress;
     private int quantityToRead;
