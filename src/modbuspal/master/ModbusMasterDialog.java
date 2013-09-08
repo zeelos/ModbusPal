@@ -116,8 +116,7 @@ implements ModbusPalListener
         mmt.setTargetList(targets);
         
         // add the new node in the tree
-        parent.add(mmt);
-        mmTreeModel.nodeStructureChanged(parent);
+        mmTreeModel.insertNodeInto(mmt, parent, parent.getChildCount());
         jTree1.setSelectionPath( new TreePath( mmt.getPath() ) );
     }
     
@@ -134,8 +133,7 @@ implements ModbusPalListener
         }
         
         ModbusMasterRequest mmr = mrd.getRequest();
-        parent.add(mmr);
-        mmTreeModel.nodeStructureChanged(parent);
+        mmTreeModel.insertNodeInto(mmr, parent, parent.getChildCount());
         jTree1.setSelectionPath( new TreePath( mmr.getPath() ) );
     }
     
@@ -159,13 +157,18 @@ implements ModbusPalListener
         setTitle("ModbusPal Master");
         setMinimumSize(new java.awt.Dimension(300, 300));
 
+        jTree1.addTreeSelectionListener(new javax.swing.event.TreeSelectionListener() {
+            public void valueChanged(javax.swing.event.TreeSelectionEvent evt) {
+                jTree1ValueChanged(evt);
+            }
+        });
         jScrollPane1.setViewportView(jTree1);
 
         getContentPane().add(jScrollPane1, java.awt.BorderLayout.CENTER);
 
         buttonsPanel.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT));
 
-        addButton.setText("Add");
+        addButton.setText("Add task...");
         addButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 addButtonActionPerformed(evt);
@@ -210,6 +213,35 @@ implements ModbusPalListener
             addNewTaskWizard();
         }
     }//GEN-LAST:event_addButtonActionPerformed
+
+    private void jTree1ValueChanged(javax.swing.event.TreeSelectionEvent evt) {//GEN-FIRST:event_jTree1ValueChanged
+        
+        TreePath selection = evt.getNewLeadSelectionPath();
+        Object o = selection.getLastPathComponent();
+        if( o == null )
+        {
+            addButton.setText("Add task...");
+        }
+        else
+        {
+            if( o instanceof ModbusMasterTask )
+            {
+                addButton.setText("Add target...");
+            }
+            else if( o instanceof ModbusMasterTarget )
+            {
+                addButton.setText("Add request...");
+            }
+            else if(o instanceof ModbusMasterRequest )
+            {
+                addButton.setText("Add request...");
+            }
+            else
+            {
+                addButton.setText("Add task...");
+            }
+        }
+    }//GEN-LAST:event_jTree1ValueChanged
 
     
     public boolean isRunning()
@@ -320,11 +352,8 @@ implements ModbusPalListener
     public void modbusMasterTaskAdded(ModbusMasterTask mmt) 
     {
         // add new task to the tree
-        modbusMasterRoot.add(mmt);
-        mmTreeModel.nodeStructureChanged(modbusMasterRoot);
-        TreeNode[] path = mmTreeModel.getPathToRoot(mmt);
-        TreePath tp = new TreePath(path);
-        jTree1.setSelectionPath(tp);
+        mmTreeModel.insertNodeInto(mmt, modbusMasterRoot, modbusMasterRoot.getChildCount());
+        jTree1.setSelectionPath( new TreePath( mmt.getPath() ) );
     }
 
 }
