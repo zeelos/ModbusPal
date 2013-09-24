@@ -11,6 +11,7 @@
 
 package modbuspal.main;
 
+import java.io.IOException;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -20,7 +21,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import modbuspal.help.HelpViewer;
 import modbuspal.slave.*;
+import modbuspal.toolkit.GUITools;
 
 /**
  * a dialog in which the user defines new modbus slave to add into the project
@@ -29,6 +32,7 @@ import modbuspal.slave.*;
 public class AddSlaveDialog
 extends javax.swing.JDialog
 {
+    private static final String RTU_PATTERN = "([\\d]+)(?:[\\s]*-[\\s]*([\\d]+))?";
     private boolean added = false;
     
     /** 
@@ -55,7 +59,10 @@ extends javax.swing.JDialog
         setModalityType(ModalityType.DOCUMENT_MODAL);
 
         initComponents();
+        
         setTitle("Duplicate "+name);
+        GUITools.underline(rtuSlaveHelpLabel);
+        GUITools.underline(tcpSlaveHelpLabel);
         //GUITools.align(parent,this);
 
         if( name!=null )
@@ -75,10 +82,10 @@ extends javax.swing.JDialog
         return added;
     }
 
-    
+
     private List<ModbusSlaveAddress> tryParseRtuAddress(String s)
     {
-        Pattern rtuPattern = Pattern.compile("([\\d]+)(?:[\\s]*-[\\s]*([\\d]+))?");
+        Pattern rtuPattern = Pattern.compile(RTU_PATTERN);
         Matcher m = rtuPattern.matcher(s.trim());
         if(m.matches()==true)
         {
@@ -153,19 +160,22 @@ extends javax.swing.JDialog
         return null;
     }
         
-    private List<ModbusSlaveAddress> tryParseIpAddress(String s)
+    private List<ModbusSlaveAddress> tryParseIpAddress_1(String s)
     {
         StringBuilder sb = new StringBuilder();
         
         // part of the pattern that finds an ip v4 address
+        // (group 1)
         sb.append("([\\d\\.]+)"); 
         
         // part of the pattern that finds the optionnal second ip v4 address.
         // that second ip address defines a range for multiple slave creation.
+        // (group 2)
         sb.append("(?:[\\s]*-[\\s]*([\\d\\.]+))?");
         
         // part of the pattern that finds the optionnal rtu address
         // associated with the ip
+        // (group 3&4)
         sb.append("(?:[\\s]*\\([\\s]*([\\d]+)[\\s]*\\))?");
         
         //Pattern p = Pattern.compile("([\\d\\.]+)(?:[\\s]*-[\\s]*([\\d\\.]+))?");
@@ -228,7 +238,123 @@ extends javax.swing.JDialog
     }
     
 
+    private List<ModbusSlaveAddress> tryParseIpAddress_2(String s) throws UnknownHostException
+    {
+        StringBuilder sb = new StringBuilder();
+        
+        // part of the pattern that finds an ip v4 address
+        // (group 1)
+        sb.append("([\\d\\.]+)"); 
     
+        // ignore white spaces and match parenthesis
+        sb.append("[\\s]*\\([\\s]*");
+        
+        // match RTU PATTERN
+        sb.append(RTU_PATTERN); // = "([\\d]+)(?:[\\s]*-[\\s]*([\\d]+))?";
+        
+        // ignore white spaces and mathc parenthesis
+        sb.append("[\\s]*\\)");
+
+        Pattern p = Pattern.compile(sb.toString());
+        Matcher m = p.matcher(s.trim());
+        if( m.find() )
+        {
+/*            int count = m.groupCount();
+            String ipAddress = m.group(1);
+            String firstRtu = m.group(2);
+            String lastRtu = m.group(3);
+            int slaveAddress = -1;
+            
+            if( lastIp==null )
+            {
+                lastIp=firstIp;
+            }
+            
+            if(rtuAddr!=null)
+            {
+                try
+                {
+                    slaveAddress = Integer.parseInt(rtuAddr);
+                }
+                catch(NumberFormatException ex)
+                {
+                    slaveAddress=-1;
+                }
+            }
+            
+            int[] startIp = parseIpv4(firstIp);
+            int[] endIp = parseIpv4(lastIp);
+            ArrayList<ModbusSlaveAddress> output = new ArrayList<ModbusSlaveAddress>(count);
+            for(int a = startIp[0]; a<= endIp[0]; a++ )
+            {
+                for(int b = startIp[1]; b<= endIp[1]; b++ )
+                {
+                    for(int c = startIp[2]; c<= endIp[2]; c++ )
+                    {
+                        for(int d = startIp[3]; d<= endIp[3]; d++ )
+                        {   
+                            try 
+                            {
+                                byte[] ip = new byte[]{ (byte)a, (byte)b, (byte)c, (byte)d };
+                                InetAddress addr = Inet4Address.getByAddress(ip);
+                                ModbusSlaveAddress msa = new ModbusSlaveAddress(addr, slaveAddress);
+                                output.add(msa);
+                            } 
+                            catch (UnknownHostException ex) 
+                            {
+                                Logger.getLogger(AddSlaveDialog.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                        }   
+                    }   
+                } 
+            }*/
+            
+            String ipAddress = m.group(1);
+            String group2 =  m.group(2);
+            int startIndex = Integer.parseInt(group2);
+            int endIndex = startIndex;
+            int groupCount = m.groupCount();
+            if( groupCount==3 )
+            {
+                String group3 = m.group(3);
+                if( group3!=null)
+                {
+                    endIndex = Integer.parseInt(group3);
+                }
+            }
+            
+            if( (startIndex<ModbusConst.FIRST_MODBUS_SLAVE) 
+            || (startIndex>ModbusConst.LAST_MODBUS_SLAVE))
+            {
+                throw new ArrayIndexOutOfBoundsException();
+            }
+            
+            if( (endIndex<ModbusConst.FIRST_MODBUS_SLAVE) 
+            || (endIndex>ModbusConst.LAST_MODBUS_SLAVE))
+            {
+                throw new ArrayIndexOutOfBoundsException();
+            }
+            
+            if( startIndex > endIndex )
+            {
+                throw new IllegalArgumentException();
+            }
+            
+            int count = 1 + (endIndex-startIndex);
+            ArrayList<ModbusSlaveAddress> output = new ArrayList<ModbusSlaveAddress>(count);
+            for(int i=0; i<count; i++)
+            {
+                //byte[] ip = new byte[]{ (byte)a, (byte)b, (byte)c, (byte)d };
+                InetAddress addr = Inet4Address.getByName(ipAddress);
+                ModbusSlaveAddress msa = new ModbusSlaveAddress(addr, startIndex+i);
+                output.add(msa);
+            }
+            
+            
+            return output;
+        }
+        return null;
+    }
     
     private List<ModbusSlaveAddress> parseSlaveIds()
     {
@@ -238,20 +364,30 @@ extends javax.swing.JDialog
         
         for(String chunk:chunks)
         {
-            List<ModbusSlaveAddress> msa = tryParseRtuAddress(chunk);
-            if(msa == null)
+            try
             {
-                msa = tryParseIpAddress(chunk);
-                /*if(msa==null)
+                List<ModbusSlaveAddress> msa = tryParseRtuAddress(chunk);
+                if(msa == null)
                 {
-                    msa = tryParseIpRtuAddress(chunk);
-                }*/
+                    msa = tryParseIpAddress_2(chunk);
+                    if(msa==null)
+                    {
+                        msa = tryParseIpAddress_1(chunk);
+                    }
+                }
+
+                if( msa != null )
+                {
+                    output.addAll(msa);
+                }
             }
-            
-            if( msa != null )
+            catch(Exception e)
             {
-                output.addAll(msa);
+                
             }
+                    
+        
+                    
         }
         
         return output;
@@ -306,8 +442,9 @@ extends javax.swing.JDialog
         nameTextField = new javax.swing.JTextField();
         jScrollPane2 = new javax.swing.JScrollPane();
         slavesTextArea = new javax.swing.JTextArea();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
+        jPanel1 = new javax.swing.JPanel();
+        rtuSlaveHelpLabel = new javax.swing.JLabel();
+        tcpSlaveHelpLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("New slave");
@@ -371,17 +508,32 @@ extends javax.swing.JDialog
         gridBagConstraints.insets = new java.awt.Insets(10, 2, 2, 2);
         getContentPane().add(jScrollPane2, gridBagConstraints);
 
-        jTextArea1.setEditable(false);
-        jTextArea1.setColumns(20);
-        jTextArea1.setLineWrap(true);
-        jTextArea1.setRows(5);
-        jTextArea1.setWrapStyleWord(true);
-        jScrollPane1.setViewportView(jTextArea1);
+        jPanel1.setLayout(new java.awt.GridLayout(0, 1, 5, 5));
+
+        rtuSlaveHelpLabel.setForeground(new java.awt.Color(0, 0, 255));
+        rtuSlaveHelpLabel.setText("How to define MODBUS RTU slaves...");
+        rtuSlaveHelpLabel.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        rtuSlaveHelpLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                rtuSlaveHelpLabelMouseClicked(evt);
+            }
+        });
+        jPanel1.add(rtuSlaveHelpLabel);
+
+        tcpSlaveHelpLabel.setForeground(new java.awt.Color(0, 0, 255));
+        tcpSlaveHelpLabel.setText("How to define MODBUS TCP slaves...");
+        tcpSlaveHelpLabel.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+        tcpSlaveHelpLabel.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tcpSlaveHelpLabelMouseClicked(evt);
+            }
+        });
+        jPanel1.add(tcpSlaveHelpLabel);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.insets = new java.awt.Insets(10, 2, 2, 10);
-        getContentPane().add(jScrollPane1, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        getContentPane().add(jPanel1, gridBagConstraints);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -396,16 +548,33 @@ extends javax.swing.JDialog
         setVisible(false);
     }//GEN-LAST:event_cancelButtonActionPerformed
 
+    private void rtuSlaveHelpLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_rtuSlaveHelpLabelMouseClicked
+        try {
+            HelpViewer helpViewer = HelpViewer.open("modbus-slaves-add-rtu.html");
+        } catch (IOException ex) {
+            Logger.getLogger(AddSlaveDialog.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_rtuSlaveHelpLabelMouseClicked
+
+    private void tcpSlaveHelpLabelMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tcpSlaveHelpLabelMouseClicked
+        try {
+            HelpViewer helpViewer = HelpViewer.open("modbus-slaves-add-tcp.html");
+        } catch (IOException ex) {
+            Logger.getLogger(AddSlaveDialog.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_tcpSlaveHelpLabelMouseClicked
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addButton;
     private javax.swing.JButton cancelButton;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JTextArea jTextArea1;
     private javax.swing.JTextField nameTextField;
+    private javax.swing.JLabel rtuSlaveHelpLabel;
     private javax.swing.JTextArea slavesTextArea;
+    private javax.swing.JLabel tcpSlaveHelpLabel;
     // End of variables declaration//GEN-END:variables
 
 }

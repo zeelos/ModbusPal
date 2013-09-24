@@ -65,7 +65,15 @@ public abstract class ModbusPalProject2
                         bestMatch = address;
                         matchRate = 1;
                     }
-                }               
+                }  
+                else if( address.getRtuAddress() == -1 )
+                {
+                    if(matchRate > 3)
+                    {
+                        bestMatch = address;
+                        matchRate = 3;
+                    }
+                }
             }
             
             else
@@ -76,18 +84,18 @@ public abstract class ModbusPalProject2
                     {
                         if( address.getRtuAddress() == id.getRtuAddress() )
                         {
-                            if(matchRate > 3)
+                            if(matchRate > 4)
                             {
                                 bestMatch=address;
-                                matchRate = 3;
+                                matchRate = 4;
                             }
                         }
                         else if( address.getRtuAddress() == -1 )
                         {
-                            if(matchRate > 4)
+                            if(matchRate > 5)
                             {
                                 bestMatch = address;
-                                matchRate = 4;
+                                matchRate = 5;
                             }
                         }
                     }

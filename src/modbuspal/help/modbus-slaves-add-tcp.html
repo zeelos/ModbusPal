@@ -1,0 +1,61 @@
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+  <head>
+    <title>ModbusPal</title>
+    <link rel="stylesheet" type="text/css" href="styles.css" />
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  </head>
+  <body>
+      
+      <h1>Adding MODBUS TCP slaves</h1>
+
+      <h2>Regular MODBUS TCP addressing</h2>
+      
+      <p>When a single MODBUS TCP device has its own IP address on the network,
+      then the IP address is self sufficient to identify that slave.</p>
+
+      <p>New MODBUS TCP slaves can be created by using one of the
+      following patterns:</p>
+      
+      <dl>
+          <dt>127.0.0.1</dt>
+          <dd>Create just one slave that will reply to requests received
+              from any network interface.</dd>
+          <dt>192.168.10.100</dt>
+          <dd>Create just one slave that will only reply to requests received
+              on the network interface whose IP address is 192.168.10.100.</dd>
+          <dt>10.23.6.2, 10.23.6.8</dt>
+          <dd>Create 2 slaves that will reply to requests received
+              on network interfaces whose IP addresses are 10.23.6.2,
+              and 10.23.6.8.</dd>
+          <dt>10.23.6.2-10.23.6.8</dt>
+          <dd>Create 9 slaves that will reply to requests received
+              on network interfaces whose IP addresses are 10.23.6.2,
+              10.23.6.3, ..., 10.23.6.7 and 10.23.6.8.</dd>
+      </dl>
+      
+      <p>Note: the comma can be replaced by a the creation of a new line. White 
+      spaces following the comma are ignored.</p>
+
+      <h2>Multiple slaves sharing the same IP address</h2>
+      
+      <p>When more than one MODBUS TCP device share the same IP address on the network,
+      then the IP address alone is not sufficient to identify each slave. This is
+      the case when, for example, the IP address is owned by a TCP/SERIAL gateway
+      and the actual MODBUS slaves are using MODBUS RTU protocol.</p>
+
+      <p>Such MODBUS slaves must be identified by both an IP address and a slave
+      number, and can be created by using one of the
+      following patterns:</p>
+      
+      <dl>
+          <dt>127.0.0.1(17)</dt>
+          <dt>10.23.6.2-10.23.6.8(23)</dt>
+          <dt>192.168.10.100(10-15)</dt>
+      </dl>
+  </body>
+</html>

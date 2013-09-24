@@ -7,11 +7,15 @@ package modbuspal.toolkit;
 
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Point;
 import java.awt.Window;
+import java.awt.font.TextAttribute;
 import java.io.File;
+import java.util.Map;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import modbuspal.main.ErrorMessage;
 
 /**
@@ -107,5 +111,15 @@ public class GUITools
         }
 
         return null;
+    }
+    
+    
+    
+    public static void underline(JLabel label)
+    {
+        Font font = label.getFont();
+        Map attributes = font.getAttributes();
+        attributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
+        label.setFont(font.deriveFont(attributes));
     }
 }

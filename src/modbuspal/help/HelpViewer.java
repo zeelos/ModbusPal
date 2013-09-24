@@ -78,6 +78,25 @@ implements HyperlinkListener
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    
+    public static HelpViewer open(String file) 
+    throws IOException
+    {
+        HelpViewer helpViewer = new HelpViewer();
+        
+        URL url = HelpViewer.class.getResource(file);
+        helpViewer.openURL(url);
+        
+        helpViewer.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+        helpViewer.setExtendedState(JFrame.MAXIMIZED_BOTH);
+
+        helpViewer.setVisible(true);
+        helpViewer.toFront();
+        
+        return helpViewer;
+    }
+    
+    
     /**
     * @param args the command line arguments
     */
@@ -97,6 +116,16 @@ implements HyperlinkListener
     private javax.swing.JTabbedPane jTabbedPane1;
     // End of variables declaration//GEN-END:variables
 
+    
+    private void openURL(URL url) 
+    throws IOException
+    {
+        String file = url.getFile();
+        String parts[] = file.split("[/\\\\]");
+        addTab(parts[parts.length-1], url);
+    }
+    
+    
     @Override
     public void hyperlinkUpdate(HyperlinkEvent e)
     {
@@ -104,10 +133,7 @@ implements HyperlinkListener
         {
             try
             {
-                URL url = e.getURL();
-                String file = url.getFile();
-                String parts[] = file.split("[/\\\\]");
-                addTab(parts[parts.length-1], url);
+                openURL(e.getURL());
             }
             catch(IOException ioe)
             {
