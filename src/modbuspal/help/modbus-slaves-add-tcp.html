@@ -38,7 +38,7 @@ and open the template in the editor.
               10.23.6.3, ..., 10.23.6.7 and 10.23.6.8.</dd>
       </dl>
       
-      <p>Note: the comma can be replaced by a the creation of a new line. White 
+      <p>Note: the comma can be replaced by a new line. White 
       spaces following the comma are ignored.</p>
 
       <h2>Multiple slaves sharing the same IP address</h2>
@@ -54,8 +54,12 @@ and open the template in the editor.
       
       <dl>
           <dt>127.0.0.1(17)</dt>
-          <dt>10.23.6.2-10.23.6.8(23)</dt>
+          <dd>Create juste one slave at IP address 127.0.0.1 (listen on all
+          network interfaces) and slave number 17.</dd>
           <dt>192.168.10.100(10-15)</dt>
+          <dd>Create 6 slaves sharing the same IP address (local network interface
+          192.168.10.100). Each slave is assigned a slave number ranging from 10
+          to 15 included.</dd>
       </dl>
   </body>
 </html>

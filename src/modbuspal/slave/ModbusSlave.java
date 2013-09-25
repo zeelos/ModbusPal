@@ -16,6 +16,14 @@ import java.util.logging.Logger;
 import modbuspal.automation.NullAutomation;
 import modbuspal.instanciator.InstantiableManager;
 import modbuspal.main.ModbusConst;
+import static modbuspal.main.ModbusConst.FC_READ_COILS;
+import static modbuspal.main.ModbusConst.FC_READ_DISCRETE_INPUTS;
+import static modbuspal.main.ModbusConst.FC_READ_HOLDING_REGISTERS;
+import static modbuspal.main.ModbusConst.FC_READ_WRITE_MULTIPLE_REGISTERS;
+import static modbuspal.main.ModbusConst.FC_WRITE_MULTIPLE_COILS;
+import static modbuspal.main.ModbusConst.FC_WRITE_MULTIPLE_REGISTERS;
+import static modbuspal.main.ModbusConst.FC_WRITE_SINGLE_COIL;
+import static modbuspal.main.ModbusConst.FC_WRITE_SINGLE_REGISTER;
 import modbuspal.main.ModbusPalProject;
 import modbuspal.main.ModbusPalXML;
 import static modbuspal.main.ModbusPalXML.XML_SLAVE_ID_ATTRIBUTE;
@@ -46,13 +54,7 @@ implements ModbusPalXML, ModbusConst
 
     private ModbusSlave()
     {
-        pduProcessors[FC_READ_COILS] = coils;
-        pduProcessors[FC_READ_HOLDING_REGISTERS] = holdingRegisters;
-        pduProcessors[FC_WRITE_SINGLE_COIL] = coils;
-        pduProcessors[FC_WRITE_SINGLE_REGISTER] = holdingRegisters;
-        pduProcessors[FC_WRITE_MULTIPLE_COILS] = coils;
-        pduProcessors[FC_WRITE_MULTIPLE_REGISTERS] = holdingRegisters;
-        pduProcessors[FC_READ_WRITE_MULTIPLE_REGISTERS] = holdingRegisters;
+        clearFunctions();
     }
 
     /**
@@ -154,6 +156,18 @@ implements ModbusPalXML, ModbusConst
         {
             setPduProcessor( (byte)i,null);
         }
+        /*for(byte i : USER_DEFINED_FUNCTION_CODES)
+        {
+            setPduProcessor(i,null);
+        }*/
+        pduProcessors[FC_READ_COILS] = coils;
+        pduProcessors[FC_READ_DISCRETE_INPUTS] = coils;
+        pduProcessors[FC_READ_HOLDING_REGISTERS] = holdingRegisters;
+        pduProcessors[FC_WRITE_SINGLE_COIL] = coils;
+        pduProcessors[FC_WRITE_SINGLE_REGISTER] = holdingRegisters;
+        pduProcessors[FC_WRITE_MULTIPLE_COILS] = coils;
+        pduProcessors[FC_WRITE_MULTIPLE_REGISTERS] = holdingRegisters;
+        pduProcessors[FC_READ_WRITE_MULTIPLE_REGISTERS] = holdingRegisters;
     }
 
 

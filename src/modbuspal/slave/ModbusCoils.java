@@ -32,6 +32,7 @@ extends ModbusRegisters
         switch( functionCode )
         {
             case FC_READ_COILS: return readMultipleCoils(functionCode, buffer, offset, createIfNotExist);
+            case FC_READ_DISCRETE_INPUTS: return readMultipleCoils(functionCode, buffer, offset, createIfNotExist);
             case FC_WRITE_SINGLE_COIL: return writeSingleCoil(functionCode, buffer, offset, createIfNotExist);
             case FC_WRITE_MULTIPLE_COILS: return writeMultipleCoils(functionCode, buffer, offset, createIfNotExist);
         }

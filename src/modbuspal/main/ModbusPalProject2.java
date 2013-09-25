@@ -6,6 +6,7 @@
 package modbuspal.main;
 
 import java.net.SocketException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
@@ -267,8 +268,17 @@ public abstract class ModbusPalProject2
      */
     public ModbusSlave[] getModbusSlaves()
     {
+        ArrayList<ModbusSlave> list = new ArrayList<ModbusSlave>();
+        for(ModbusSlave slave : knownSlaves.values())
+        {
+            if( slave != null )
+            {
+                list.add(slave);
+            }
+        }
+        
         ModbusSlave[] output = new ModbusSlave[0];
-        return knownSlaves.values().toArray(output);
+        return list.toArray(output);
     }
 
     /**
