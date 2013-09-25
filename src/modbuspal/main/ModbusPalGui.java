@@ -22,6 +22,7 @@ import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
+import modbuspal.link.ModbusSerialLink;
 
 /**
  * Utilitary methods for creating new instances of ModbusPal
@@ -49,17 +50,48 @@ public class ModbusPalGui
         }
     }
 
+    
+    public static void install()
+    {
+        ModbusSerialLink.install();
+    }
+    
     /**
     * @param args the command line arguments
     */
-    public static void main(String args[]) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                setNativeLookAndFeel();
-                newFrame().setVisible(true);
+    public static void main(String args[]) 
+    {
+        boolean runInstall = false;
+        boolean runGui = true;
+        
+        if( args.length>=1 )
+        {
+            for(String arg:args)
+            {
+                if( arg.compareToIgnoreCase("-install")==0 )
+                {
+                    runInstall = true;
+                    runGui = false;
+                }
             }
-        });
+        }
+        if( runInstall == true )
+        {
+            install();
+        }
+        
+        if( runGui == true )
+        {
+            java.awt.EventQueue.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    setNativeLookAndFeel();
+                    newFrame().setVisible(true);
+                }
+            });
+        }
+        
+        
     }
 
 

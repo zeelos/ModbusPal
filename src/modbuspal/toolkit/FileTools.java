@@ -8,9 +8,11 @@ package modbuspal.toolkit;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URI;
 
 /**
@@ -179,5 +181,26 @@ public class FileTools
         }
         fr.close();
         return rc;
+    }
+    
+    
+    public static void copyTo(InputStream src, File dst) 
+    throws FileNotFoundException, IOException
+    {
+        FileOutputStream fos = new FileOutputStream(dst);
+        try
+        {
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            
+            while(  (bytesRead=src.read(buffer)) != -1 )
+            {
+                fos.write(buffer, 0, bytesRead);
+            }
+        }
+        finally
+        {
+            fos.close();
+        }
     }
 }

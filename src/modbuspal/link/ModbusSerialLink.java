@@ -8,6 +8,7 @@ package modbuspal.link;
 import java.io.IOException;
 import java.util.Enumeration;
 import gnu.io.*;
+import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ import modbuspal.main.ModbusPalProject;
 import modbuspal.master.ModbusMasterRequest;
 import modbuspal.slave.ModbusSlaveAddress;
 import modbuspal.toolkit.ModbusTools;
+import modbuspal.toolkit.SystemTools;
 
 /**
  * The serial link waits for incoming requests from a COM port
@@ -118,20 +120,82 @@ implements ModbusLink, Runnable, SerialPortEventListener
         return new CommPortList();
     }
 
+        
+    private static boolean installOnWindows() 
+    throws IOException
+    {
+        System.out.println("Install RXTX on Windows...");
+        
+        String jrePath = System.getProperty("java.home");
+        System.out.printf("java.home returns \"%s\"\r\n", jrePath);
+        
+        // Copy RXTXcomm.jar ---> <JAVA_HOME>\jre\lib\ext
+        // Copy rxtxSerial.dll ---> <JAVA_HOME>\jre\bin
+        // Copy rxtxParallel.dll ---> <JAVA_HOME>\jre\bin
+        
+        if( SystemTools.IsWindows64bits() )
+        {
+            System.out.println("64-bit architecture detected...");
+            SystemTools.Install("rxtx/win-x64/RXTXcomm.jar", new File(jrePath, "lib/ext/RXTXcomm.jar") );
+            SystemTools.Install("rxtx/win-x64/rxtxParallel.dll", new File(jrePath, "bin/rxtxParallel.dll") );
+            SystemTools.Install("rxtx/win-x64/rxtxSerial.dll", new File(jrePath, "bin/rxtxSerial.dll") );
+        }
+        else
+        {
+            System.out.println("32-bit architecture detected...");
+            SystemTools.Install("rxtx/win-x86/RXTXcomm.jar", new File(jrePath, "lib/ext/RXTXcomm.jar") );
+            SystemTools.Install("rxtx/win-x86/rxtxParallel.dll", new File(jrePath, "bin/rxtxParallel.dll") );
+            SystemTools.Install("rxtx/win-x86/rxtxSerial.dll", new File(jrePath, "bin/rxtxSerial.dll") );            
+        }
+            
+        
+        return false;
+    }
+    
+    
+    public static boolean install()
+    {
+        System.out.println("---------------------------------------------");
+        System.out.println("Installing RXTX component...");
+        System.out.println("---------------------------------------------");
+        
+        try
+        {
+            if( SystemTools.IsWindowsHost() == true )
+            {
+                return installOnWindows();
+            }
+            return false;
+        }
+        catch(Exception ex)
+        {
+            ex.printStackTrace();
+            return false;
+        }
+    }
+    
     /**
      * Setup the RXTX library and scan the available COM ports
      */
-    public static void install()
+    public static boolean enumerate()
     {
-        Enumeration portList = CommPortIdentifier.getPortIdentifiers();
-        while( portList.hasMoreElements() )
+        try
         {
-            CommPortIdentifier com = (CommPortIdentifier)portList.nextElement();
-            if( com.getPortType()==CommPortIdentifier.PORT_SERIAL )
+            Enumeration portList = CommPortIdentifier.getPortIdentifiers();
+            while( portList.hasMoreElements() )
             {
-                System.out.println("Found "+com.getName() );
-                commPorts.add(com);
+                CommPortIdentifier com = (CommPortIdentifier)portList.nextElement();
+                if( com.getPortType()==CommPortIdentifier.PORT_SERIAL )
+                {
+                    System.out.println("Found "+com.getName() );
+                    commPorts.add(com);
+                }
             }
+            return true;
+        }
+        catch(Exception ex)
+        {
+            return false;
         }
     }
     private int serialStopBits;

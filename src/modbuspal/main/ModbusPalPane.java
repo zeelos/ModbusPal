@@ -282,7 +282,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         }
 
         installRecorder();
-        //installCommPorts();
+        installCommPorts();
         //installScriptEngine();
 
         setProject( new ModbusPalProject() );
@@ -315,7 +315,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
             Class c = cl.loadClass("gnu.io.CommPortIdentifier");
             return true;
         }
-        catch (ClassNotFoundException ex)
+        catch (Exception ex)
         {
             return false;
         }
@@ -388,10 +388,10 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
             CardLayout layout = (CardLayout)jPanel1.getLayout();
             layout.show(jPanel1, "disabled");
             return;
-        }
-
+        }        
+        
         // detect the comm ports
-        ModbusSerialLink.install();
+        ModbusSerialLink.enumerate();
         
         // get the list of comm ports (as strings)
         // and put it in the swing list
