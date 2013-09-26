@@ -1064,6 +1064,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         System.out.printf("[%s] Start link\r\n", modbusPalProject.getName());
         GUITools.setAllEnabled(linksTabbedPane,false);
 
+        masterToggleButton.setEnabled(false);
         boolean isMaster = masterToggleButton.isSelected();
         
         // if link is tcp/ip
@@ -1104,10 +1105,25 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
     public void stopLink()
     {
         System.out.printf("[%s] Stop link\r\n", modbusPalProject.getName());
-
+        boolean isMaster = masterToggleButton.isSelected();
+        
+        
+        if(isMaster)
+        {
+            // stop the master
+            modbusMasterDialog.stop();
+        }
+        
         if( currentLink != null )
         {
-            currentLink.stop();
+            if(isMaster)
+            {
+                currentLink.stopMaster();
+            }
+            else
+            {
+                currentLink.stop();
+            }
             ((TiltLabel)tiltLabel).stop();
             currentLink = null;
         }
@@ -1119,7 +1135,9 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
                 modbusMasterDialog.stop();
             }
         }
+               
         
+        masterToggleButton.setEnabled(true);
         GUITools.setAllEnabled(linksTabbedPane,true);
     }
 

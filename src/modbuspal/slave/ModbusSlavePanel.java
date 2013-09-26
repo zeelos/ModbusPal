@@ -93,6 +93,7 @@ implements WindowListener, ModbusSlaveListener,AncestorListener
 
         slaveIdLabel.setFont(new java.awt.Font("Tahoma", 1, 11)); // NOI18N
         slaveIdLabel.setText(String.valueOf(modbusSlave.getSlaveId()));
+        slaveIdLabel.setToolTipText(modbusSlave.getSlaveId().toBaseString());
         slaveIdLabel.setPreferredSize(new java.awt.Dimension(120, 14));
         add(slaveIdLabel);
 

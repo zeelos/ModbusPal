@@ -17,6 +17,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.ComboBoxModel;
 import javax.swing.event.ListDataListener;
+import static modbuspal.link.ModbusSlaveProcessor.makeExceptionResponse;
+import static modbuspal.main.ModbusConst.XC_SLAVE_DEVICE_FAILURE;
 import modbuspal.main.ModbusPalProject;
 import modbuspal.master.ModbusMasterRequest;
 import modbuspal.slave.ModbusSlaveAddress;
@@ -467,16 +469,131 @@ implements ModbusLink, Runnable, SerialPortEventListener
     public void startMaster(ModbusLinkListener l) 
     throws IOException 
     {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        listener = l;
+
+        try
+        {
+            serialPort.setSerialPortParams(baudrate, SerialPort.DATABITS_8, serialStopBits, serialParity);
+            input = serialPort.getInputStream();
+            output = serialPort.getOutputStream();
+            serialPort.addEventListener(this);
+            serialPort.notifyOnDataAvailable(true);
+            System.out.println("Connected to com port");
+        }
+        catch( TooManyListenersException ex)
+        {
+            throw new RuntimeException(ex);
+        }
+        catch (UnsupportedCommOperationException ex)
+        {
+            throw new RuntimeException(ex);
+        }
     }
 
     
-    
+    @Override
+    public void stopMaster()
+    {
+        try
+        {
+            input.close();
+        } 
+        catch (IOException ex)
+        {
+            Logger.getLogger(ModbusSerialLink.class.getName()).log(Level.SEVERE, null, ex);
+        }
+
+        try
+        {
+            output.close();
+        } 
+        catch (IOException ex)
+        {
+            Logger.getLogger(ModbusSerialLink.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        serialPort.close();
+    }
 
     @Override
     public void execute(ModbusSlaveAddress dst, ModbusMasterRequest req, int timeout)
+    throws IOException
     {
-        throw new UnsupportedOperationException("Not supported yet.");
+        byte buffer[] = new byte[2048];
+        
+        // genete PDU of the request, start at offset 7
+        // (leave room for header and footer).
+        int length = req.toBytes(buffer, 1);
+        
+        // prepend slave address
+        ModbusTools.setUint8(buffer, 0, dst.getRtuAddress());
+        
+        // compute CRC
+        int totalLen = 1+ length + 2; // 1 for slave address, and 2 for CRC
+        int outputCRC = computeCRC(buffer,0,totalLen-2);
+        buffer[totalLen-2] = (byte)(outputCRC & 0xFF);
+        buffer[totalLen-1] = (byte)((outputCRC>>8) & 0xFF);
+                
+        // send request 
+        output.write(buffer, 0, totalLen);
+        output.flush();
+                
+        // wait for reply
+        synchronized(input)
+        {
+            try 
+            {
+                input.wait(timeout);
+            } 
+            catch (InterruptedException ex) 
+            {
+                Logger.getLogger(ModbusSerialLink.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        // if some data is available then:
+        if( input.available() >= 3 )
+        {
+            // read all available data
+            totalLen = input.read(buffer);
+
+            // read slave address (it is the first byte)
+            int slaveID = ModbusTools.getUint8(buffer,0);
+
+            // read crc value (located in the last two bytes
+            int crcLSB = ModbusTools.getUint8(buffer, totalLen-2);
+            int crcMSB = ModbusTools.getUint8(buffer, totalLen-1);
+            int receivedCRC = crcMSB * 256 + crcLSB;
+
+            // compute crc between slave address (included) and crc (excluded)
+            int computedCRC = computeCRC(buffer,0,totalLen-2);
+
+            int pduLength = totalLen - 3; // 1 for slave address, and 2 for CRC
+
+            // if CRC are ok, then process the pdu
+            if( receivedCRC == computedCRC )
+            {
+                //System.out.println("read "+ totalLen + " bytes");
+                //pduLength = processPDU(new ModbusSlaveAddress(slaveID), buffer, 1, pduLength);
+                processPDU(req, dst, buffer, 1, totalLen - 3);
+            }
+
+            else
+            {
+                // handle CRC error with exception code
+                //pduLength = makeExceptionResponse(XC_SLAVE_DEVICE_FAILURE, buffer, 1);
+            } 
+        }
+        
+        /*
+        sock.setSoTimeout(timeout);
+        
+        // wait for reply
+        int recv = sock.getInputStream().read(buffer);
+        
+        // rip MBAP header off
+        processPDU(req, dst, buffer, 7, recv);
+        */ 
     }
 
 }

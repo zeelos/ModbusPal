@@ -46,7 +46,6 @@ implements ModbusLink, Runnable
         super(mpp);
         modbusPalProject = mpp;
         tcpPort = port;
-        serverSocket = new ServerSocket(port);
         clientSockets = new HashMap<ModbusSlaveAddress, Socket>();
     }
 
@@ -59,6 +58,7 @@ implements ModbusLink, Runnable
         serverThread.start();
     }
 
+    @Override
     public void stop()
     {
         executeThread = false;
@@ -81,10 +81,19 @@ implements ModbusLink, Runnable
         ModbusTcpIpSlaveDispatcher.stopAll();
     }
 
+    @Override
     public void run()
     {
         System.out.println("Start ModbusTcpIpLink");
-
+        try
+        {
+            serverSocket = new ServerSocket(tcpPort);
+        }
+        catch(Exception ex)
+        {
+            executeThread = false;
+        }
+        
         while(executeThread == true)
         {
             // create client socket
@@ -131,6 +140,28 @@ implements ModbusLink, Runnable
         listener = l;
     }
     
+    
+    @Override
+    public void stopMaster()
+    {
+        for(Socket sock : clientSockets.values() )
+        {
+            if(sock != null )
+            {
+                try
+                {
+                    sock.close();
+                }
+                catch (IOException ex) 
+                {
+                    Logger.getLogger(ModbusTcpIpLink.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+        
+        clientSockets.clear();
+    }
+    
 
     @Override
     public void execute(ModbusSlaveAddress dst, ModbusMasterRequest req, int timeout)
@@ -165,8 +196,6 @@ implements ModbusLink, Runnable
         int recv = sock.getInputStream().read(buffer);
         
         // rip MBAP header off
-        processPDU(req, dst, buffer, recv, length);
-        
-        return;
+        processPDU(req, dst, buffer, 7, recv);
     }
 }

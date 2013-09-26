@@ -5,6 +5,7 @@
 package modbuspal.slave;
 
 import java.net.InetAddress;
+import modbuspal.main.ModbusConst;
 
 /**
  *
@@ -26,11 +27,21 @@ public class ModbusSlaveAddress
     public ModbusSlaveAddress(InetAddress a, int n)
     {
         ipAddress = a;
+        
+        if( (n<ModbusConst.FIRST_MODBUS_SLAVE) || (n>ModbusConst.LAST_MODBUS_SLAVE) )
+        {
+            n= -1;
+        }
         rtuAddress = n;
     }
     
     public ModbusSlaveAddress(int n)
     {
+        if( (n<ModbusConst.FIRST_MODBUS_SLAVE) || (n>ModbusConst.LAST_MODBUS_SLAVE) )
+        {
+            n= -1;
+        }
+        
         rtuAddress = n;
         ipAddress = null;
     }
@@ -58,9 +69,20 @@ public class ModbusSlaveAddress
     
     public void setRtuAddress(int n)
     {
+        if( (n<ModbusConst.FIRST_MODBUS_SLAVE) || (n>ModbusConst.LAST_MODBUS_SLAVE) )
+        {
+            n= -1;
+        }        
         rtuAddress = n;
     }
 
+    public String toBaseString()
+    {
+        return String.format("{ rtuAddress : %d, ipAddress : %s }", 
+                rtuAddress,
+                (ipAddress==null)?"null":ipAddress.toString());
+    }
+    
     @Override
     public String toString() 
     {

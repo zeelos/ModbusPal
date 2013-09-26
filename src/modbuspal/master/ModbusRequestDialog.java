@@ -39,6 +39,12 @@ extends javax.swing.JDialog
             return ModbusMasterRequest.getWriteMultipleRegistersRequest(startingAddress, quantityOfRegisters);
         }
         
+        else if( actionSelectorTabbedPane.getSelectedComponent()==delayPanel )
+        {
+            int delayInMilliseconds = delayTextField.getInteger();
+            return ModbusMasterDelay.getDelay(delayInMilliseconds);
+        }
+        
         return null;
     }
     
@@ -63,9 +69,20 @@ extends javax.swing.JDialog
         x10_startingAddressTextField = new modbuspal.toolkit.NumericTextField();
         jLabel4 = new javax.swing.JLabel();
         x10_quantityToReadTextField = new modbuspal.toolkit.NumericTextField();
+        delayPanel = new javax.swing.JPanel();
+        jLabel8 = new javax.swing.JLabel();
+        delayTextField = new modbuspal.toolkit.NumericTextField();
+        jLabel10 = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         okButton = new javax.swing.JButton();
         cancelButton = new javax.swing.JButton();
+        jPanel2 = new javax.swing.JPanel();
+        jLabel5 = new javax.swing.JLabel();
+        jSpinner1 = new javax.swing.JSpinner();
+        implementationComboBox = new javax.swing.JComboBox();
+        jLabel6 = new javax.swing.JLabel();
+        jSpinner2 = new javax.swing.JSpinner();
+        jLabel7 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Master Request");
@@ -139,6 +156,26 @@ extends javax.swing.JDialog
 
         actionSelectorTabbedPane.addTab("Write Holding registers", x10_writeHoldingRegistersPanel);
 
+        delayPanel.setLayout(new java.awt.GridBagLayout());
+
+        jLabel8.setText("Delay:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 2, 2);
+        delayPanel.add(jLabel8, gridBagConstraints);
+
+        delayTextField.setColumns(5);
+        delayTextField.setText("numericTextField1");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(5, 2, 2, 5);
+        delayPanel.add(delayTextField, gridBagConstraints);
+
+        jLabel10.setText("ms");
+        delayPanel.add(jLabel10, new java.awt.GridBagConstraints());
+
+        actionSelectorTabbedPane.addTab("Delay", delayPanel);
+
         getContentPane().add(actionSelectorTabbedPane, java.awt.BorderLayout.CENTER);
 
         jPanel1.setLayout(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT));
@@ -161,6 +198,31 @@ extends javax.swing.JDialog
 
         getContentPane().add(jPanel1, java.awt.BorderLayout.SOUTH);
 
+        jLabel5.setText("Retries:");
+        jPanel2.add(jLabel5);
+
+        jSpinner1.setModel(new javax.swing.SpinnerNumberModel(0, 0, 10, 1));
+        jPanel2.add(jSpinner1);
+
+        implementationComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Modbus", "J-Bus" }));
+        implementationComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                implementationComboBoxActionPerformed(evt);
+            }
+        });
+        jPanel2.add(implementationComboBox);
+
+        jLabel6.setText("Receive timeout:");
+        jPanel2.add(jLabel6);
+
+        jSpinner2.setModel(new javax.swing.SpinnerNumberModel(0, 0, 60000, 1000));
+        jPanel2.add(jSpinner2);
+
+        jLabel7.setText("ms");
+        jPanel2.add(jLabel7);
+
+        getContentPane().add(jPanel2, java.awt.BorderLayout.NORTH);
+
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
@@ -174,6 +236,20 @@ extends javax.swing.JDialog
         setVisible(false);
     }//GEN-LAST:event_okButtonActionPerformed
 
+    private void implementationComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_implementationComboBoxActionPerformed
+
+        /*switch( implementationComboBox.getSelectedIndex() )
+        {
+            default:
+            case 0: // modbus
+            modbusSlave.setImplementation(IMPLEMENTATION_MODBUS);
+            break;
+            case 1: // J-Bus
+            modbusSlave.setImplementation(IMPLEMENTATION_JBUS);
+            break;
+        }*/
+    }//GEN-LAST:event_implementationComboBoxActionPerformed
+
     public boolean isOK()
     {
         return isOK;
@@ -182,11 +258,22 @@ extends javax.swing.JDialog
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTabbedPane actionSelectorTabbedPane;
     private javax.swing.JButton cancelButton;
+    private javax.swing.JPanel delayPanel;
+    private modbuspal.toolkit.NumericTextField delayTextField;
+    private javax.swing.JComboBox implementationComboBox;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
+    private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
+    private javax.swing.JLabel jLabel7;
+    private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JSpinner jSpinner1;
+    private javax.swing.JSpinner jSpinner2;
     private javax.swing.JButton okButton;
     private modbuspal.toolkit.NumericTextField x03_quantityToReadTextField;
     private javax.swing.JPanel x03_readHoldingRegistersPanel;

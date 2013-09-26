@@ -39,6 +39,11 @@ public interface ModbusLink
     public void stop();
 
     /**
+     * Stops the ModbusLink. Usually stops the thread created by startMaster().
+     */
+    public void stopMaster();
+    
+    /**
      * For future use. When modbuspal will be able to operate as a MASTER.
      * @param req 
      */

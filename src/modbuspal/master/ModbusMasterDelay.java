@@ -4,14 +4,29 @@
  */
 package modbuspal.master;
 
-import javax.swing.tree.DefaultMutableTreeNode;
-
 /**
  *
  * @author JMC15
  */
 public class ModbusMasterDelay
-extends DefaultMutableTreeNode
+extends ModbusMasterRequest
 {
+    public static ModbusMasterDelay getDelay(int milliseconds)
+    {
+        ModbusMasterDelay output = new ModbusMasterDelay();
+        output.delayMs = milliseconds;
+        
+        String caption = String.format("Delay (%d milliseconds)", milliseconds);
+        output.setUserObject(caption);
+        return output;
+    }   
+        
+    private int delayMs = 0;
     
+    
+    
+    public int getDelay() 
+    {
+        return delayMs;
+    }
 }

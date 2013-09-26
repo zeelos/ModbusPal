@@ -131,6 +131,7 @@ implements ModbusConst
         {
             System.err.println("Slave "+slaveID+" is not enabled");
             req.notifyPDUnotServiced();
+            modbusPalProject.notifyPDUnotServiced();
             return false;
         }
 
@@ -143,6 +144,7 @@ implements ModbusConst
         if( isExceptionResponse(buffer,offset)==true )
         {
             req.notifyExceptionResponse();
+            modbusPalProject.notifyExceptionResponse();
             return false;
         }
 
@@ -156,6 +158,7 @@ implements ModbusConst
             //int length = makeExceptionResponse(functionCode,XC_ILLEGAL_FUNCTION, buffer, offset);
             //ModbusPalRecorder.recordOutgoing(slaveID,buffer,offset,length);
             req.notifyExceptionResponse();
+            modbusPalProject.notifyExceptionResponse();
             return false;
         }
 
@@ -164,20 +167,13 @@ implements ModbusConst
         {
             System.err.println("Illegal function code "+functionCode);
             req.notifyPDUnotServiced();
+            modbusPalProject.notifyPDUnotServiced();
             return false;
         }
 
         req.notifyPDUprocessed();
+        modbusPalProject.notifyPDUprocessed();       
 
-        // delay the reply
-        /*try {
-            Thread.sleep(slave.getReplyDelay());
-        } catch (InterruptedException ex) {
-            Logger.getLogger(ModbusSlaveProcessor.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        ModbusPalRecorder.recordOutgoing(slaveID,buffer,offset,length);
-        return length;*/
         return true;
     }
 

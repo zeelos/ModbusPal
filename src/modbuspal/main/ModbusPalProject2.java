@@ -7,7 +7,6 @@ package modbuspal.main;
 
 import java.net.SocketException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.logging.Level;
@@ -115,51 +114,55 @@ public abstract class ModbusPalProject2
     
     private ModbusSlaveAddress getMatchingRtuAddress(ModbusSlaveAddress id)
     {
-        ModbusSlaveAddress output = null;
-        /*
+        ModbusSlaveAddress bestMatch = null;
+        int matchRate = Integer.MAX_VALUE;
+        
         Set<ModbusSlaveAddress> addresses = knownSlaves.keySet();
         for(ModbusSlaveAddress address : addresses )
         {
-            // try to find a matching address without ip address.
-            // if one is found return it immediately because it is
-            // a perfect match
-            if( address.getIpAddress()==null )
+            if(address.getIpAddress()==null)
             {
-                if (address.getRtuAddress()==id.getRtuAddress())
+                if(address.getRtuAddress()==id.getRtuAddress())
                 {
-                    output = address;
-                    return output;
+                    if( matchRate > 1 )
+                    {
+                        bestMatch = address;
+                        matchRate = 1;
+                    }
                 }
             }
+            
             else
             {
                 try 
                 {
-                    if (address.getRtuAddress()==id.getRtuAddress())
+                    if( NetworkTools.isLocalAddress(address.getIpAddress())==true )
                     {
-                        // try to get a slave address with its ip set to
-                        // a local ip address. if one is found, it overrides
-                        // any previously found address.
-                        if( NetworkTools.isLocalAddress(address.getIpAddress())==true)
+                        if( address.getRtuAddress() == id.getRtuAddress() )
                         {
-                            output = address;
+                            if(matchRate > 2)
+                            {
+                                bestMatch=address;
+                                matchRate = 2;
+                            }
                         }
-                        else if(output==null)
+                        else if( address.getRtuAddress() == -1 )
                         {
-                            output = address;
+                            if(matchRate > 3)
+                            {
+                                bestMatch = address;
+                                matchRate = 3;
+                            }
                         }
                     }
-                } 
+                }
                 catch (SocketException ex) 
                 {
                     Logger.getLogger(ModbusPalProject2.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                }                
             }
-
         }
-        */
-        return output;
-        
+        return bestMatch;        
     }
     
     /**
@@ -196,19 +199,22 @@ public abstract class ModbusPalProject2
      */
     public ModbusSlave getModbusSlave(ModbusSlaveAddress id, boolean createIfNotExist)
     {
-        ModbusSlaveAddress matchedId = getMatchingSlaveAddress(id);
-        if( (matchedId!=null) && (knownSlaves.get(matchedId)!=null) )
+        synchronized(knownSlaves)
         {
-            return knownSlaves.get(matchedId);
-        }
-        else if( createIfNotExist==true )
-        {
-            setModbusSlave( id, new ModbusSlave(id) );
-            return knownSlaves.get(id);
-        }
-        else
-        {
-            return null;
+            ModbusSlaveAddress matchedId = getMatchingSlaveAddress(id);
+            if( (matchedId!=null) && (knownSlaves.get(matchedId)!=null) )
+            {
+                return knownSlaves.get(matchedId);
+            }
+            else if( createIfNotExist==true )
+            {
+                setModbusSlave( id, new ModbusSlave(id) );
+                return knownSlaves.get(id);
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 
@@ -222,18 +228,21 @@ public abstract class ModbusPalProject2
      */
     protected ModbusSlave setModbusSlave(ModbusSlaveAddress id, ModbusSlave s)
     {
-        ModbusSlave old = knownSlaves.get(id);
-        knownSlaves.put(id, s);
-        if(s!=null)
+        synchronized(knownSlaves)
         {
-            notifySlaveAdded(s);
-        }
-        else if(old!=null)
-        {
-            notifySlaveRemoved(old);
-        }
+            ModbusSlave old = knownSlaves.get(id);
+            knownSlaves.put(id, s);
+            if(s!=null)
+            {
+                notifySlaveAdded(s);
+            }
+            else if(old!=null)
+            {
+                notifySlaveRemoved(old);
+            }
 
-        return old;
+            return old;
+        }
     }
 
     /**
@@ -268,17 +277,20 @@ public abstract class ModbusPalProject2
      */
     public ModbusSlave[] getModbusSlaves()
     {
-        ArrayList<ModbusSlave> list = new ArrayList<ModbusSlave>();
-        for(ModbusSlave slave : knownSlaves.values())
+        synchronized(knownSlaves)
         {
-            if( slave != null )
+            ArrayList<ModbusSlave> list = new ArrayList<ModbusSlave>();
+            for(ModbusSlave slave : knownSlaves.values())
             {
-                list.add(slave);
+                if( slave != null )
+                {
+                    list.add(slave);
+                }
             }
+
+            ModbusSlave[] output = new ModbusSlave[0];
+            return list.toArray(output);
         }
-        
-        ModbusSlave[] output = new ModbusSlave[0];
-        return list.toArray(output);
     }
 
     /**
@@ -287,7 +299,10 @@ public abstract class ModbusPalProject2
      */
     public int getModbusSlaveCount()
     {
-        return knownSlaves.size();
+        synchronized(knownSlaves)
+        {
+            return knownSlaves.size();
+        }
     }
 
 }

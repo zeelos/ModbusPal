@@ -14,8 +14,8 @@ package modbuspal.master;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 import modbuspal.automation.Automation;
 import modbuspal.link.ModbusLink;
 import modbuspal.main.AddSlaveDialog;
@@ -24,6 +24,7 @@ import modbuspal.main.ModbusPalProject;
 import modbuspal.main.ModbusPalPane;
 import modbuspal.slave.ModbusSlave;
 import modbuspal.slave.ModbusSlaveAddress;
+import modbuspal.toolkit.GUITools;
 
 /**
  *
@@ -73,6 +74,8 @@ implements ModbusPalListener
         mmTreeModel = new DefaultTreeModel(modbusMasterRoot);
         
         jTree1.setModel(mmTreeModel);
+        
+        jTree1.getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
     }
     
     
@@ -216,8 +219,14 @@ implements ModbusPalListener
 
     private void jTree1ValueChanged(javax.swing.event.TreeSelectionEvent evt) {//GEN-FIRST:event_jTree1ValueChanged
         
+        Object o = null;
         TreePath selection = evt.getNewLeadSelectionPath();
-        Object o = selection.getLastPathComponent();
+        
+        if( selection != null )
+        {
+            o = selection.getLastPathComponent();
+        }
+        
         if( o == null )
         {
             addButton.setText("Add task...");
@@ -249,9 +258,27 @@ implements ModbusPalListener
         return isRunning;
     }
     
+    
+    private void disableDialog()
+    {
+        GUITools.setAllEnabled(getContentPane(), false);
+        
+        
+        try
+        {            
+            jTree1.clearSelection();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+    
     public void start(final ModbusLink link)
     {
         isRunning = true;
+        
+        disableDialog();
         
         // retrieve the list of tasks
         List<ModbusMasterTask> tasks = modbusPalProject.getModbusMasterTasks();
@@ -288,6 +315,9 @@ implements ModbusPalListener
         
         threads.clear();
         isRunning = false;
+        //addButton.setEnabled(true);
+        //removeButton.setEnabled(true);        
+        GUITools.setAllEnabled(getContentPane(), true);
     }
     
     
@@ -345,13 +375,14 @@ implements ModbusPalListener
     @Override
     public void modbusMasterTaskRemoved(ModbusMasterTask mmt) 
     {
-        //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        mmt.detach();
     }
 
     @Override
     public void modbusMasterTaskAdded(ModbusMasterTask mmt) 
     {
         // add new task to the tree
+        mmt.attach(jTree1);
         mmTreeModel.insertNodeInto(mmt, modbusMasterRoot, modbusMasterRoot.getChildCount());
         jTree1.setSelectionPath( new TreePath( mmt.getPath() ) );
     }

@@ -160,6 +160,12 @@ implements ModbusLink, Runnable
     {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+    
+    @Override
+    public void stopMaster()
+    {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
     @Override
     public void execute(ModbusSlaveAddress dst, ModbusMasterRequest req, int timeout) 
