@@ -25,11 +25,44 @@ extends javax.swing.JDialog
     
     ModbusMasterRequest getRequest()
     {
-        if( actionSelectorTabbedPane.getSelectedComponent()==x03_readHoldingRegistersPanel )
+        if( actionSelectorTabbedPane.getSelectedComponent()==x01_readCoilsPanel )
+        {
+            int startingAddress = x01_startingAddressTextField.getInteger();
+            int quantityToRead = x01_quantityToReadTextField.getInteger();
+            return ModbusMasterRequest.getReadCoilsRequest(startingAddress, quantityToRead);            
+        }
+        
+        else if( actionSelectorTabbedPane.getSelectedComponent()==x02_readDiscreteInputsPanel )
+        {
+            int startingAddress = x02_startingAddressTextField.getInteger();
+            int quantityToRead = x02_quantityToReadTextField.getInteger();
+            return ModbusMasterRequest.getReadDiscreteInputsRequest(startingAddress, quantityToRead);
+        }
+        
+        else if( actionSelectorTabbedPane.getSelectedComponent()==x03_readHoldingRegistersPanel )
         {
             int startingAddress = x03_startingAddressTextField.getInteger();
             int quantityOfRegisters = x03_quantityToReadTextField.getInteger();
             return ModbusMasterRequest.getReadHoldingRegistersRequest(startingAddress, quantityOfRegisters);
+        }
+        
+        else if( actionSelectorTabbedPane.getSelectedComponent()==x05_writeSingleCoilPanel )
+        {
+            int outputAddress = x05_outputAddressTextField.getInteger();
+            return ModbusMasterRequest.getWriteSingleCoilRequest(outputAddress);
+        }
+        
+        else if( actionSelectorTabbedPane.getSelectedComponent()==x06_writeSingleRegisterPanel )
+        {
+            int registerAddress = x06_registerAddressTextField.getInteger();
+            return ModbusMasterRequest.getWriteSingleRegisterRequest(registerAddress);
+        }
+        
+        else if( actionSelectorTabbedPane.getSelectedComponent()==x0F_writeMultipleCoilsPanel )
+        {
+            int startingAddress = x0F_startingAddressTextField.getInteger();
+            int quantityOfOutputs = x0F_quantityOfOutputsTextField.getInteger();
+            return ModbusMasterRequest.getWriteMultipleCoilsRequest(startingAddress, quantityOfOutputs);
         }
         
         else if( actionSelectorTabbedPane.getSelectedComponent()==x10_writeHoldingRegistersPanel )
@@ -37,6 +70,17 @@ extends javax.swing.JDialog
             int startingAddress = x10_startingAddressTextField.getInteger();
             int quantityOfRegisters = x10_quantityToReadTextField.getInteger();
             return ModbusMasterRequest.getWriteMultipleRegistersRequest(startingAddress, quantityOfRegisters);
+        }
+        
+        else if( actionSelectorTabbedPane.getSelectedComponent()==x17_readWriteMultipleRegistersPanel )
+        {
+            int readStartingAddress = x17_readStartingAddressTextField.getInteger();
+            int quantityToRead = x17_quantityToReadTextField.getInteger();
+            int writeStartingAddress = x17_writeStartingAddressTextField.getInteger();
+            int quantityToWrite = x17_quantityToWriteTextField.getInteger();
+            return ModbusMasterRequest.getReadWriteMultipleRegistersRequest(
+                    readStartingAddress, quantityToRead,
+                    writeStartingAddress, quantityToWrite);
         }
         
         else if( actionSelectorTabbedPane.getSelectedComponent()==delayPanel )
@@ -59,16 +103,46 @@ extends javax.swing.JDialog
         java.awt.GridBagConstraints gridBagConstraints;
 
         actionSelectorTabbedPane = new javax.swing.JTabbedPane();
+        x01_readCoilsPanel = new javax.swing.JPanel();
+        jLabel9 = new javax.swing.JLabel();
+        x01_startingAddressTextField = new modbuspal.toolkit.NumericTextField();
+        jLabel11 = new javax.swing.JLabel();
+        x01_quantityToReadTextField = new modbuspal.toolkit.NumericTextField();
+        x02_readDiscreteInputsPanel = new javax.swing.JPanel();
+        jLabel12 = new javax.swing.JLabel();
+        x02_startingAddressTextField = new modbuspal.toolkit.NumericTextField();
+        jLabel13 = new javax.swing.JLabel();
+        x02_quantityToReadTextField = new modbuspal.toolkit.NumericTextField();
         x03_readHoldingRegistersPanel = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         x03_startingAddressTextField = new modbuspal.toolkit.NumericTextField();
         jLabel1 = new javax.swing.JLabel();
         x03_quantityToReadTextField = new modbuspal.toolkit.NumericTextField();
+        x05_writeSingleCoilPanel = new javax.swing.JPanel();
+        jLabel14 = new javax.swing.JLabel();
+        x05_outputAddressTextField = new modbuspal.toolkit.NumericTextField();
+        x06_writeSingleRegisterPanel = new javax.swing.JPanel();
+        jLabel15 = new javax.swing.JLabel();
+        x06_registerAddressTextField = new modbuspal.toolkit.NumericTextField();
+        x0F_writeMultipleCoilsPanel = new javax.swing.JPanel();
+        jLabel16 = new javax.swing.JLabel();
+        x0F_startingAddressTextField = new modbuspal.toolkit.NumericTextField();
+        jLabel17 = new javax.swing.JLabel();
+        x0F_quantityOfOutputsTextField = new modbuspal.toolkit.NumericTextField();
         x10_writeHoldingRegistersPanel = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         x10_startingAddressTextField = new modbuspal.toolkit.NumericTextField();
         jLabel4 = new javax.swing.JLabel();
         x10_quantityToReadTextField = new modbuspal.toolkit.NumericTextField();
+        x17_readWriteMultipleRegistersPanel = new javax.swing.JPanel();
+        jLabel18 = new javax.swing.JLabel();
+        x17_readStartingAddressTextField = new modbuspal.toolkit.NumericTextField();
+        jLabel19 = new javax.swing.JLabel();
+        x17_quantityToReadTextField = new modbuspal.toolkit.NumericTextField();
+        jLabel20 = new javax.swing.JLabel();
+        x17_writeStartingAddressTextField = new modbuspal.toolkit.NumericTextField();
+        jLabel21 = new javax.swing.JLabel();
+        x17_quantityToWriteTextField = new modbuspal.toolkit.NumericTextField();
         delayPanel = new javax.swing.JPanel();
         jLabel8 = new javax.swing.JLabel();
         delayTextField = new modbuspal.toolkit.NumericTextField();
@@ -87,6 +161,75 @@ extends javax.swing.JDialog
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Master Request");
         setMinimumSize(new java.awt.Dimension(300, 300));
+
+        x01_readCoilsPanel.setLayout(new java.awt.GridBagLayout());
+
+        jLabel9.setText("Starting address:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 2, 2);
+        x01_readCoilsPanel.add(jLabel9, gridBagConstraints);
+
+        x01_startingAddressTextField.setColumns(5);
+        x01_startingAddressTextField.setText("numericTextField1");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(5, 2, 2, 5);
+        x01_readCoilsPanel.add(x01_startingAddressTextField, gridBagConstraints);
+
+        jLabel11.setText("Quantity of coils :");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(2, 5, 5, 2);
+        x01_readCoilsPanel.add(jLabel11, gridBagConstraints);
+        jLabel11.getAccessibleContext().setAccessibleName("Quantity of coils :");
+
+        x01_quantityToReadTextField.setColumns(5);
+        x01_quantityToReadTextField.setText("numericTextField1");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(2, 2, 5, 5);
+        x01_readCoilsPanel.add(x01_quantityToReadTextField, gridBagConstraints);
+
+        actionSelectorTabbedPane.addTab("Read Coils", x01_readCoilsPanel);
+
+        x02_readDiscreteInputsPanel.setLayout(new java.awt.GridBagLayout());
+
+        jLabel12.setText("Starting address:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 2, 2);
+        x02_readDiscreteInputsPanel.add(jLabel12, gridBagConstraints);
+
+        x02_startingAddressTextField.setColumns(5);
+        x02_startingAddressTextField.setText("numericTextField1");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(5, 2, 2, 5);
+        x02_readDiscreteInputsPanel.add(x02_startingAddressTextField, gridBagConstraints);
+
+        jLabel13.setText("Quantity of inputs :");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(2, 5, 5, 2);
+        x02_readDiscreteInputsPanel.add(jLabel13, gridBagConstraints);
+
+        x02_quantityToReadTextField.setColumns(5);
+        x02_quantityToReadTextField.setText("numericTextField1");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(2, 2, 5, 5);
+        x02_readDiscreteInputsPanel.add(x02_quantityToReadTextField, gridBagConstraints);
+
+        actionSelectorTabbedPane.addTab("Read Discrete Inputs", x02_readDiscreteInputsPanel);
 
         x03_readHoldingRegistersPanel.setLayout(new java.awt.GridBagLayout());
 
@@ -122,6 +265,74 @@ extends javax.swing.JDialog
 
         actionSelectorTabbedPane.addTab("Read Holding registers", x03_readHoldingRegistersPanel);
 
+        x05_writeSingleCoilPanel.setLayout(new java.awt.GridBagLayout());
+
+        jLabel14.setText("Output address:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 2, 2);
+        x05_writeSingleCoilPanel.add(jLabel14, gridBagConstraints);
+
+        x05_outputAddressTextField.setColumns(5);
+        x05_outputAddressTextField.setText("numericTextField1");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(5, 2, 2, 5);
+        x05_writeSingleCoilPanel.add(x05_outputAddressTextField, gridBagConstraints);
+
+        actionSelectorTabbedPane.addTab("Write Single Coil", x05_writeSingleCoilPanel);
+
+        x06_writeSingleRegisterPanel.setLayout(new java.awt.GridBagLayout());
+
+        jLabel15.setText("Register address:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 2, 2);
+        x06_writeSingleRegisterPanel.add(jLabel15, gridBagConstraints);
+
+        x06_registerAddressTextField.setColumns(5);
+        x06_registerAddressTextField.setText("numericTextField1");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(5, 2, 2, 5);
+        x06_writeSingleRegisterPanel.add(x06_registerAddressTextField, gridBagConstraints);
+
+        actionSelectorTabbedPane.addTab("Write Single Register", x06_writeSingleRegisterPanel);
+
+        x0F_writeMultipleCoilsPanel.setLayout(new java.awt.GridBagLayout());
+
+        jLabel16.setText("Starting address:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 2, 2);
+        x0F_writeMultipleCoilsPanel.add(jLabel16, gridBagConstraints);
+
+        x0F_startingAddressTextField.setColumns(5);
+        x0F_startingAddressTextField.setText("numericTextField1");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(5, 2, 2, 5);
+        x0F_writeMultipleCoilsPanel.add(x0F_startingAddressTextField, gridBagConstraints);
+
+        jLabel17.setText("Quantity of outputs :");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(2, 5, 5, 2);
+        x0F_writeMultipleCoilsPanel.add(jLabel17, gridBagConstraints);
+
+        x0F_quantityOfOutputsTextField.setColumns(5);
+        x0F_quantityOfOutputsTextField.setText("numericTextField1");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(2, 2, 5, 5);
+        x0F_writeMultipleCoilsPanel.add(x0F_quantityOfOutputsTextField, gridBagConstraints);
+
+        actionSelectorTabbedPane.addTab("Write Multiple Coils", x0F_writeMultipleCoilsPanel);
+
         x10_writeHoldingRegistersPanel.setLayout(new java.awt.GridBagLayout());
 
         jLabel3.setText("Starting address:");
@@ -155,6 +366,74 @@ extends javax.swing.JDialog
         x10_writeHoldingRegistersPanel.add(x10_quantityToReadTextField, gridBagConstraints);
 
         actionSelectorTabbedPane.addTab("Write Holding registers", x10_writeHoldingRegistersPanel);
+
+        x17_readWriteMultipleRegistersPanel.setLayout(new java.awt.GridBagLayout());
+
+        jLabel18.setText("Read starting address:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 2, 2);
+        x17_readWriteMultipleRegistersPanel.add(jLabel18, gridBagConstraints);
+
+        x17_readStartingAddressTextField.setColumns(5);
+        x17_readStartingAddressTextField.setText("numericTextField1");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(5, 2, 2, 5);
+        x17_readWriteMultipleRegistersPanel.add(x17_readStartingAddressTextField, gridBagConstraints);
+
+        jLabel19.setText("Quantity to read:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(2, 5, 5, 2);
+        x17_readWriteMultipleRegistersPanel.add(jLabel19, gridBagConstraints);
+
+        x17_quantityToReadTextField.setColumns(5);
+        x17_quantityToReadTextField.setText("numericTextField1");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(2, 2, 5, 5);
+        x17_readWriteMultipleRegistersPanel.add(x17_quantityToReadTextField, gridBagConstraints);
+
+        jLabel20.setText("Write starting address:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        x17_readWriteMultipleRegistersPanel.add(jLabel20, gridBagConstraints);
+
+        x17_writeStartingAddressTextField.setColumns(5);
+        x17_writeStartingAddressTextField.setText("numericTextField1");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(5, 2, 2, 5);
+        x17_readWriteMultipleRegistersPanel.add(x17_writeStartingAddressTextField, gridBagConstraints);
+
+        jLabel21.setText("Quantity to write:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(2, 5, 5, 2);
+        x17_readWriteMultipleRegistersPanel.add(jLabel21, gridBagConstraints);
+
+        x17_quantityToWriteTextField.setColumns(5);
+        x17_quantityToWriteTextField.setText("numericTextField1");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(2, 2, 5, 5);
+        x17_readWriteMultipleRegistersPanel.add(x17_quantityToWriteTextField, gridBagConstraints);
+
+        actionSelectorTabbedPane.addTab("Read/Write Multiple Registers", x17_readWriteMultipleRegistersPanel);
 
         delayPanel.setLayout(new java.awt.GridBagLayout());
 
@@ -263,23 +542,53 @@ extends javax.swing.JDialog
     private javax.swing.JComboBox implementationComboBox;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
+    private javax.swing.JLabel jLabel11;
+    private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel13;
+    private javax.swing.JLabel jLabel14;
+    private javax.swing.JLabel jLabel15;
+    private javax.swing.JLabel jLabel16;
+    private javax.swing.JLabel jLabel17;
+    private javax.swing.JLabel jLabel18;
+    private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel20;
+    private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
+    private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JSpinner jSpinner1;
     private javax.swing.JSpinner jSpinner2;
     private javax.swing.JButton okButton;
+    private modbuspal.toolkit.NumericTextField x01_quantityToReadTextField;
+    private javax.swing.JPanel x01_readCoilsPanel;
+    private modbuspal.toolkit.NumericTextField x01_startingAddressTextField;
+    private modbuspal.toolkit.NumericTextField x02_quantityToReadTextField;
+    private javax.swing.JPanel x02_readDiscreteInputsPanel;
+    private modbuspal.toolkit.NumericTextField x02_startingAddressTextField;
     private modbuspal.toolkit.NumericTextField x03_quantityToReadTextField;
     private javax.swing.JPanel x03_readHoldingRegistersPanel;
     private modbuspal.toolkit.NumericTextField x03_startingAddressTextField;
+    private modbuspal.toolkit.NumericTextField x05_outputAddressTextField;
+    private javax.swing.JPanel x05_writeSingleCoilPanel;
+    private modbuspal.toolkit.NumericTextField x06_registerAddressTextField;
+    private javax.swing.JPanel x06_writeSingleRegisterPanel;
+    private modbuspal.toolkit.NumericTextField x0F_quantityOfOutputsTextField;
+    private modbuspal.toolkit.NumericTextField x0F_startingAddressTextField;
+    private javax.swing.JPanel x0F_writeMultipleCoilsPanel;
     private modbuspal.toolkit.NumericTextField x10_quantityToReadTextField;
     private modbuspal.toolkit.NumericTextField x10_startingAddressTextField;
     private javax.swing.JPanel x10_writeHoldingRegistersPanel;
+    private modbuspal.toolkit.NumericTextField x17_quantityToReadTextField;
+    private modbuspal.toolkit.NumericTextField x17_quantityToWriteTextField;
+    private modbuspal.toolkit.NumericTextField x17_readStartingAddressTextField;
+    private javax.swing.JPanel x17_readWriteMultipleRegistersPanel;
+    private modbuspal.toolkit.NumericTextField x17_writeStartingAddressTextField;
     // End of variables declaration//GEN-END:variables
 }

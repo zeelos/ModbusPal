@@ -27,6 +27,11 @@ implements ModbusPduProcessor
     }
 
     @Override
+    public int buildPDU(ModbusMasterRequest mmr, ModbusSlaveAddress slaveID, byte[] buffer, int offset, boolean createIfNotExist) {
+        return -1;
+    }
+        
+    @Override
     public boolean processPDU(ModbusMasterRequest mmr, ModbusSlaveAddress slaveID, byte[] buffer, int offset, boolean createIfNotExist) {
         return false;
     }

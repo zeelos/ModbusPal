@@ -179,7 +179,7 @@ implements ModbusLink, Runnable
         
         // genete PDU of the request, start at offset 7
         // (leave room for MBAP header).
-        int length = req.toBytes(buffer, 7);
+        int length = buildPDU(req, dst, buffer, 7);
         
         // create MBAP header for the request
         ModbusTools.setUint16(buffer, 0, clientTI); // transaction identifier on 2 bytes

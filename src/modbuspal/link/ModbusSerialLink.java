@@ -521,9 +521,9 @@ implements ModbusLink, Runnable, SerialPortEventListener
     {
         byte buffer[] = new byte[2048];
         
-        // genete PDU of the request, start at offset 7
+        // genete PDU of the request, start at offset 1
         // (leave room for header and footer).
-        int length = req.toBytes(buffer, 1);
+        int length = buildPDU(req, dst, buffer, 1);
         
         // prepend slave address
         ModbusTools.setUint8(buffer, 0, dst.getRtuAddress());
@@ -584,16 +584,5 @@ implements ModbusLink, Runnable, SerialPortEventListener
                 //pduLength = makeExceptionResponse(XC_SLAVE_DEVICE_FAILURE, buffer, 1);
             } 
         }
-        
-        /*
-        sock.setSoTimeout(timeout);
-        
-        // wait for reply
-        int recv = sock.getInputStream().read(buffer);
-        
-        // rip MBAP header off
-        processPDU(req, dst, buffer, 7, recv);
-        */ 
     }
-
 }

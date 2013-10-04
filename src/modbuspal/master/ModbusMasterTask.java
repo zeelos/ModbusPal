@@ -10,7 +10,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import modbuspal.link.ModbusLink;
@@ -18,7 +17,7 @@ import modbuspal.slave.ModbusSlaveAddress;
 
 /**
  *
- * @author JMC15
+ * @author nnovic
  */
 public class ModbusMasterTask 
 extends DefaultMutableTreeNode

@@ -94,14 +94,26 @@ implements ModbusPduProcessor, TableModel, ModbusPalXML, ModbusConst
     {
         switch( functionCode )
         {
-            case FC_READ_HOLDING_REGISTERS: return readMultipleRegistersRequest(functionCode, buffer, offset, createIfNotExist);
-            case FC_WRITE_SINGLE_REGISTER: return writeSingleRegisterRequest(functionCode, buffer, offset, createIfNotExist);
-            case FC_WRITE_MULTIPLE_REGISTERS: return writeMultipleRegistersRequest(functionCode, buffer, offset, createIfNotExist);
-            case FC_READ_WRITE_MULTIPLE_REGISTERS: return readWriteMultipleRegistersRequest(functionCode, buffer, offset, createIfNotExist);
+            case FC_READ_HOLDING_REGISTERS: return processReadMultipleRegistersRequest(functionCode, buffer, offset, createIfNotExist);
+            case FC_WRITE_SINGLE_REGISTER: return processWriteSingleRegisterRequest(functionCode, buffer, offset, createIfNotExist);
+            case FC_WRITE_MULTIPLE_REGISTERS: return processWriteMultipleRegistersRequest(functionCode, buffer, offset, createIfNotExist);
+            case FC_READ_WRITE_MULTIPLE_REGISTERS: return processReadWriteMultipleRegistersRequest(functionCode, buffer, offset, createIfNotExist);
         }
         return -1;
     }
 
+    @Override
+    public int buildPDU(ModbusMasterRequest req, ModbusSlaveAddress slaveID, byte[] buffer, int offset, boolean createIfNotExist)
+    {
+        switch( req.getFunctionCode() )
+        {
+            case FC_READ_HOLDING_REGISTERS: return buildReadMultipleRegistersRequest(req, buffer, offset, createIfNotExist);
+            case FC_WRITE_SINGLE_REGISTER: return buildWriteSingleRegisterRequest(req, buffer, offset, createIfNotExist);
+            case FC_WRITE_MULTIPLE_REGISTERS: return buildWriteMultipleRegistersRequest(req, buffer, offset, createIfNotExist);
+            case FC_READ_WRITE_MULTIPLE_REGISTERS: return buildReadWriteMultipleRegistersRequest(req, buffer, offset, createIfNotExist);
+        }
+        return -1;
+    }
     
     @Override
     public boolean processPDU(ModbusMasterRequest req, ModbusSlaveAddress slaveID, byte[] buffer, int offset, boolean createIfNotExist)
@@ -148,7 +160,7 @@ implements ModbusPduProcessor, TableModel, ModbusPalXML, ModbusConst
     }
 
 
-    private int readWriteMultipleRegistersRequest(byte functionCode, byte[] buffer, int offset, boolean createIfNotExist)
+    private int processReadWriteMultipleRegistersRequest(byte functionCode, byte[] buffer, int offset, boolean createIfNotExist)
     {
         int readStartingAddress = ModbusTools.getUint16(buffer, offset+1);
         int quantityToRead = ModbusTools.getUint16(buffer, offset+3);
@@ -199,7 +211,55 @@ implements ModbusPduProcessor, TableModel, ModbusPalXML, ModbusConst
 
 
     
-    
+    private int buildReadWriteMultipleRegistersRequest(ModbusMasterRequest req, byte[] buffer, int offset, boolean createIfNotExist)
+    {
+        int readStartingAddress = req.getReadAddress();
+        int quantityToRead = req.getReadQuantity();
+        int writeStartingAddress = req.getWriteAddress();
+        int quantityToWrite = req.getWriteQuantity();
+        int writeByteCount = quantityToWrite*2;
+
+        // verify quantity to read
+        if( (quantityToRead<1) || (quantityToRead>118) )
+        {
+            return -1;
+        }
+
+        // verify quantity to write
+        if( (quantityToWrite<1) || (quantityToWrite>118) || (writeByteCount!=2*quantityToWrite) )
+        {
+            return -1;
+        }
+
+        // verify that registers to be read exist:
+        if( exist(readStartingAddress,quantityToRead,createIfNotExist) == false )
+        {
+            return -1;
+        }
+
+        // verify that registers to be written exist:
+        if( exist(writeStartingAddress,quantityToWrite,createIfNotExist) == false )
+        {
+            return -1;
+        }
+
+        buffer[offset+0] = req.getFunctionCode();
+        ModbusTools.setUint16(buffer, offset+1, readStartingAddress);
+        ModbusTools.setUint16(buffer, offset+3, quantityToRead);
+        ModbusTools.setUint16(buffer, offset+5, writeStartingAddress);
+        ModbusTools.setUint16(buffer, offset+7, quantityToWrite);
+        ModbusTools.setUint8(buffer, offset+9, writeByteCount);
+        
+        byte rc = getValues(writeStartingAddress, quantityToWrite, buffer, offset+10);
+        if( rc != XC_SUCCESSFUL )
+        {
+            return -1;
+        }
+        
+        return 10+writeByteCount;
+    }
+        
+        
     private boolean readWriteMultipleRegistersReply(ModbusMasterRequest req, byte[] buffer, int offset, boolean createIfNotExist)
     {
         int readStartingAddress = req.getReadAddress();
@@ -239,7 +299,7 @@ implements ModbusPduProcessor, TableModel, ModbusPalXML, ModbusConst
     
     
     
-    private int writeMultipleRegistersRequest(byte functionCode, byte[] buffer, int offset, boolean createIfNotExist)
+    private int processWriteMultipleRegistersRequest(byte functionCode, byte[] buffer, int offset, boolean createIfNotExist)
     {
         int startingAddress = ModbusTools.getUint16(buffer, offset+1);
         int quantity = ModbusTools.getUint16(buffer, offset+3);
@@ -265,6 +325,36 @@ implements ModbusPduProcessor, TableModel, ModbusPalXML, ModbusConst
     }
 
 
+    private int buildWriteMultipleRegistersRequest(ModbusMasterRequest req, byte[] buffer, int offset, boolean createIfNotExist)
+    {
+        int startingAddress = req.getWriteAddress();
+        int quantity = req.getWriteQuantity();
+        int byteCount = quantity * 2;
+
+        if( (quantity<1) || (quantity>123) )
+        {
+            return -1;
+        }
+
+        if( exist(startingAddress,quantity, createIfNotExist) == false )
+        {
+            return -1;
+        }
+        
+        buffer[offset+0] = req.getFunctionCode();
+        ModbusTools.setUint16(buffer, offset+1, startingAddress);
+        ModbusTools.setUint16(buffer, offset+3, quantity);
+        ModbusTools.setUint8(buffer, offset+5, byteCount);
+        
+        byte rc = getValues(startingAddress, quantity, buffer, offset+6);
+        if( rc != XC_SUCCESSFUL )
+        {
+            return -1;
+        }
+
+        return 6+byteCount;
+    }
+    
     private boolean writeMultipleRegistersReply(ModbusMasterRequest req, byte[] buffer, int offset, boolean createIfNotExist)
     {
         int startingAddress = ModbusTools.getUint16(buffer, offset+1);
@@ -297,7 +387,7 @@ implements ModbusPduProcessor, TableModel, ModbusPalXML, ModbusConst
 
     
     
-    private int writeSingleRegisterRequest(byte functionCode, byte[] buffer, int offset, boolean createIfNotExist)
+    private int processWriteSingleRegisterRequest(byte functionCode, byte[] buffer, int offset, boolean createIfNotExist)
     {
         int address = ModbusTools.getUint16(buffer, offset+1);
 
@@ -317,6 +407,24 @@ implements ModbusPduProcessor, TableModel, ModbusPalXML, ModbusConst
     }
 
 
+    
+    private int buildWriteSingleRegisterRequest(ModbusMasterRequest req, byte[] buffer, int offset, boolean createIfNotExist)
+    {
+        int address = req.getWriteAddress();
+
+        if( exist(address, 1, createIfNotExist) == false )
+        {
+            return -1;
+        }
+
+        int value = getValue(address);
+        
+        buffer[offset+0] = req.getFunctionCode();
+        ModbusTools.setUint16(buffer, offset+1, address);
+        ModbusTools.setUint16(buffer, offset+3, value);
+
+        return 5;
+    }
     
     private boolean writeSingleRegisterReply(ModbusMasterRequest req, byte[] buffer, int offset, boolean createIfNotExist)
     {
@@ -342,7 +450,7 @@ implements ModbusPduProcessor, TableModel, ModbusPalXML, ModbusConst
     
     
     
-    private int readMultipleRegistersRequest(byte functionCode, byte[] buffer, int offset, boolean createIfNotExist)
+    private int processReadMultipleRegistersRequest(byte functionCode, byte[] buffer, int offset, boolean createIfNotExist)
     {
         int startingAddress = ModbusTools.getUint16(buffer, offset+1);
         int quantity = ModbusTools.getUint16(buffer, offset+3);
@@ -368,6 +476,15 @@ implements ModbusPduProcessor, TableModel, ModbusPalXML, ModbusConst
         }
 
         return 2 + (2*quantity);
+    }
+    
+    
+    private int buildReadMultipleRegistersRequest(ModbusMasterRequest req, byte[] buffer, int offset, boolean createIfNotExist)
+    {
+        ModbusTools.setUint8(buffer, offset+0, req.getFunctionCode()); // function code
+        ModbusTools.setUint16(buffer, offset+1, req.getReadAddress()); // starting address
+        ModbusTools.setUint16(buffer, offset+3, req.getReadQuantity()); // quantity of registers
+        return 5;
     }
 
 

@@ -22,13 +22,6 @@ public interface ModbusConst
     public static final byte FC_WRITE_MULTIPLE_REGISTERS = (byte)0x10;
     public static final byte FC_READ_WRITE_MULTIPLE_REGISTERS = (byte)0x17;
 
-    public static final String MODBUS_FUNCTIONS[] = {
-        "(0x00)",
-        "(0x01) Read coils",
-        "(0x02)",
-        "(0x03) Read holding registers",
-    };
-
     public static final byte XC_SUCCESSFUL = (byte)0x00;
     public static final byte XC_ILLEGAL_FUNCTION = (byte)0x01;
     public static final byte XC_ILLEGAL_DATA_ADDRESS = (byte)0x02;

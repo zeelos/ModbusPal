@@ -112,6 +112,62 @@ implements ModbusConst
         return length;
     }
 
+    
+    
+    
+    protected int buildPDU(ModbusMasterRequest req, ModbusSlaveAddress slaveID, byte[] buffer, int offset/*, int pduLength*/)
+    {
+        // record the request
+        // ModbusPalRecorder.recordIncoming(slaveID,buffer,offset,pduLength);
+
+        // check if the slave is enabled
+        if( modbusPalProject.isSlaveEnabled(slaveID) == false )
+        {
+            System.err.println("Slave "+slaveID+" is not enabled");
+            req.notifyPDUnotServiced();
+            modbusPalProject.notifyPDUnotServiced();
+            return -1;
+        }
+
+        
+        byte functionCode = req.getFunctionCode();
+        
+        
+        // get the slave:
+        ModbusSlave slave = modbusPalProject.getModbusSlave(slaveID);
+
+        // retrive the pdu processor for the modbus function:
+        
+        ModbusPduProcessor mspp = slave.getPduProcessor(functionCode);
+        if( mspp == null )
+        {
+            System.err.println("Unsupported function code "+functionCode);
+            //int length = makeExceptionResponse(functionCode,XC_ILLEGAL_FUNCTION, buffer, offset);
+            //ModbusPalRecorder.recordOutgoing(slaveID,buffer,offset,length);
+            req.notifyExceptionResponse();
+            modbusPalProject.notifyExceptionResponse();
+            return -1;
+        }
+
+        int length = mspp.buildPDU(req, slaveID, buffer, offset, modbusPalProject.isLeanModeEnabled());
+        if(length==-1)
+        {
+            System.err.println("Illegal function code "+functionCode);
+            req.notifyPDUnotServiced();
+            modbusPalProject.notifyPDUnotServiced();
+            return -1;
+        }
+
+        //req.notifyPDUprocessed();
+        //modbusPalProject.notifyPDUprocessed();       
+
+        return length;
+    }    
+    
+    
+    
+    
+    
     /**
      * The subclass will call this method in order to process the content of
      * the PDU that has been received from the slave.

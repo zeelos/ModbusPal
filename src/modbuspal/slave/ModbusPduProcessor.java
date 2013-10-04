@@ -58,6 +58,8 @@ extends Instantiable<ModbusPduProcessor>
     public boolean processPDU(ModbusMasterRequest mmr, ModbusSlaveAddress slaveID, byte[] buffer, int offset, boolean createIfNotExist);
     
     
+    public int buildPDU(ModbusMasterRequest mmr, ModbusSlaveAddress slaveID, byte[] buffer, int offset, boolean createIfNotExist);
+    
     /**
      * Returns a JPanel that is designed to graphically reflect the settings
      * of the PduProcessor. Those settings will be, most of the time, various
