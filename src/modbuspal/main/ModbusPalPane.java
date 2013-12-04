@@ -1183,8 +1183,8 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
             //slave.setName(name);
             //ModbusPal.addModbusSlave(slave);
 
-            ModbusSlaveAddress ids[] = dialog.getSlaveIds();
-            String name = dialog.getSlaveName();
+            ModbusSlaveAddress ids[] = dialog.getTargetList();
+            String name = dialog.getTargetName();
             for( int i=0; i<ids.length; i++ )
             {
                 ModbusSlave slave = new ModbusSlave(ids[i]);
@@ -1342,7 +1342,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
             if( modbusMasterDialog != null )
             {
                 modbusMasterDialog.setVisible(false);
-                modbusMasterDialog = null;
+                //modbusMasterDialog = null;
             }
         }
 }//GEN-LAST:event_masterToggleButtonActionPerformed

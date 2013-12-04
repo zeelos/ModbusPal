@@ -205,8 +205,8 @@ implements WindowListener, ModbusSlaveListener,AncestorListener
 
         if( dialog.isAdded() )
         {
-            ModbusSlaveAddress ids[] = dialog.getSlaveIds();
-            String name = dialog.getSlaveName();
+            ModbusSlaveAddress ids[] = dialog.getTargetList();
+            String name = dialog.getTargetName();
             for( int i=0; i<ids.length; i++ )
             {
                 modbusPalProject.duplicateModbusSlave(modbusSlave.getSlaveId(), ids[i], name);

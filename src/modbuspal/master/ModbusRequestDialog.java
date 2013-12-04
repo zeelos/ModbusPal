@@ -4,6 +4,9 @@
  */
 package modbuspal.master;
 
+import modbuspal.main.ModbusConst;
+import modbuspal.slave.ModbusCoils;
+
 /**
  *
  * @author jmc15
@@ -591,4 +594,66 @@ extends javax.swing.JDialog
     private javax.swing.JPanel x17_readWriteMultipleRegistersPanel;
     private modbuspal.toolkit.NumericTextField x17_writeStartingAddressTextField;
     // End of variables declaration//GEN-END:variables
+
+    void initializeWith(ModbusMasterRequest mmr) 
+    {
+        if( mmr instanceof ModbusMasterDelay )
+        {
+            ModbusMasterDelay mmd = (ModbusMasterDelay)mmr;
+            actionSelectorTabbedPane.setSelectedComponent(delayPanel);
+            delayTextField.setValue( mmd.getDelay() );
+            return;
+        }
+        
+        switch( mmr.getFunctionCode() )
+        {
+            case ModbusConst.FC_READ_COILS:
+                actionSelectorTabbedPane.setSelectedComponent(x01_readCoilsPanel);
+                x01_startingAddressTextField.setValue( mmr.getReadAddress() );
+                x01_quantityToReadTextField.setValue( mmr.getReadQuantity() );
+                break;
+                
+            case ModbusConst.FC_READ_DISCRETE_INPUTS:
+                actionSelectorTabbedPane.setSelectedComponent(x02_readDiscreteInputsPanel);
+                x02_startingAddressTextField.setValue( mmr.getReadAddress() );
+                x02_quantityToReadTextField.setValue( mmr.getReadQuantity() );
+                break;
+                
+            case ModbusConst.FC_READ_HOLDING_REGISTERS:
+                actionSelectorTabbedPane.setSelectedComponent(x03_readHoldingRegistersPanel);
+                x03_startingAddressTextField.setValue( mmr.getReadAddress() );
+                x03_quantityToReadTextField.setValue( mmr.getReadQuantity() );
+                break;
+                
+            case ModbusConst.FC_WRITE_SINGLE_COIL:
+                actionSelectorTabbedPane.setSelectedComponent(x05_writeSingleCoilPanel);
+                x05_outputAddressTextField.setValue( mmr.getWriteAddress() );
+                break;
+                
+            case ModbusConst.FC_WRITE_SINGLE_REGISTER:
+                actionSelectorTabbedPane.setSelectedComponent(x06_writeSingleRegisterPanel);
+                x06_registerAddressTextField.setValue( mmr.getWriteAddress() );
+                break;
+                
+            case ModbusConst.FC_WRITE_MULTIPLE_COILS:
+                actionSelectorTabbedPane.setSelectedComponent(x0F_writeMultipleCoilsPanel);
+                x0F_startingAddressTextField.setValue(mmr.getWriteAddress());
+                x0F_quantityOfOutputsTextField.setValue(mmr.getWriteQuantity());
+                break;
+                
+            case ModbusConst.FC_WRITE_MULTIPLE_REGISTERS:
+                actionSelectorTabbedPane.setSelectedComponent(x10_writeHoldingRegistersPanel);
+                x10_startingAddressTextField.setValue( mmr.getWriteAddress() );
+                x10_quantityToReadTextField.setValue( mmr.getWriteQuantity() );
+                break;
+                
+            case ModbusConst.FC_READ_WRITE_MULTIPLE_REGISTERS:
+                x17_readStartingAddressTextField.setValue( mmr.getReadAddress() );
+                x17_quantityToReadTextField.setValue( mmr.getReadQuantity() );
+                x17_writeStartingAddressTextField.setValue( mmr.getWriteAddress() );
+                x17_quantityToWriteTextField.setValue( mmr.getWriteQuantity() );
+                break;
+
+        }
+    }
 }

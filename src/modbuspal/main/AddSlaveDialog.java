@@ -22,6 +22,7 @@ import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import modbuspal.help.HelpViewer;
+import modbuspal.master.ModbusMasterTarget;
 import modbuspal.slave.*;
 import modbuspal.toolkit.GUITools;
 
@@ -399,7 +400,7 @@ extends javax.swing.JDialog
      * slave numbers
      * @return list of the modbus slave numbers to create in the project
      */
-    public ModbusSlaveAddress[] getSlaveIds()
+    public ModbusSlaveAddress[] getTargetList()
     {
         List<ModbusSlaveAddress> list = parseSlaveIds();
         ModbusSlaveAddress[] output = new ModbusSlaveAddress[0];
@@ -420,7 +421,7 @@ extends javax.swing.JDialog
      * used for the modbus slave(s) to create in the project
      * @return slave name typed by the user
      */
-    public String getSlaveName()
+    public String getTargetName()
     {
         return nameTextField.getText();
     }
@@ -577,4 +578,14 @@ extends javax.swing.JDialog
     private javax.swing.JLabel tcpSlaveHelpLabel;
     // End of variables declaration//GEN-END:variables
 
+    public void initializeWith(ModbusMasterTarget mmt) 
+    {
+        slavesTextArea.setText(mmt.getTargetListAsText());
+        nameTextField.setText( mmt.getTargetName() );
+    }
+
+    public String getTargetListAsText() 
+    {
+        return slavesTextArea.getText();
+    }
 }

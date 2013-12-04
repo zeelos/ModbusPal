@@ -17,7 +17,8 @@ extends javax.swing.JDialog
     /**
      * Creates new form NewTaskDialog
      */
-    public NewTaskDialog(java.awt.Frame parent, boolean modal) {
+    public NewTaskDialog(java.awt.Frame parent, boolean modal) 
+    {
         super(parent, modal);
         initComponents();
     }
@@ -107,5 +108,10 @@ extends javax.swing.JDialog
     String getTaskName() 
     {
         return jTextField1.getText();
+    }
+
+    void initializeWith(ModbusMasterTask mmt) 
+    {
+        jTextField1.setText( mmt.getTaskName() );
     }
 }

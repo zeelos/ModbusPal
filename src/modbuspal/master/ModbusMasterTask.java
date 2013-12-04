@@ -52,6 +52,11 @@ extends DefaultMutableTreeNode
         setUserObject(s);
     }
     
+    String getTaskName()
+    {
+        return taskName;
+    }
+    
     private void select(DefaultMutableTreeNode tn)
     {
         try

@@ -20,13 +20,19 @@ extends DefaultMutableTreeNode
 {
     private String targetName;
     private ModbusSlaveAddress[] targetList;
-            
+    private String targetListText;
+    
     void setTargetName(String s) 
     {
         targetName = s;
         setUserObject(targetName);
     }
 
+    public String getTargetName()
+    {
+        return targetName;
+    }
+    
     void setTargetList(ModbusSlaveAddress[] a) 
     {
         targetList = a;
@@ -38,5 +44,14 @@ extends DefaultMutableTreeNode
         Collections.addAll(output, targetList);
         return output;
     }
+
+    void setTargetListAsText(String targetsAsString) 
+    {
+        targetListText = targetsAsString;
+    }
     
+    public String getTargetListAsText()
+    {
+        return targetListText;
+    }
 }

@@ -14,6 +14,8 @@ package modbuspal.master;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import modbuspal.automation.Automation;
@@ -96,9 +98,43 @@ implements ModbusPalListener
             
             modbusPalProject.addModbusMasterTask(mmt);
         }
+    }    
+    
+    
+    
+    private void modifyTask(ModbusMasterTask mmt)
+    {
+        NewTaskDialog ntd = new NewTaskDialog(null, true);
+        ntd.initializeWith(mmt);
+        ntd.setVisible(true);
+        if( ntd.isOK() == true )
+        {
+            // obtain data from the form
+            String taskName = ntd.getTaskName();
+            
+            mmt.setTaskName(taskName);
+
+            mmTreeModel.nodeChanged(mmt);
+        }
+    }
+    
+    
+    private void removeTask(ModbusMasterTask mmt)
+    {
+        // remove all targets that are children of this task
+        for(int i=0; i<mmt.getChildCount(); i++)
+        {
+            ModbusMasterTarget child = (ModbusMasterTarget)mmt.getChildAt(i);
+            removeTarget(child);
+        }
+        
+        // remove the task
+        modbusPalProject.removeModbusMasterTask(mmt);
     }
     
 
+    
+    
     private void addNewTargetWizard(ModbusMasterTask parent)
     {
         // create dialog for target selection
@@ -110,13 +146,15 @@ implements ModbusPalListener
         }
         
         // obtain data from the form
-        ModbusSlaveAddress[] targets = asd.getSlaveIds();
-        String targetName = asd.getSlaveName();
+        ModbusSlaveAddress[] targets = asd.getTargetList();
+        String targetsAsString = asd.getTargetListAsText();
+        String targetName = asd.getTargetName();
         
         // create new target node in the tree
         ModbusMasterTarget mmt = new ModbusMasterTarget();
         mmt.setTargetName(targetName);
         mmt.setTargetList(targets);
+        mmt.setTargetListAsText(targetsAsString);
         
         // add the new node in the tree
         mmTreeModel.insertNodeInto(mmt, parent, parent.getChildCount());
@@ -124,6 +162,42 @@ implements ModbusPalListener
     }
     
     
+    private void modifyTarget(ModbusMasterTarget mmt)
+    {
+        AddSlaveDialog asd = new AddSlaveDialog("Target slave(s)");
+        asd.initializeWith(mmt);
+        asd.setVisible(true);
+        if( asd.isAdded() == false )
+        {
+            return;
+        }        
+        
+         // obtain data from the form
+        ModbusSlaveAddress[] targets = asd.getTargetList();
+        String targetsAsString = asd.getTargetListAsText();
+        String targetName = asd.getTargetName();
+        
+        // create new target node in the tree
+        mmt.setTargetName(targetName);
+        mmt.setTargetList(targets);
+        mmt.setTargetListAsText(targetsAsString);
+        
+        mmTreeModel.nodeChanged(mmt);
+    }
+    
+    
+    private void removeTarget(ModbusMasterTarget mmt)
+    {
+        // remove all request that are children of this target
+        for(int i=0; i<mmt.getChildCount(); i++)
+        {
+            ModbusMasterRequest child = (ModbusMasterRequest)mmt.getChildAt(i);
+            removeRequest(child);
+        }
+        
+        // remove the target
+        mmTreeModel.removeNodeFromParent(mmt);        
+    }
     
     private void addNewRequestWizard( ModbusMasterTarget parent )
     {
@@ -141,6 +215,33 @@ implements ModbusPalListener
     }
     
     
+    private void modifyRequest(ModbusMasterRequest mmr)
+    {
+        ModbusRequestDialog mrd = new ModbusRequestDialog();
+        mrd.initializeWith(mmr);
+        mrd.setVisible(true);
+        if( mrd.isOK() == false )
+        {
+            return;
+        }                
+        
+        ModbusMasterRequest newRequest = mrd.getRequest();
+        
+        MutableTreeNode parent = (MutableTreeNode)mmr.getParent();
+        int index = mmTreeModel.getIndexOfChild(parent, mmr);
+        mmTreeModel.removeNodeFromParent(mmr);
+                
+        mmTreeModel.insertNodeInto(newRequest, parent, index);
+        jTree1.setSelectionPath( new TreePath( newRequest.getPath() ) );
+    }
+    
+    
+    
+    private void removeRequest(ModbusMasterRequest mmr)
+    {
+        mmTreeModel.removeNodeFromParent(mmr);
+    }
+    
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -155,6 +256,7 @@ implements ModbusPalListener
         buttonsPanel = new javax.swing.JPanel();
         addButton = new javax.swing.JButton();
         removeButton = new javax.swing.JButton();
+        modifyButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("ModbusPal Master");
@@ -180,7 +282,21 @@ implements ModbusPalListener
         buttonsPanel.add(addButton);
 
         removeButton.setText("Remove");
+        removeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removeButtonActionPerformed(evt);
+            }
+        });
         buttonsPanel.add(removeButton);
+
+        modifyButton.setText("Modify");
+        modifyButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                modifyButtonActionPerformed(evt);
+            }
+        });
+        buttonsPanel.add(modifyButton);
+        modifyButton.getAccessibleContext().setAccessibleName("Modify");
 
         getContentPane().add(buttonsPanel, java.awt.BorderLayout.PAGE_START);
 
@@ -251,6 +367,53 @@ implements ModbusPalListener
             }
         }
     }//GEN-LAST:event_jTree1ValueChanged
+
+    private void removeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeButtonActionPerformed
+        
+        
+        TreePath selection = jTree1.getSelectionPath();
+        if( selection != null )
+        {
+            Object lastCpnt = selection.getLastPathComponent();
+            if( lastCpnt instanceof ModbusMasterTask )
+            {
+                removeTask( (ModbusMasterTask)lastCpnt );
+            }
+            else if( lastCpnt instanceof ModbusMasterTarget )
+            {
+                removeTarget( (ModbusMasterTarget)lastCpnt );
+            }
+            else if( lastCpnt instanceof ModbusMasterRequest )
+            {
+                ModbusMasterRequest req = (ModbusMasterRequest)lastCpnt;
+                removeRequest(req);
+            }
+        }       
+        
+    }//GEN-LAST:event_removeButtonActionPerformed
+
+    private void modifyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_modifyButtonActionPerformed
+        
+        TreePath selection = jTree1.getSelectionPath();
+        if( selection != null )
+        {
+            Object lastCpnt = selection.getLastPathComponent();
+            if( lastCpnt instanceof ModbusMasterTask )
+            {
+                modifyTask( (ModbusMasterTask)lastCpnt );
+            }
+            else if( lastCpnt instanceof ModbusMasterTarget )
+            {
+                modifyTarget( (ModbusMasterTarget)lastCpnt );
+            }
+            else if( lastCpnt instanceof ModbusMasterRequest )
+            {
+                ModbusMasterRequest req = (ModbusMasterRequest)lastCpnt;
+                modifyRequest(req);
+            }
+        }    
+        
+    }//GEN-LAST:event_modifyButtonActionPerformed
 
     
     public boolean isRunning()
@@ -327,6 +490,7 @@ implements ModbusPalListener
     private javax.swing.JPanel buttonsPanel;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTree jTree1;
+    private javax.swing.JButton modifyButton;
     private javax.swing.JButton removeButton;
     // End of variables declaration//GEN-END:variables
 
@@ -376,6 +540,7 @@ implements ModbusPalListener
     public void modbusMasterTaskRemoved(ModbusMasterTask mmt) 
     {
         mmt.detach();
+        mmTreeModel.removeNodeFromParent(mmt);
     }
 
     @Override
