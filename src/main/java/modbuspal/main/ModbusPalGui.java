@@ -83,7 +83,7 @@ public class ModbusPalGui
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                    setNativeLookAndFeel();
+                    //setNativeLookAndFeel();
                     newFrame().setVisible(true);
                 }
             });
