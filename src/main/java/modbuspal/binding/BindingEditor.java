@@ -25,6 +25,7 @@ import javax.swing.ListModel;
 import javax.swing.event.ListDataListener;
 import modbuspal.main.ModbusPalPane;
 import modbuspal.main.ModbusPalProject;
+import modbuspal.toolkit.FileTools;
 
 /**
  * dialog in which the user specifies which automation and which binding class
@@ -129,8 +130,7 @@ extends javax.swing.JDialog
         automations = new AutomationListModel( modbusPalProject.getAutomations() );
         bindings = new BindingList( modbusPalProject.getBindingFactory().getList() );
         initComponents();
-        Image img = Toolkit.getDefaultToolkit().createImage( getClass().getResource("/modbuspal/main/img/icon32.png") );
-        setIconImage(img);
+        setIconImage(FileTools.getImage("/modbuspal/main/img/icon32.png"));
     }
 
     /**

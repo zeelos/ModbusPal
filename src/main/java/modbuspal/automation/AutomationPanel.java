@@ -20,6 +20,7 @@ import java.awt.event.WindowListener;
 import javax.swing.event.AncestorListener;
 import modbuspal.generator.Generator;
 import modbuspal.instanciator.InstantiableManager;
+import modbuspal.toolkit.FileTools;
 
 /**
  * Represents the automation in the main interface
@@ -137,9 +138,9 @@ implements WindowListener, AutomationExecutionListener, AncestorListener
         });
         add(nameTextField);
 
-        playToggleButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/modbuspal/automation/img/play.png"))); // NOI18N
+        playToggleButton.setIcon(new javax.swing.ImageIcon(FileTools.getImage("/img/play.png"))); // NOI18N
         playToggleButton.setToolTipText("Start or stop this automation");
-        playToggleButton.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/modbuspal/automation/img/stop.png"))); // NOI18N
+        playToggleButton.setSelectedIcon(new javax.swing.ImageIcon(FileTools.getImage("/img/stop.png"))); // NOI18N
         playToggleButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 playToggleButtonActionPerformed(evt);
@@ -147,7 +148,7 @@ implements WindowListener, AutomationExecutionListener, AncestorListener
         });
         add(playToggleButton);
 
-        showToggleButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/modbuspal/automation/img/show.png"))); // NOI18N
+        showToggleButton.setIcon(new javax.swing.ImageIcon(FileTools.getImage("/img/show.png"))); // NOI18N
         showToggleButton.setToolTipText("Show or hide the editor of this automation");
         showToggleButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
         showToggleButton.addActionListener(new java.awt.event.ActionListener() {
@@ -157,7 +158,7 @@ implements WindowListener, AutomationExecutionListener, AncestorListener
         });
         add(showToggleButton);
 
-        deleteButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/modbuspal/automation/img/delete.png"))); // NOI18N
+        deleteButton.setIcon(new javax.swing.ImageIcon(FileTools.getImage("/img/delete.png"))); // NOI18N
         deleteButton.setToolTipText("Delete this automation");
         deleteButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
         deleteButton.addActionListener(new java.awt.event.ActionListener() {

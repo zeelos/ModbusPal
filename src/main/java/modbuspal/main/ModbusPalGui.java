@@ -13,16 +13,14 @@ package modbuspal.main;
 
 import java.awt.BorderLayout;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.net.URL;
 import java.util.HashMap;
-import javax.swing.ImageIcon;
-import javax.swing.JFrame;
-import javax.swing.JInternalFrame;
-import javax.swing.UIManager;
-import javax.swing.WindowConstants;
+import javax.swing.*;
 import javax.swing.event.InternalFrameEvent;
 import javax.swing.event.InternalFrameListener;
 import modbuspal.link.ModbusSerialLink;
+import modbuspal.toolkit.FileTools;
 
 /**
  * Utilitary methods for creating new instances of ModbusPal
@@ -82,7 +80,7 @@ public class ModbusPalGui
         
         if( runGui == true )
         {
-            java.awt.EventQueue.invokeLater(new Runnable() {
+            SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
                     setNativeLookAndFeel();
@@ -121,9 +119,7 @@ public class ModbusPalGui
 
         private void setIconImage()
         {
-            URL url2 = getClass().getClassLoader().getResource("modbuspal/main/img/icon.png");
-            Image image2 = getToolkit().createImage(url2);
-            setFrameIcon( new ImageIcon(image2) );
+            setFrameIcon( new ImageIcon(FileTools.getImage("/img/icon.png")));
         }
 
         @Override
@@ -180,9 +176,7 @@ public class ModbusPalGui
 
         private void setIconImage()
         {
-            URL url2 = getClass().getClassLoader().getResource("modbuspal/main/img/icon.png");
-            Image image2 = getToolkit().createImage(url2);
-            setIconImage(image2);
+            setIconImage(FileTools.getImage("/img/icon.png"));
         }
     }
 

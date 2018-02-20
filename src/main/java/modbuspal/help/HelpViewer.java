@@ -11,6 +11,8 @@
 
 package modbuspal.help;
 
+import modbuspal.toolkit.FileTools;
+
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.io.IOException;
@@ -35,8 +37,7 @@ implements HyperlinkListener
     public HelpViewer() 
     {
         initComponents();
-        Image img = Toolkit.getDefaultToolkit().createImage( getClass().getResource("/modbuspal/main/img/icon32.png") );
-        setIconImage(img);
+        setIconImage(FileTools.getImage("/img/icon32.png"));
 
         try
         {

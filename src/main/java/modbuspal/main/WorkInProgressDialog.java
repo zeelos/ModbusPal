@@ -11,8 +11,12 @@
 
 package modbuspal.main;
 
+import modbuspal.toolkit.FileTools;
+
+import javax.swing.*;
 import java.awt.Image;
 import java.awt.Toolkit;
+import java.io.File;
 
 /**
  * a dialog that appears for lengthy operations.
@@ -64,8 +68,7 @@ extends javax.swing.JDialog
         setTitle(title);
         initComponents();
         setMessage(message);
-        Image img = Toolkit.getDefaultToolkit().createImage( getClass().getResource("/modbuspal/main/img/icon32.png") );
-        setIconImage(img);
+        setIconImage(FileTools.getImage("/img/icon32.png"));
 
         //TODO: GUITools.align(parent, this);
     }
@@ -93,7 +96,7 @@ extends javax.swing.JDialog
         setMinimumSize(new java.awt.Dimension(350, 100));
 
         logoLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
-        logoLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/modbuspal/main/img/modbuspal.png"))); // NOI18N
+        logoLabel.setIcon(new ImageIcon(FileTools.getImage("/img/modbuspal.png"))); // NOI18N
         logoLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         getContentPane().add(logoLabel, java.awt.BorderLayout.WEST);
 

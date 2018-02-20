@@ -11,8 +11,8 @@
 
 package modbuspal.slave;
 
-import modbuspal.toolkit.GUITools;
-import modbuspal.toolkit.XMLTools;
+import modbuspal.toolkit.*;
+
 import java.awt.BorderLayout;
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -26,8 +26,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.xml.parsers.ParserConfigurationException;
 import modbuspal.instanciator.InstantiableManager;
-import modbuspal.toolkit.NumericTextField;
-import modbuspal.toolkit.XFileChooser;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -59,8 +57,7 @@ implements ModbusConst, ModbusSlaveListener
         ModbusSlaveAddress id = s.getSlaveId();
         String name = s.getName();
         setTitle( String.valueOf(id) + ":" + name );
-        Image img = Toolkit.getDefaultToolkit().createImage( getClass().getResource("/modbuspal/main/img/icon32.png") );
-        setIconImage(img);
+        setIconImage(FileTools.getImage("/img/icon32.png"));
         
         modbusSlave.addModbusSlaveListener(this);
         initComponents();

@@ -13,10 +13,13 @@ package modbuspal.slave;
 
 import java.awt.event.KeyEvent;
 import javax.swing.event.AncestorEvent;
+
+import modbuspal.toolkit.FileTools;
 import modbuspal.toolkit.GUITools;
 import modbuspal.main.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.File;
 import javax.swing.event.AncestorListener;
 
 /**
@@ -116,10 +119,10 @@ implements WindowListener, ModbusSlaveListener,AncestorListener
         });
         add(nameTextField);
 
-        enableToggleButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/modbuspal/slave/img/disabled.png"))); // NOI18N
+        enableToggleButton.setIcon(new javax.swing.ImageIcon(FileTools.getImage("/img/disabled.png"))); // NOI18N
         enableToggleButton.setSelected(modbusSlave.isEnabled());
         enableToggleButton.setToolTipText("Enable or disable this slave");
-        enableToggleButton.setSelectedIcon(new javax.swing.ImageIcon(getClass().getResource("/modbuspal/slave/img/enabled.png"))); // NOI18N
+        enableToggleButton.setSelectedIcon(new javax.swing.ImageIcon(FileTools.getImage("/img/enabled.png"))); // NOI18N
         enableToggleButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 enableToggleButtonActionPerformed(evt);
@@ -127,7 +130,7 @@ implements WindowListener, ModbusSlaveListener,AncestorListener
         });
         add(enableToggleButton);
 
-        showToggleButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/modbuspal/slave/img/show.png"))); // NOI18N
+        showToggleButton.setIcon(new javax.swing.ImageIcon(FileTools.getImage("/img/show.png"))); // NOI18N
         showToggleButton.setToolTipText("Show or hide the editor of this slave");
         showToggleButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
         showToggleButton.addActionListener(new java.awt.event.ActionListener() {
@@ -137,7 +140,7 @@ implements WindowListener, ModbusSlaveListener,AncestorListener
         });
         add(showToggleButton);
 
-        duplicateButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/modbuspal/slave/img/duplicate.png"))); // NOI18N
+        duplicateButton.setIcon(new javax.swing.ImageIcon(FileTools.getImage("/img/duplicate.png"))); // NOI18N
         duplicateButton.setToolTipText("Duplicate this slave");
         duplicateButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
         duplicateButton.addActionListener(new java.awt.event.ActionListener() {
@@ -147,7 +150,7 @@ implements WindowListener, ModbusSlaveListener,AncestorListener
         });
         add(duplicateButton);
 
-        deleteButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/modbuspal/slave/img/delete.png"))); // NOI18N
+        deleteButton.setIcon(new javax.swing.ImageIcon(FileTools.getImage("/img/delete.png"))); // NOI18N
         deleteButton.setToolTipText("Delete this slave");
         deleteButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
         deleteButton.addActionListener(new java.awt.event.ActionListener() {

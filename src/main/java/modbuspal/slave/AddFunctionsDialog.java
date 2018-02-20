@@ -21,6 +21,7 @@ import javax.swing.AbstractListModel;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import modbuspal.instanciator.InstantiableManager;
+import modbuspal.toolkit.FileTools;
 
 /**
  * the dialog where the user selects a ModbusPduProcessor to associate with
@@ -106,8 +107,7 @@ extends javax.swing.JDialog
         listOfFunctions = new ListOfFunctions(ff);
         listOfInstances = new ListOfInstances(slave.getPduProcessorInstances());
         initComponents();
-        Image img = Toolkit.getDefaultToolkit().createImage( getClass().getResource("/modbuspal/main/img/icon32.png") );
-        setIconImage(img);
+        setIconImage(FileTools.getImage("icon32.png"));
         if( listOfFunctions.getSize()>0 )
         {
             newRadioButton.requestFocus();

@@ -41,6 +41,7 @@ import modbuspal.instanciator.InstantiableManager;
 import modbuspal.main.ErrorMessage;
 import modbuspal.main.ListLayout;
 import modbuspal.main.ModbusPalPane;
+import modbuspal.toolkit.FileTools;
 import modbuspal.toolkit.XFileChooser;
 import modbuspal.toolkit.XMLTools;
 import org.w3c.dom.Document;
@@ -75,8 +76,7 @@ implements AutomationEditionListener, AutomationExecutionListener, InstantiableM
         automation = a;
         
         setTitle( "Automation:"+automation.getName() );
-        Image img = Toolkit.getDefaultToolkit().createImage( getClass().getResource("/modbuspal/main/img/icon32.png") );
-        setIconImage(img);
+        setIconImage(FileTools.getImage("icon32.png"));
         
         listLayout = new ListLayout();
         initComponents();

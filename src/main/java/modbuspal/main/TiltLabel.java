@@ -5,6 +5,8 @@
 
 package modbuspal.main;
 
+import modbuspal.toolkit.FileTools;
+
 import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -47,15 +49,10 @@ implements Runnable
 
     private void loadImages()
     {
-        URL grayIconUrl = getClass().getResource("img/grayTilt.png");
-        URL greenIconUrl = getClass().getResource("img/greenTilt.png");
-        URL yellowIconUrl = getClass().getResource("img/yellowTilt.png");
-        URL redIconUrl = getClass().getResource("img/redTilt.png");
-        grayIcon = new ImageIcon(grayIconUrl);
-        greenIcon = new ImageIcon(greenIconUrl);
-        yellowIcon = new ImageIcon(yellowIconUrl);
-        redIcon = new ImageIcon(redIconUrl);
-
+        grayIcon = new ImageIcon(FileTools.getImage("/img/grayTilt.png"));
+        greenIcon = new ImageIcon(FileTools.getImage("/img/greenTilt.png"));
+        yellowIcon = new ImageIcon(FileTools.getImage("/img/yellowTilt.png"));
+        redIcon = new ImageIcon(FileTools.getImage("/img/redTilt.png"));
     }
 
     public void start()

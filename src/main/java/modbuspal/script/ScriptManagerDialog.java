@@ -27,6 +27,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import modbuspal.main.ListLayout;
 import modbuspal.main.ModbusPalPane;
 import modbuspal.main.ModbusPalProject;
+import modbuspal.toolkit.FileTools;
 import modbuspal.toolkit.FileTransferHandler;
 
 
@@ -61,8 +62,7 @@ implements ScriptListener, FileTransferHandler.FileTransferTarget
     {
         super();
         initComponents();
-        Image img = Toolkit.getDefaultToolkit().createImage( getClass().getResource("/modbuspal/main/img/icon32.png") );
-        setIconImage(img);
+        setIconImage(FileTools.getImage("/img/icon32.png"));
         scriptsList.setDropTarget( new DropTarget(this, new FileTransferHandler(this) ) );
     }
 

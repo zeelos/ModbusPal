@@ -5,6 +5,9 @@
 
 package modbuspal.toolkit;
 
+import javax.imageio.ImageIO;
+import javax.imageio.stream.ImageInputStream;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -202,5 +205,17 @@ public class FileTools
         {
             fos.close();
         }
+    }
+
+    public static BufferedImage getImage(String name) {
+        try {
+            InputStream imgStream = FileTools.class.getResourceAsStream(name);
+            ImageInputStream imageInput = ImageIO.createImageInputStream(imgStream);
+            return ImageIO.read(imageInput);
+        } catch (Exception e) {
+            e.printStackTrace();
+            // should not happen
+            return null;
+       }
     }
 }

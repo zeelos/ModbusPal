@@ -11,6 +11,8 @@
 
 package modbuspal.automation;
 
+import modbuspal.toolkit.FileTools;
+
 import java.awt.Image;
 import java.awt.Toolkit;
 
@@ -66,8 +68,7 @@ extends javax.swing.JDialog
         setModalityType(ModalityType.APPLICATION_MODAL);
         automationListModel = al;
         initComponents();
-        Image img = Toolkit.getDefaultToolkit().createImage( getClass().getResource("/modbuspal/main/img/icon32.png") );
-        setIconImage(img);
+        setIconImage(FileTools.getImage("/modbuspal/main/img/icon32.png"));
         select(selected);
     }
 
