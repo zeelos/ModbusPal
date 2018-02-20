@@ -65,9 +65,9 @@
                             <mainClass>modbuspal.main.ModbusPalGui</mainClass>
                         </manifest>
                     </archive>
-                    <descriptorRefs>
-                        <descriptorRef>jar-with-dependencies</descriptorRef>
-                    </descriptorRefs>
+                    <descriptors>
+                        <descriptor>src/main/assembly/package.xml</descriptor>
+                    </descriptors>
                 </configuration>
                 <executions>
                     <execution>
