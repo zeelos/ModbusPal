@@ -502,7 +502,7 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         tcpIpSettingsPanel.add(jLabel1, gridBagConstraints);
 
         portTextField.setText("502");
-        portTextField.setPreferredSize(new java.awt.Dimension(40, 20));
+        portTextField.setPreferredSize(new java.awt.Dimension(80, 20));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.insets = new java.awt.Insets(5, 2, 5, 5);
         tcpIpSettingsPanel.add(portTextField, gridBagConstraints);
