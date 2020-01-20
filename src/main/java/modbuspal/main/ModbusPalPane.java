@@ -53,6 +53,9 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
     
     /** Base registry key for the configuration of the application. */
     public static final String BASE_REGISTRY_KEY = "modbuspal";
+    
+    /** Default TCP/IP port in a string to be loaded into the GUI. */
+    public static final String DEFAULT_PORT_TEXT = "502";
 
     private ArrayList<ModbusPalProjectListener> listeners = new ArrayList<ModbusPalProjectListener>();
         
@@ -284,12 +287,66 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         installRecorder();
         installCommPorts();
         //installScriptEngine();
+        
+        String initialLoadProjectFilePath = ModbusPalGui.getInitialLoadFilePath();
+        ModbusPalProject project = null;
+        File fileCheck = new File( initialLoadProjectFilePath );
+        if( initialLoadProjectFilePath != "" && fileCheck.isFile() )
+        {
+            try
+            {
+                System.out.println( "Loading the project file: " + initialLoadProjectFilePath );
+                project = loadProject( initialLoadProjectFilePath );
 
-        setProject( new ModbusPalProject() );
-
+                // Need to initialize the port number after loading the project, and not every time we load or set a project because if the
+                // user wants to load another file, we don't want to clobber it with the command line initial port number.
+                // This call must be called before the runToggleButton.doClick() method is invoked.
+                initializeInitialPortNumber( project );
+                
+                // Now that we have loaded a project from an initial project file, it is time to start all of the
+                // automations that have been loaded from the project file.
+                Component panels[] = automationsListPanel.getComponents();
+                for( int panelIndex = 0; panelIndex < panels.length; panelIndex++ )
+                {
+                    if( panels[ panelIndex ] instanceof AutomationPanel )
+                    {
+                        AutomationPanel panel = ( AutomationPanel ) panels[ panelIndex ];
+                        panel.automationHasStarted( null );
+                    }
+                }
+                runToggleButton.doClick();
+            }
+            catch( Exception exception )
+            {
+                System.out.println(
+                        "Could not load the initial project file path \"" + initialLoadProjectFilePath + "\"." );
+                System.out.println( "Check the path you inputted into the command line arguments." );
+            }
+        }
+        else 
+        {
+        	project = new ModbusPalProject();
+        	setProject( project );
+        	// Initializing the initial port number in case a port number was given, but no initial load file was given in the
+        	// command line arguments.
+        	initializeInitialPortNumber( project );
+        } 
     }
 
-
+    /**
+     * Initialize the initial port number given from the command line arguments if there was a valid number given in the command line.
+     * @param project The current ModbusPal project that is being used.
+     */
+    private void initializeInitialPortNumber( ModbusPalProject project )
+    {
+        int initialPortNumber = ModbusPalGui.getInitialPortNumber();
+        if( initialPortNumber >= 0 && initialPortNumber <= ModbusPalGui.MAX_PORT_NUMBER )
+        {
+            project.linkTcpipPort= Integer.toString( initialPortNumber );
+        }
+        portTextField.setText( project.linkTcpipPort );
+    }
+    
     private void installConsole()
     {
         try {
@@ -501,8 +558,19 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 2);
         tcpIpSettingsPanel.add(jLabel1, gridBagConstraints);
 
-        portTextField.setText("502");
+        int initialPortNumber = ModbusPalGui.getInitialPortNumber();
+        if( initialPortNumber >= 0 && initialPortNumber <= ModbusPalGui.MAX_PORT_NUMBER )
+        {
+        	System.out.println( "Loading the initial TCP/IP port number: " + initialPortNumber );
+        	portTextField.setText( Integer.toString( initialPortNumber ) );
+        }
+        else
+        {
+        	System.out.println( "Could not load an initial port number. Loading default port number." );
+        	portTextField.setText( DEFAULT_PORT_TEXT );
+        }
         portTextField.setPreferredSize(new java.awt.Dimension(40, 20));
+        
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.insets = new java.awt.Insets(5, 2, 5, 5);
         tcpIpSettingsPanel.add(portTextField, gridBagConstraints);
@@ -1314,7 +1382,6 @@ implements ModbusPalXML, WindowListener, ModbusPalListener, ModbusLinkListener
 
 
     private void addAutomationButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addAutomationButtonActionPerformed
-        
         String name = Automation.DEFAULT_NAME + " #" + String.valueOf( modbusPalProject.idGenerator.createID() );
         Automation automation = new Automation( name );
         modbusPalProject.addAutomation(automation);

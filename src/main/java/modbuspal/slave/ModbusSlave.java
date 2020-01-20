@@ -7,6 +7,8 @@ package modbuspal.slave;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -630,8 +632,15 @@ implements ModbusPalXML, ModbusConst
             }
             else
             {
-                String id = XMLTools.getAttribute(XML_SLAVE_ID_ATTRIBUTE, node);
-                slaveId = new ModbusSlaveAddress(Integer.valueOf(id));
+            	String id = XMLTools.getAttribute(XML_SLAVE_ID_ATTRIBUTE, node);
+            	try 
+            	{
+            		slaveId = new ModbusSlaveAddress( InetAddress.getByName( id ) );
+            	} 
+            	catch (UnknownHostException exception) 
+            	{
+            		System.out.println( "Unknown host while loading Modbus Slave: " + id );
+            	}
             }
 
             String en = XMLTools.getAttribute(XML_SLAVE_ENABLED_ATTRIBUTE, node);

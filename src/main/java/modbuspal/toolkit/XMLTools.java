@@ -71,6 +71,10 @@ public class XMLTools
      */
     public static String getAttribute(String attr, Node node)
     {
+    	if( node == null )
+    	{
+    		return null;
+    	}
         NamedNodeMap attributes = node.getAttributes();
         Node attribute = attributes.getNamedItem(attr);
         if( attribute==null )
