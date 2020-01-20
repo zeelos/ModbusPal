@@ -10,6 +10,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -109,8 +111,6 @@ implements ModbusPalXML
         generatorFactory.add( new modbuspal.generator.linear.LinearGenerator() );
         generatorFactory.add( new modbuspal.generator.random.RandomGenerator() );
         generatorFactory.add( new modbuspal.generator.sine.SineGenerator() );
-
-
     }
 
     private ModbusPalProject(Document doc, File source)
@@ -411,8 +411,11 @@ implements ModbusPalXML
     /**
      * This method will examine the content of a "<binding>" tag in order to
      * parse the attributes it contains, and also the child tags that may exist.
-     * @param node reference on the Node that represents a "<binding>" tag in the
+     * @param node Reference on the Node that represents a "<binding>" tag in the
      * project.
+     * @param slave Reference to a ModbusSlave to bind the automation to. If the passed in
+     * slave is "null", it will retrieve the ModbusSlave that is the parent of this register or coil
+     * node the automation is being bound to.
      * @throws java.lang.InstantiationException
      * @throws java.lang.IllegalAccessException
      */
@@ -443,21 +446,36 @@ implements ModbusPalXML
         Node orderNode = attributes.getNamedItem("order");
         String orderValue = orderNode.getNodeValue();
         int wordOrder = Integer.parseInt(orderValue);
+        
+        boolean isRegister = true;
 
         // retrieve the register that is the parent of this node
-        Node parentRegister = XMLTools.findParent(node,"register");
-        String parentAddress = XMLTools.getAttribute(ModbusPalXML.XML_ADDRESS_ATTRIBUTE, parentRegister);
-        int registerAddress = Integer.parseInt( parentAddress );
+        Node parentNode = XMLTools.findParent(node,"register");
+        String parentAddress = XMLTools.getAttribute(ModbusPalXML.XML_ADDRESS_ATTRIBUTE, parentNode);
+        
+        int ioAddress = 0;
+        if( parentAddress == null )
+        {
+        	isRegister = false;
+        	parentNode = XMLTools.findParent(node, "coil");
+        	parentAddress = XMLTools.getAttribute(ModbusPalXML.XML_ADDRESS_ATTRIBUTE, parentNode);
+        	if( parentAddress == null )
+        	{
+        		System.out.println( "Cannot bind automation. Parent is neither a register or coil!" );
+        		return;
+        	}
+        }
+        
+        ioAddress = Integer.parseInt( parentAddress );
 
-        // Instanciate the binding:
+        // Instantiate the binding:
         Binding binding = bindingFactory.newInstance(className);
         binding.setup(automation, wordOrder);
 
-
-        if( slave==null)
+        if( slave==null )
         {
             // retrieve the slave that is the parent of this register
-            Node parentSlave = XMLTools.findParent(parentRegister, "slave");
+            Node parentSlave = XMLTools.findParent(parentNode, "slave");
             
             String slaveAddress = XMLTools.getAttribute(ModbusPalXML.XML_SLAVE_ID2_ATTRIBUTE, parentSlave);
             if( slaveAddress!= null )
@@ -467,15 +485,28 @@ implements ModbusPalXML
             }
             else
             {
-                slaveAddress = XMLTools.getAttribute(ModbusPalXML.XML_SLAVE_ID_ATTRIBUTE, parentSlave);
-                int slaveId = Integer.parseInt(slaveAddress);
-                ModbusSlaveAddress msa = new ModbusSlaveAddress(slaveId);
-                slave = getModbusSlave(msa);
+            	slaveAddress = XMLTools.getAttribute(ModbusPalXML.XML_SLAVE_ID_ATTRIBUTE, parentSlave);
+            	try 
+            	{
+            		ModbusSlaveAddress msa = new ModbusSlaveAddress( InetAddress.getByName( slaveAddress ) );
+            		slave = getModbusSlave(msa);
+            	} 
+            	catch (UnknownHostException exception) 
+            	{
+            		System.out.println( "Unable to get Modbus Slave IP address from slave address: " + slaveAddress );
+            	}
             }
         }
 
-        // bind the register and the automation
-        slave.getHoldingRegisters().bind(registerAddress, binding);
+        // bind the registers, coils, and the automation
+        if( isRegister )
+        {
+        	slave.getHoldingRegisters().bind(ioAddress, binding);
+        }
+        else 
+        {
+        	slave.getCoils().bind(ioAddress, binding);
+        }
     }
 
 

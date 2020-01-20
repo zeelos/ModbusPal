@@ -279,20 +279,20 @@ implements WindowListener, AutomationExecutionListener, AncestorListener
     {
     }
 
-    @Override
     public void automationHasEnded(Automation source)
     {
         //playToggleButton.setText("Start");
         playToggleButton.setSelected(false);
         setBackground(false);
+        automation.stop();
     }
 
-    @Override
     public void automationHasStarted(Automation aThis)
     {
         //playToggleButton.setText("Stop");
         playToggleButton.setSelected(true);
         setBackground(true);
+        automation.start();
     }
 
     @Override
