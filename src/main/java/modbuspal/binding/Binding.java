@@ -11,6 +11,7 @@ import modbuspal.automation.Automation;
 import modbuspal.automation.AutomationExecutionListener;
 import modbuspal.instanciator.Instantiable;
 import modbuspal.slave.ModbusRegisters;
+import modbuspal.slave.ModbusExtendedRegisters;
 
 /**
  * Defines a binding
@@ -28,6 +29,7 @@ implements AutomationExecutionListener, Cloneable, Instantiable<Binding>
     private Automation automation;
     private int order;
     private ModbusRegisters registers;
+    private ModbusExtendedRegisters extendedRegisters;
     private int registerAddress;
 
     /** creates a new instance. */
@@ -60,6 +62,20 @@ implements AutomationExecutionListener, Cloneable, Instantiable<Binding>
         automation.addAutomationExecutionListener(this);
     }
 
+    /**
+     *  This method is called by ModbusRegisters. It should not be called
+     *  directly. Its purpose is to define which register is the target
+     *  of the binding.
+     * @param l reference on the modbus registers to look into
+     * @param address address of the register that is the target of the binding
+     */
+    public final void attachExtendedRegisters(ModbusExtendedRegisters l, int address)
+    {
+        extendedRegisters = l;
+        registerAddress = address;
+        automation.addAutomationExecutionListener(this);
+    }
+
 
     /**
      *  This method is called by ModbusRegisters. It should not be called
@@ -69,6 +85,17 @@ implements AutomationExecutionListener, Cloneable, Instantiable<Binding>
     public final void detach()
     {
         registers=null;
+        automation.removeAutomationExecutionListener(this);
+    }
+
+    /**
+     *  This method is called by ModbusRegisters. It should not be called
+     *  directly. Its purpose is to undefine which register is the target
+     *  of the binding.
+     */
+    public final void detachExtendedRegisters()
+    {
+        extendedRegisters=null;
         automation.removeAutomationExecutionListener(this);
     }
 
@@ -142,7 +169,7 @@ implements AutomationExecutionListener, Cloneable, Instantiable<Binding>
 
     /**
      * Process the specified value and return the 16-word register corresponding
-     * to the requested order. 
+     * to the requested order.
      * @param order the rank of the 16-word register to return, depending of the
      * mapping implemented by this binding.
      * @param value the value to process
@@ -164,7 +191,7 @@ implements AutomationExecutionListener, Cloneable, Instantiable<Binding>
 
     /**
      * Process the specified value and return the boolean value (coil)  corresponding
-     * to the requested order. 
+     * to the requested order.
      * @param order the rank of the boolean (coil) to return, depending of the
      * mapping implemented by this binding.
      * @param value the value to process
@@ -186,7 +213,7 @@ implements AutomationExecutionListener, Cloneable, Instantiable<Binding>
     }
 
     /**
-     * Returns the name of the automation that 
+     * Returns the name of the automation that
      * has been associated to this binding by
      * calling the setup() method.
      * @return the name of the automation

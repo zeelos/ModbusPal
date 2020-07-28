@@ -8,7 +8,7 @@ package modbuspal.main;
 /**
  * Defines the subset of the MODBUS specification that is currently
  * supported by ModbusPal.
- * 
+ *
  * @author nnovic
  */
 public interface ModbusConst
@@ -20,6 +20,9 @@ public interface ModbusConst
     public static final byte FC_WRITE_SINGLE_REGISTER = (byte)0x06;
     public static final byte FC_WRITE_MULTIPLE_COILS = (byte)0x0F;
     public static final byte FC_WRITE_MULTIPLE_REGISTERS = (byte)0x10;
+    public static final byte FC_READ_FILE_RECORD = (byte)0x14;
+    public static final byte FC_READ_EXTENDED_REGISTERS = (byte)0x14;
+    public static final byte FC_WRITE_FILE_RECORD = (byte)0x15;
     public static final byte FC_READ_WRITE_MULTIPLE_REGISTERS = (byte)0x17;
 
     public static final byte XC_SUCCESSFUL = (byte)0x00;

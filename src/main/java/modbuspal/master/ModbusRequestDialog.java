@@ -11,70 +11,77 @@ import modbuspal.slave.ModbusCoils;
  *
  * @author jmc15
  */
-public class ModbusRequestDialog 
-extends javax.swing.JDialog 
+public class ModbusRequestDialog
+extends javax.swing.JDialog
 {
     private boolean isOK = false;
 
     /**
      * Creates new form ModbusRequestDialog
      */
-    public ModbusRequestDialog() 
+    public ModbusRequestDialog()
     {
         setModalityType(ModalityType.DOCUMENT_MODAL);
         initComponents();
     }
 
-    
+
     ModbusMasterRequest getRequest()
     {
         if( actionSelectorTabbedPane.getSelectedComponent()==x01_readCoilsPanel )
         {
             int startingAddress = x01_startingAddressTextField.getInteger();
             int quantityToRead = x01_quantityToReadTextField.getInteger();
-            return ModbusMasterRequest.getReadCoilsRequest(startingAddress, quantityToRead);            
+            return ModbusMasterRequest.getReadCoilsRequest(startingAddress, quantityToRead);
         }
-        
+
         else if( actionSelectorTabbedPane.getSelectedComponent()==x02_readDiscreteInputsPanel )
         {
             int startingAddress = x02_startingAddressTextField.getInteger();
             int quantityToRead = x02_quantityToReadTextField.getInteger();
             return ModbusMasterRequest.getReadDiscreteInputsRequest(startingAddress, quantityToRead);
         }
-        
+
         else if( actionSelectorTabbedPane.getSelectedComponent()==x03_readHoldingRegistersPanel )
         {
             int startingAddress = x03_startingAddressTextField.getInteger();
             int quantityOfRegisters = x03_quantityToReadTextField.getInteger();
             return ModbusMasterRequest.getReadHoldingRegistersRequest(startingAddress, quantityOfRegisters);
         }
-        
+
         else if( actionSelectorTabbedPane.getSelectedComponent()==x05_writeSingleCoilPanel )
         {
             int outputAddress = x05_outputAddressTextField.getInteger();
             return ModbusMasterRequest.getWriteSingleCoilRequest(outputAddress);
         }
-        
+
         else if( actionSelectorTabbedPane.getSelectedComponent()==x06_writeSingleRegisterPanel )
         {
             int registerAddress = x06_registerAddressTextField.getInteger();
             return ModbusMasterRequest.getWriteSingleRegisterRequest(registerAddress);
         }
-        
+
         else if( actionSelectorTabbedPane.getSelectedComponent()==x0F_writeMultipleCoilsPanel )
         {
             int startingAddress = x0F_startingAddressTextField.getInteger();
             int quantityOfOutputs = x0F_quantityOfOutputsTextField.getInteger();
             return ModbusMasterRequest.getWriteMultipleCoilsRequest(startingAddress, quantityOfOutputs);
         }
-        
+
         else if( actionSelectorTabbedPane.getSelectedComponent()==x10_writeHoldingRegistersPanel )
         {
             int startingAddress = x10_startingAddressTextField.getInteger();
             int quantityOfRegisters = x10_quantityToReadTextField.getInteger();
             return ModbusMasterRequest.getWriteMultipleRegistersRequest(startingAddress, quantityOfRegisters);
         }
-        
+
+        else if( actionSelectorTabbedPane.getSelectedComponent()==x14_readExtendedRegistersPanel )
+        {
+            int startingAddress = x14_startingAddressTextField.getInteger();
+            int quantityOfRegisters = x14_quantityToReadTextField.getInteger();
+            return ModbusMasterRequest.getReadExtendedRegistersRequest(startingAddress, quantityOfRegisters);
+        }
+
         else if( actionSelectorTabbedPane.getSelectedComponent()==x17_readWriteMultipleRegistersPanel )
         {
             int readStartingAddress = x17_readStartingAddressTextField.getInteger();
@@ -85,16 +92,16 @@ extends javax.swing.JDialog
                     readStartingAddress, quantityToRead,
                     writeStartingAddress, quantityToWrite);
         }
-        
+
         else if( actionSelectorTabbedPane.getSelectedComponent()==delayPanel )
         {
             int delayInMilliseconds = delayTextField.getInteger();
             return ModbusMasterDelay.getDelay(delayInMilliseconds);
         }
-        
+
         return null;
     }
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -137,6 +144,11 @@ extends javax.swing.JDialog
         x10_startingAddressTextField = new modbuspal.toolkit.NumericTextField();
         jLabel4 = new javax.swing.JLabel();
         x10_quantityToReadTextField = new modbuspal.toolkit.NumericTextField();
+        x14_readExtendedRegistersPanel = new javax.swing.JPanel();
+        jLabelX2 = new javax.swing.JLabel();
+        x14_startingAddressTextField = new modbuspal.toolkit.NumericTextField();
+        jLabelX1 = new javax.swing.JLabel();
+        x14_quantityToReadTextField = new modbuspal.toolkit.NumericTextField();
         x17_readWriteMultipleRegistersPanel = new javax.swing.JPanel();
         jLabel18 = new javax.swing.JLabel();
         x17_readStartingAddressTextField = new modbuspal.toolkit.NumericTextField();
@@ -370,6 +382,40 @@ extends javax.swing.JDialog
 
         actionSelectorTabbedPane.addTab("Write Holding registers", x10_writeHoldingRegistersPanel);
 
+        x14_readExtendedRegistersPanel.setLayout(new java.awt.GridBagLayout());
+
+        jLabelX2.setText("Starting address:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 2, 2);
+        x14_readExtendedRegistersPanel.add(jLabel2, gridBagConstraints);
+
+        x14_startingAddressTextField.setColumns(5);
+        x14_startingAddressTextField.setText("numericTextField1");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(5, 2, 2, 5);
+        x14_readExtendedRegistersPanel.add(x03_startingAddressTextField, gridBagConstraints);
+
+        jLabel1.setText("Quantity of registers :");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_END;
+        gridBagConstraints.insets = new java.awt.Insets(2, 5, 5, 2);
+        x14_readExtendedRegistersPanel.add(jLabel1, gridBagConstraints);
+
+        x14_quantityToReadTextField.setColumns(5);
+        x14_quantityToReadTextField.setText("numericTextField1");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(2, 2, 5, 5);
+        x14_readExtendedRegistersPanel.add(x14_quantityToReadTextField, gridBagConstraints);
+
+        actionSelectorTabbedPane.addTab("Read Extended registers", x14_readExtendedRegistersPanel);
+
         x17_readWriteMultipleRegistersPanel.setLayout(new java.awt.GridBagLayout());
 
         jLabel18.setText("Read starting address:");
@@ -536,7 +582,7 @@ extends javax.swing.JDialog
     {
         return isOK;
     }
-    
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTabbedPane actionSelectorTabbedPane;
     private javax.swing.JButton cancelButton;
@@ -544,6 +590,7 @@ extends javax.swing.JDialog
     private modbuspal.toolkit.NumericTextField delayTextField;
     private javax.swing.JComboBox implementationComboBox;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabelX1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
@@ -555,6 +602,7 @@ extends javax.swing.JDialog
     private javax.swing.JLabel jLabel18;
     private javax.swing.JLabel jLabel19;
     private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabelX2;
     private javax.swing.JLabel jLabel20;
     private javax.swing.JLabel jLabel21;
     private javax.swing.JLabel jLabel3;
@@ -588,6 +636,9 @@ extends javax.swing.JDialog
     private modbuspal.toolkit.NumericTextField x10_quantityToReadTextField;
     private modbuspal.toolkit.NumericTextField x10_startingAddressTextField;
     private javax.swing.JPanel x10_writeHoldingRegistersPanel;
+    private modbuspal.toolkit.NumericTextField x14_quantityToReadTextField;
+    private javax.swing.JPanel x14_readExtendedRegistersPanel;
+    private modbuspal.toolkit.NumericTextField x14_startingAddressTextField;
     private modbuspal.toolkit.NumericTextField x17_quantityToReadTextField;
     private modbuspal.toolkit.NumericTextField x17_quantityToWriteTextField;
     private modbuspal.toolkit.NumericTextField x17_readStartingAddressTextField;
@@ -595,7 +646,7 @@ extends javax.swing.JDialog
     private modbuspal.toolkit.NumericTextField x17_writeStartingAddressTextField;
     // End of variables declaration//GEN-END:variables
 
-    void initializeWith(ModbusMasterRequest mmr) 
+    void initializeWith(ModbusMasterRequest mmr)
     {
         if( mmr instanceof ModbusMasterDelay )
         {
@@ -604,7 +655,7 @@ extends javax.swing.JDialog
             delayTextField.setValue( mmd.getDelay() );
             return;
         }
-        
+
         switch( mmr.getFunctionCode() )
         {
             case ModbusConst.FC_READ_COILS:
@@ -612,41 +663,47 @@ extends javax.swing.JDialog
                 x01_startingAddressTextField.setValue( mmr.getReadAddress() );
                 x01_quantityToReadTextField.setValue( mmr.getReadQuantity() );
                 break;
-                
+
             case ModbusConst.FC_READ_DISCRETE_INPUTS:
                 actionSelectorTabbedPane.setSelectedComponent(x02_readDiscreteInputsPanel);
                 x02_startingAddressTextField.setValue( mmr.getReadAddress() );
                 x02_quantityToReadTextField.setValue( mmr.getReadQuantity() );
                 break;
-                
+
             case ModbusConst.FC_READ_HOLDING_REGISTERS:
                 actionSelectorTabbedPane.setSelectedComponent(x03_readHoldingRegistersPanel);
                 x03_startingAddressTextField.setValue( mmr.getReadAddress() );
                 x03_quantityToReadTextField.setValue( mmr.getReadQuantity() );
                 break;
-                
+
             case ModbusConst.FC_WRITE_SINGLE_COIL:
                 actionSelectorTabbedPane.setSelectedComponent(x05_writeSingleCoilPanel);
                 x05_outputAddressTextField.setValue( mmr.getWriteAddress() );
                 break;
-                
+
             case ModbusConst.FC_WRITE_SINGLE_REGISTER:
                 actionSelectorTabbedPane.setSelectedComponent(x06_writeSingleRegisterPanel);
                 x06_registerAddressTextField.setValue( mmr.getWriteAddress() );
                 break;
-                
+
             case ModbusConst.FC_WRITE_MULTIPLE_COILS:
                 actionSelectorTabbedPane.setSelectedComponent(x0F_writeMultipleCoilsPanel);
                 x0F_startingAddressTextField.setValue(mmr.getWriteAddress());
                 x0F_quantityOfOutputsTextField.setValue(mmr.getWriteQuantity());
                 break;
-                
+
             case ModbusConst.FC_WRITE_MULTIPLE_REGISTERS:
                 actionSelectorTabbedPane.setSelectedComponent(x10_writeHoldingRegistersPanel);
                 x10_startingAddressTextField.setValue( mmr.getWriteAddress() );
                 x10_quantityToReadTextField.setValue( mmr.getWriteQuantity() );
                 break;
-                
+
+            case ModbusConst.FC_READ_EXTENDED_REGISTERS:
+                actionSelectorTabbedPane.setSelectedComponent(x14_readExtendedRegistersPanel);
+                x14_startingAddressTextField.setValue( mmr.getReadAddress() );
+                x14_quantityToReadTextField.setValue( mmr.getReadQuantity() );
+                break;
+
             case ModbusConst.FC_READ_WRITE_MULTIPLE_REGISTERS:
                 x17_readStartingAddressTextField.setValue( mmr.getReadAddress() );
                 x17_quantityToReadTextField.setValue( mmr.getReadQuantity() );

@@ -44,7 +44,7 @@ implements ModbusConst, ModbusSlaveListener
     final ModbusPalPane modbusPalPane;
     final ModbusPalProject modbusPalProject;
 
-    /** Creates new form ModbusSlaveDialog 
+    /** Creates new form ModbusSlaveDialog
      * @param p the modbuspalpane to which this dialog is connected
      * @param s the modbus slave being displayed by this dialog
      */
@@ -53,16 +53,17 @@ implements ModbusConst, ModbusSlaveListener
         modbusPalPane = p;
         modbusPalProject = modbusPalPane.getProject();
         modbusSlave = s;
-        
+
         ModbusSlaveAddress id = s.getSlaveId();
         String name = s.getName();
         setTitle( String.valueOf(id) + ":" + name );
         setIconImage(FileTools.getImage("/img/icon32.png"));
-        
+
         modbusSlave.addModbusSlaveListener(this);
         initComponents();
         holdingRegistersPanel.add(new ModbusRegistersPanel(this, modbusSlave.getHoldingRegisters()),BorderLayout.CENTER);
         coilsPanel.add(new ModbusCoilsPanel(this, modbusSlave.getCoils()),BorderLayout.CENTER);
+        extendedRegistersPanel.add(new ModbusExtendedRegistersPanel(this, modbusSlave.getExtendedRegisters()),BorderLayout.CENTER);
         functionsPanel.add( new ModbusFunctionsPanel(this,modbusPalProject.getFunctionFactory()),BorderLayout.CENTER);
 
         // add function tabs for user defined functions
@@ -112,7 +113,7 @@ implements ModbusConst, ModbusSlaveListener
     {
         // open import file
         Document doc = XMLTools.ParseXML(importFile);
-        
+
         // normalize text representation
         doc.getDocumentElement().normalize();
 
@@ -125,7 +126,7 @@ implements ModbusConst, ModbusSlaveListener
             // any bindings ?
             Node uniqNode = slaves.item(0);
             Collection<Node> bindings = XMLTools.findChildren(uniqNode,"binding");
-            
+
             // if no bindings, then make a simle call to "load"
             if( bindings.isEmpty() )
             {
@@ -173,6 +174,7 @@ implements ModbusConst, ModbusSlaveListener
 
         jTabbedPane1 = new javax.swing.JTabbedPane();
         holdingRegistersPanel = new javax.swing.JPanel();
+        extendedRegistersPanel = new javax.swing.JPanel();
         coilsPanel = new javax.swing.JPanel();
         functionsPanel = new javax.swing.JPanel();
         tuningPanel = new javax.swing.JPanel();
@@ -201,6 +203,10 @@ implements ModbusConst, ModbusSlaveListener
         holdingRegistersPanel.setPreferredSize(new java.awt.Dimension(400, 300));
         holdingRegistersPanel.setLayout(new java.awt.BorderLayout());
         jTabbedPane1.addTab("Holding registers", holdingRegistersPanel);
+
+        extendedRegistersPanel.setPreferredSize(new java.awt.Dimension(400, 300));
+        extendedRegistersPanel.setLayout(new java.awt.BorderLayout());
+        jTabbedPane1.addTab("Extended registers", extendedRegistersPanel);
 
         coilsPanel.setLayout(new java.awt.BorderLayout());
         jTabbedPane1.addTab("Coils", coilsPanel);
@@ -360,7 +366,7 @@ implements ModbusConst, ModbusSlaveListener
             exportBindings = optionDialog.exportBindings();
             exportAutomations = optionDialog.exportAutomations();
         }
-        
+
         // Create dialog
         JFileChooser saveDialog = new XFileChooser(XFileChooser.SLAVE_FILE);
 
@@ -375,7 +381,7 @@ implements ModbusConst, ModbusSlaveListener
             setStatus("Cancelled by user.");
             return;
         }
-        
+
         try
         {
             modbusPalProject.exportSlave(exportFile, modbusSlave.getSlaveId(), exportBindings, exportAutomations );
@@ -429,7 +435,7 @@ implements ModbusConst, ModbusSlaveListener
             case 1: // J-Bus
                 modbusSlave.setImplementation(IMPLEMENTATION_JBUS);
                 break;
-        }        
+        }
 }//GEN-LAST:event_implementationComboBoxActionPerformed
 
     private void stayOnTopCheckBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_stayOnTopCheckBoxActionPerformed
@@ -454,6 +460,7 @@ implements ModbusConst, ModbusSlaveListener
     private javax.swing.JButton exportButton;
     private javax.swing.JPanel functionsPanel;
     private javax.swing.JPanel holdingRegistersPanel;
+    private javax.swing.JPanel extendedRegistersPanel;
     private javax.swing.JComboBox implementationComboBox;
     private javax.swing.JButton importButton;
     private javax.swing.JLabel jLabel1;
